@@ -3,21 +3,38 @@
   <head>
     <meta charset="utf-8">
     <meta name="generator" content="GitLab Pages">
-    <title>Plain HTML site using GitLab Pages</title>
-    <link rel="stylesheet" href="style.css">
+    <title>ヴァレロッソ福岡</title>
+    <link rel="icon" href="img/vso.ico" type="image/xicon">
+    <meta name="author" content="Yutaro Nakayama">
+    <link rel="stylesheet" href="css/style.css">
   </head>
+  <header>
+    <nav class="navbar">
+      <ul>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="about.html">チーム紹介</a></li>
+        <li><a href="players.html">監督・コーチ紹介</a></li>
+        <li><a href="schedule.html">スケジュール</a></li>
+        <li><a href="results.html">大会成績</a></li>
+        <li><a href="contact.html">お問い合わせ</a></li>
+      </ul>
+    </nav>
+  </header>
   <body>
-    <div class="navbar">
-      <a href="https://pages.gitlab.io/plain-html/">Plain HTML Example</a>
-      <a href="https://gitlab.com/pages/plain-html/">Repository</a>
-      <a href="https://gitlab.com/pages/">Other Examples</a>
+    <div class="hero-image">
+      <video autoplay muted loop id="background-video">
+        <source src="img/image_eizen.mp4" type="video/mp4">
+        <!-- ここに動画が表示されない場合の代替テキストを追加 -->
+        <p>お使いのブラウザは動画をサポートしていません。</p>
+      </video>
     </div>
-
-    <h1>Hello World!</h1>
-
-    <p>
-      This is a simple plain-HTML website on GitLab Pages, without any fancy static site generator.
-    </p>
+    <div class="hero-content">
+      <h1>ヴァレロッソ福岡</h1>
+      <p>未来のサッカー選手を育てる場所</p>
+    </div>
+    <footer>
+      <p>&copy; 2024 ヴァレロッソ福岡. All rights reserved.</p>
+    </footer>
   </body>
 </html>
 
