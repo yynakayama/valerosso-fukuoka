@@ -1,32 +1,49 @@
----
+# ValerossoHukuoka
 
-Example plain HTML website using GitLab with [Netlify](https://www.netlify.com/).
+サッカークラブのウェブサイト作成を通したフロントエンド学習プロジェスト。
 
----
+## 概要
 
-## Netlify Configuration
+サッカークラブ「ヴァレロッソ福岡」の公式ウェブサイト作成のためのリポジトリ。
+HTMLとCSSとJavaScriptを使用して、レスポンシブなwebサイトを構築。
 
-In order to build this site with Netlify, simply log in or register at 
-https://app.netlify.com/, then select "New site from Git" from the top
-right. Select GitLab, authenticate if needed, and then select this
-project from the list. 
+## 技術スタック
 
-You will need to set the publish directory to `/public`. Netlify will handle the 
-rest.
+- HTML5
+- CSS3
+- JavaScript(ES6+)
 
-In the meantime, you can take advantage of all the great GitLab features
-like merge requests, issue tracking, epics, and everything else GitLab has
-to offer.
+## 開発環境のセットアップ
+1. リポジトリのクローン
+git clone https://gitlab.com/nkym19941225/valerosso-hukuoka.git
 
-## Did you fork this project?
+2. プロジェクトディレクトリに移動
+cd valerosso-hukuoka
 
-If you forked this project for your own use, please go to your project's
-**Settings** and remove the forking relationship, which won't be necessary
-unless you want to contribute back to the upstream project.
+3. お好みのエディタでプロジェクトを開く
 
-## Troubleshooting
+## ディレクトリ構成
+valerosso-hukuoka/
+├── index.html        # トップページ
+├── css/              # スタイルシート
+│   └── style.css
+├── js/               # JavaScriptファイル
+│   └── main.js
+├── images/           # 画像ファイル
+└── README.md         #このファイル
 
-1. CSS is missing! That means that you have wrongly set up the CSS URL in your
-   HTML files. Have a look at the [index.html] for an example.
+## 昨日
 
-[index.html]: https://gitlab.com/pages/plain-html/blob/master/public/index.html
+- ホームページ
+- チーム情報
+- 監督、コーチ情報
+- スケジュール
+- 主な大会成績
+- お問い合わせフォーム
+
+## 貢献方法
+
+1. フォークする
+2. 機能追加用ブランチを作成する
+3. 変更をコミットする
+4. プルリクエストを作成する
