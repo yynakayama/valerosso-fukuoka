@@ -103,8 +103,8 @@
 }
 
 .philosophy-point img {
-    width: 60px; /* アイコンサイズ */
-    height: 60px;
+    width: 100px; /* アイコンサイズ */
+    height: 100px;
     margin-bottom: 15px;
     object-fit: contain; /* 画像が潰れないように */
 }
