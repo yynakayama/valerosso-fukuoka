@@ -1,56 +1,54 @@
+* {
+  margin: 0; /* 外側の余白を0に設定 */
+  padding: 0; /* 内側の余白を0に設定 */
+  box-sizing: border-box; /* ボックスモデルをborder-boxに設定 */
+}
+
+/* 全体のフォント設定 */
 body {
-  font-family: sans-serif;
-  margin: auto;
-  max-width: 1280px;
+  font-family: 'Arial', sans-serif; /* フォントをArialに設定、無ければsans-serif */
+  line-height: 1.6; /* 行間を設定 */
+  color: #333; /* 基本的な文字色 */
 }
 
-.navbar {
-  background-color: #313236;
-  border-radius: 2px;
-  max-width: 800px;
+/* メインコンテンツエリアのスタイル */
+.content {
+  padding: 20px; /* 内側に20pxの余白を設定 */
+  max-width: 1200px; /* 最大幅を設定 */
+  margin: 0 auto; /* 中央に配置 */
 }
 
-.navbar a {
-  color: #aaa;
-  display: inline-block;
-  font-size: 15px;
-  padding: 10px;
-  text-decoration: none;
+/* 見出しのスタイル */
+h1 {
+  font-size: 2rem; /* フォントサイズを設定 */
+  margin-bottom: 1rem; /* 下部に余白を設定 */
+  color: #0611e3; /* サッカークラブの青色に変更 */
 }
 
-.navbar a:hover {
-  color: #ffffff;
+h2 {
+  font-size: 1.5rem; /* フォントサイズを設定 */
+  margin-bottom: 0.8rem; /* 下部に余白を設定 */
 }
 
-.hero-section {
-  position: relative;
-  height: 100vh; /* 画面の高さいっぱいに表示 */
-  width: 100%;
-  overflow: hidden;
+h3 {
+  font-size: 1.2rem; /* フォントサイズを設定 */
+  margin-bottom: 0.6rem; /* 下部に余白を設定 */
 }
 
-/* ヘッダーのCSS */
-header {
-  position: relative; /* または position: fixed; でヘッダーを固定 */
-  width: 100%;
-  z-index: 10; /* より大きな値を設定して最前面に表示 */
+/* 段落のスタイル */
+p {
+  margin-bottom: 1rem; /* 下部に余白を設定 */
 }
 
-
-.hero-content {
-  z-index: 1;
-  /* その他のコンテンツスタイル */
+/* リンクのスタイル */
+a {
+  color: #0611e3; /* リンクの色を青に変更 */
+  text-decoration: none; /* 下線を非表示 */
+  transition: color 0.3s ease; /* 色の変化をアニメーション */
 }
 
-.navbar ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center; /* 中央揃え */
-}
-.navbar li {
-  margin: 0 10px; /* リストアイテムの間隔 */
+a:hover {
+  color: #0410b0; /* ホバー時の色を少し暗めの青に変更 */
 }
 
 #background-video {
@@ -63,38 +61,29 @@ header {
   z-index: 0; /* 背面に配置 */
 }
 
-.hero-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  z-index: 1; /* 前面に配置 */
-  color: white; /* テキストの色 */
-  width: 90%;
-  max-width: 800px;
+/* フッターのスタイル */
+footer {
+  text-align: center; /* テキストを中央揃えに */
+  padding: 20px; /* 内側に余白を設定 */
+  background-color: #1a1a1a; /* 背景色を暗めのグレーに */
+  color: white; /* 文字色を白に */
+  margin-top: 40px; /* 上部に余白を設定 */
 }
 
-.hero-content h1 {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* テキストの視認性向上 */
+/* レスポンシブ設定 */
+@media (min-width: 768px) {
+  .content {
+      padding: 30px; /* タブレット以上では余白を広げる */
+  }
+  
+  h1 {
+      font-size: 2.5rem; /* フォントサイズを大きく */
+  }
 }
 
-.hero-content p {
-  font-size: 1.5rem;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-/* オーバーレイを追加してテキストの視認性を高める場合 */
-.hero-section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.3); /* 半透明の黒オーバーレイ */
-  z-index: 0;
+@media (min-width: 1024px) {
+  .content {
+      padding: 40px; /* デスクトップでは更に余白を広げる */
+  }
 }
 

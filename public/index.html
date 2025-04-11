@@ -1,40 +1,110 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="generator" content="GitLab Pages">
-    <title>ヴァレロッソ福岡</title>
-    <link rel="icon" href="img/vso.ico" type="image/xicon">
-    <meta name="author" content="Yutaro Nakayama">
-    <link rel="stylesheet" href="css/style.css">
-  </head>
-  <header>
-    <nav class="navbar">
-      <ul>
-        <li><a href="index.html">ホーム</a></li>
-        <li><a href="about.html">チーム紹介</a></li>
-        <li><a href="players.html">監督・コーチ紹介</a></li>
-        <li><a href="schedule.html">スケジュール</a></li>
-        <li><a href="results.html">大会成績</a></li>
-        <li><a href="contact.html">お問い合わせ</a></li>
-      </ul>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <!-- ビューポートの設定 - モバイル表示を最適化するための設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valerosso Fukuoka - ホーム</title>
+    <!-- CSSファイルの読み込み -->
+    <link rel="stylesheet" href="css/style.css"> <!-- 共通スタイル -->
+    <link rel="stylesheet" href="css/header.css"> <!-- ヘッダー用スタイル -->
+    <link rel="stylesheet" href="css/footer.css"> <!-- フッター用スタイル -->
+    <link rel="stylesheet" href="css/pages/home.css"> <!-- ホームページ固有のスタイル -->
+</head>
+<body>
+    <!-- ヘッダー部分 - サイトタイトルとハンバーガーメニューボタンを含む -->
+    <header>
+        <!-- サイトタイトル -->
+        <div class="site-title">Valerosso Fukuoka</div>
+        
+        <!-- ハンバーガーメニューボタン - 3本の横線（span要素）で構成 -->
+        <div class="hamburger">
+            <span></span> <!-- 上の線 -->
+            <span></span> <!-- 中央の線 -->
+            <span></span> <!-- 下の線 -->
+        </div>
+    </header>
+    
+    <!-- オーバーレイ - メニュー表示時に背景を暗くするための要素 -->
+    <div class="overlay"></div>
+    
+    <!-- ナビゲーションメニュー - 各ページへのリンクリスト -->
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="index.html" class="current">ホーム</a></li>
+            <li><a href="team.html">クラブ紹介</a></li>
+            <li><a href="schedule.html">練習・試合予定</a></li>
+            <li><a href="news.html">お知らせ</a></li>
+            <li><a href="gallery.html">フォトギャラリー</a></li>
+            <li><a href="join.html">入部案内</a></li>
+            <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
     </nav>
-  </header>
-  <body>
-    <div class="hero-image">
-      <video autoplay muted loop id="background-video">
-        <source src="img/image_eizen.mp4" type="video/mp4">
-        <!-- ここに動画が表示されない場合の代替テキストを追加 -->
-        <p>お使いのブラウザは動画をサポートしていません。</p>
-      </video>
-    </div>
-    <div class="hero-content">
-      <h1>ヴァレロッソ福岡</h1>
-      <p>未来のサッカー選手を育てる場所</p>
-    </div>
-    <footer>
-      <p>&copy; 2024 ヴァレロッソ福岡. All rights reserved.</p>
-    </footer>
-  </body>
-</html>
+    
+    <!-- メインコンテンツエリア -->
+    <main>
+        <!-- ヒーローセクション - メインビジュアルとキャッチコピー -->
+        <section class="hero-section">
+            <h1>未来の選手を育てる少年サッカークラブ</h1>
+            <p>Valerosso Fukuokaは福岡を拠点に活動する中学生・高校生向けサッカークラブです。技術向上はもちろん、人間的成長も大切にしています。</p>
+            <a href="team.html" class="hero-button">クラブを知る</a>
+        </section>
+        
+        <!-- 次の試合/大会情報 -->
+        <section class="next-match">
+            <h2>次の大会</h2>
+            <div class="match-details">
+                <img src="img/vso.ico" alt="Valerosso Fukuoka" class="team-logo">
+                <div class="match-info">
+                    <div class="match-date">2025年4月15日（土）</div>
+                    <div class="match-time">福岡ジュニアカップ</div>
+                    <div class="match-venue">福岡市総合グラウンド</div>
+                    <div class="match-countdown">大会まであと -- 日 -- 時間 -- 分 -- 秒</div>
+                </div>
+            </div>
+            <a href="schedule.html" class="schedule-button">日程詳細を見る</a>
+        </section>
+        
+        <!-- 最新お知らせ -->
+        <section class="news-section">
+            <h2>最新お知らせ</h2>
+            <div class="news-container">
+                <!-- ニュースカードはJavaScriptで動的に生成 -->
+            </div>
+        </section>
+        
+        <!-- コーチ紹介 -->
+        <section class="coach-section">
+            <h2>指導方針</h2>
+            <div class="coach-philosophy">
+                <p>当クラブでは、サッカーの技術向上だけでなく、チームワーク、責任感、自主性を重視し、将来社会で活躍できる人材育成を目指しています。</p>
+                <div class="philosophy-points">
+                    <div class="philosophy-point">
+                        <h3>技術力向上</h3>
+                        <p>基礎技術の徹底と戦術理解の向上</p>
+                    </div>
+                    <div class="philosophy-point">
+                        <h3>人間力育成</h3>
+                        <p>礼儀・挨拶・時間厳守の徹底</p>
+                    </div>
+                    <div class="philosophy-point">
+                        <h3>健全な心身</h3>
+                        <p>正しい生活習慣と食育の推進</p>
+                    </div>
+                </div>
+            </div>
+            <a href="team.html#philosophy" class="more-button">詳しく見る</a>
+        </section>
+    </main>
 
+    <!-- フッター -->
+    <footer>
+        <p>&copy; <span class="copyright-year">2025</span> Valerosso Fukuoka. All rights reserved.</p>
+    </footer>
+    
+    <!-- JavaScriptファイルの読み込み -->
+    <script src="js/main.js"></script> <!-- 共通のJavaScript -->
+    <script src="js/navigation.js"></script> <!-- ナビゲーション用JavaScript -->
+    <script src="js/pages/home.js"></script> <!-- ホームページ固有のJavaScript -->
+</body>
+</html>

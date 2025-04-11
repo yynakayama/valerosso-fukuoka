@@ -1,0 +1,269 @@
+/* home.css - ホームページ固有のスタイル */
+
+/* ヒーローセクションのスタイル */
+.hero-section {
+    background-color: #f5f5f5; /* 背景色を明るいグレーに設定 */
+    padding: 30px 20px; /* 内側の余白を設定（上下30px、左右20px） */
+    text-align: center; /* テキストを中央揃えに */
+    margin-bottom: 30px; /* 下部に余白を設定 */
+}
+
+.hero-section h1 {
+    font-size: 2rem; /* 見出しのフォントサイズを設定 */
+    margin-bottom: 15px; /* 下部に余白を設定 */
+}
+
+.hero-section p {
+    font-size: 1.1rem; /* 段落のフォントサイズを設定 */
+    max-width: 800px; /* 最大幅を設定 */
+    margin: 0 auto 20px; /* 中央揃えにして下部に余白を設定 */
+}
+
+.hero-button {
+    display: inline-block; /* インラインブロック要素として表示 */
+    background-color: #0611e3; /* ボタンの背景色を青に */
+    color: white; /* 文字色を白に */
+    padding: 10px 20px; /* 内側の余白を設定 */
+    border-radius: 5px; /* 角を丸くする */
+    font-weight: bold; /* 太字に設定 */
+    text-transform: uppercase; /* 大文字に変換 */
+    transition: background-color 0.3s ease; /* 背景色の変化をアニメーション */
+}
+
+.hero-button:hover {
+    background-color: #0410b0; /* ホバー時の背景色を少し暗めの青に */
+}
+
+/* 最新ニュースセクションのスタイル */
+.news-section {
+    margin-bottom: 40px; /* 下部に余白を設定 */
+}
+
+.news-section h2 {
+    color: #0611e3; /* 見出しの色を青に */
+    margin-bottom: 20px; /* 下部に余白を設定 */
+    text-align: center; /* テキストを中央揃えに */
+}
+
+.news-container {
+    display: flex; /* フレックスボックスレイアウトを使用 */
+    flex-direction: column; /* モバイルではカードを縦に並べる */
+    gap: 20px; /* カード間の間隔を設定 */
+}
+
+.news-card {
+    border: 1px solid #ddd; /* 境界線を設定 */
+    border-radius: 5px; /* 角を丸くする */
+    overflow: hidden; /* はみ出た内容を非表示 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 影を設定 */
+}
+
+.news-card img {
+    width: 100%; /* 画像の幅を親要素いっぱいに */
+    height: auto; /* 高さを自動調整 */
+    display: block; /* ブロック要素として表示 */
+}
+
+.news-content {
+    padding: 15px; /* 内側に余白を設定 */
+}
+
+.news-date {
+    color: #666; /* 日付の色をグレーに */
+    font-size: 0.9rem; /* フォントサイズを小さく */
+    margin-bottom: 5px; /* 下部に余白を設定 */
+}
+
+.news-title {
+    font-size: 1.2rem; /* タイトルのフォントサイズを設定 */
+    margin-bottom: 10px; /* 下部に余白を設定 */
+}
+
+.news-excerpt {
+    font-size: 0.95rem; /* 抜粋のフォントサイズを設定 */
+    color: #444; /* 文字色を少し明るめに */
+}
+
+.news-link {
+    display: inline-block; /* インラインブロック要素として表示 */
+    margin-top: 10px; /* 上部に余白を設定 */
+    color: #0611e3; /* リンクの色を青に */
+    font-weight: bold; /* 太字に設定 */
+}
+
+.news-link:hover {
+    color: #0410b0; /* ホバー時の色を少し暗めの青に */
+}
+
+/* 次の大会セクションのスタイル */
+.next-match {
+    background-color: #1a1a1a; /* 背景色を暗めのグレーに */
+    color: white; /* 文字色を白に */
+    padding: 25px 20px; /* 内側の余白を設定 */
+    border-radius: 5px; /* 角を丸くする */
+    margin-bottom: 40px; /* 下部に余白を設定 */
+    text-align: center; /* テキストを中央揃えに */
+}
+
+.next-match h2 {
+    color: #0611e3; /* 見出しの色を青に */
+    margin-bottom: 15px; /* 下部に余白を設定 */
+}
+
+/* コーチ紹介セクションのスタイル */
+.coach-section {
+    background-color: #f9f9f9; /* 背景色を明るいグレーに */
+    padding: 30px 20px; /* 内側の余白を設定 */
+    border-radius: 5px; /* 角を丸くする */
+    margin-bottom: 40px; /* 下部に余白を設定 */
+    text-align: center; /* テキストを中央揃えに */
+}
+
+.coach-section h2 {
+    color: #0611e3; /* 見出しの色をクラブカラーに */
+    margin-bottom: 20px; /* 下部に余白を設定 */
+}
+
+.coach-philosophy {
+    max-width: 800px; /* 最大幅を設定 */
+    margin: 0 auto 20px; /* 中央揃えにして下部に余白を設定 */
+}
+
+.coach-philosophy p {
+    margin-bottom: 20px; /* 下部に余白を設定 */
+    line-height: 1.6; /* 行間を広めに設定 */
+}
+
+.philosophy-points {
+    display: flex; /* フレックスボックスレイアウトを使用 */
+    flex-direction: column; /* モバイルでは縦に並べる */
+    gap: 20px; /* 間隔を設定 */
+    margin-top: 20px; /* 上部に余白を設定 */
+}
+
+.philosophy-point {
+    background-color: white; /* 背景色を白に */
+    padding: 15px; /* 内側に余白を設定 */
+    border-radius: 5px; /* 角を丸くする */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 影を設定 */
+}
+
+.philosophy-point h3 {
+    color: #0611e3; /* 見出しの色を青に */
+    margin-bottom: 10px; /* 下部に余白を設定 */
+}
+
+/* レスポンシブ設定 - タブレット以上 */
+@media (min-width: 768px) {
+    .philosophy-points {
+        flex-direction: row; /* タブレット以上では横並びに */
+    }
+    
+    .philosophy-point {
+        flex: 1; /* 均等に幅を分配 */
+    }
+}
+
+.match-details {
+    display: flex; /* フレックスボックスレイアウトを使用 */
+    flex-direction: column; /* モバイルでは縦に並べる */
+    align-items: center; /* 中央揃えに */
+    margin-bottom: 15px; /* 下部に余白を設定 */
+}
+
+.team-logo {
+    width: 80px; /* ロゴの幅を設定 */
+    height: 80px; /* ロゴの高さを設定 */
+    margin: 10px; /* 余白を設定 */
+}
+
+.match-info {
+    margin: 10px 0; /* 上下に余白を設定 */
+}
+
+.match-date {
+    font-weight: bold; /* 太字に設定 */
+    font-size: 1.1rem; /* フォントサイズを設定 */
+    margin-bottom: 5px; /* 下部に余白を設定 */
+}
+
+.match-time {
+    color: #0611e3; /* 時間の色を青に */
+    font-size: 1.3rem; /* フォントサイズを大きく */
+    font-weight: bold; /* 太字に設定 */
+}
+
+.match-venue {
+    margin-top: 5px; /* 上部に余白を設定 */
+    font-size: 0.9rem; /* フォントサイズを小さく */
+    opacity: 0.8; /* 少し透明に */
+}
+
+.schedule-button {
+    display: inline-block; /* インラインブロック要素として表示 */
+    background-color: #0611e3; /* ボタンの背景色をクラブカラーに */
+    color: white; /* 文字色を白に */
+    padding: 10px 25px; /* 内側の余白を設定 */
+    border-radius: 5px; /* 角を丸くする */
+    font-weight: bold; /* 太字に設定 */
+    margin-top: 10px; /* 上部に余白を設定 */
+    transition: background-color 0.3s ease; /* 背景色の変化をアニメーション */
+}
+
+.schedule-button:hover {
+    background-color: #b00510; /* ホバー時の背景色を少し暗めに */
+}
+
+.more-button {
+    display: inline-block; /* インラインブロック要素として表示 */
+    background-color: #333; /* ボタンの背景色をグレーに */
+    color: white; /* 文字色を白に */
+    padding: 8px 20px; /* 内側の余白を設定 */
+    border-radius: 5px; /* 角を丸くする */
+    font-weight: bold; /* 太字に設定 */
+    margin-top: 15px; /* 上部に余白を設定 */
+    transition: background-color 0.3s ease; /* 背景色の変化をアニメーション */
+}
+
+.more-button:hover {
+    background-color: #0410b0; /* ホバー時の背景色を少し暗めの青に */
+}
+
+/* レスポンシブ設定 */
+@media (min-width: 768px) {
+    .hero-section {
+        padding: 50px 30px; /* タブレット以上では余白を広げる */
+    }
+    
+    .hero-section h1 {
+        font-size: 2.5rem; /* フォントサイズを大きく */
+    }
+    
+    .news-container {
+        flex-direction: row; /* タブレット以上では横並びに */
+        flex-wrap: wrap; /* 複数行に折り返す */
+    }
+    
+    .news-card {
+        flex: 0 0 calc(50% - 10px); /* 2カラムレイアウト */
+    }
+    
+    .match-details {
+        flex-direction: row; /* タブレット以上では横並びに */
+        justify-content: center; /* 中央揃えに */
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-section {
+        padding: 70px 40px; /* デスクトップでは更に余白を広げる */
+    }
+    
+    .hero-section h1 {
+        font-size: 3rem; /* フォントサイズをより大きく */
+    }
+    
+    .news-card {
+        flex: 0 0 calc(33.333% - 14px); /* 3カラムレイアウト */
+    }
+}

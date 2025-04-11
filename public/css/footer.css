@@ -1,0 +1,28 @@
+/* footer.css - フッター用のスタイル */
+
+/* フッターの基本スタイル */
+footer {
+    background-color: #1a1a1a; /* 背景色を暗めのグレーに設定 */
+    color: #fff; /* 文字色を白に設定 */
+    padding: 20px; /* 内側の余白を設定 */
+    text-align: center; /* テキストを中央揃えに */
+    margin-top: 40px; /* 上部に余白を設定 */
+}
+
+/* フッター内のリンクスタイル */
+footer a {
+    color: #fff; /* リンクの色を白に設定 */
+    text-decoration: none; /* 下線を非表示 */
+    transition: color 0.3s ease; /* 色の変化をアニメーション */
+}
+
+footer a:hover {
+    color: #0611e3; /* ホバー時の色を青に変更 */
+}
+
+/* レスポンシブ対応 */
+@media (min-width: 768px) {
+    footer {
+        padding: 30px; /* タブレット以上では余白を広げる */
+    }
+}
