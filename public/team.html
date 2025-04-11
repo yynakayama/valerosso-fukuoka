@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <!-- ビューポートの設定 - モバイル表示を最適化するための設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valerosso Fukuoka - クラブ紹介</title> <!-- タイトルを変更 -->
+    <!-- CSSファイルの読み込み -->
+    <link rel="stylesheet" href="css/style.css"> <!-- 共通スタイル -->
+    <link rel="stylesheet" href="css/header.css"> <!-- ヘッダー用スタイル -->
+    <link rel="stylesheet" href="css/footer.css"> <!-- フッター用スタイル -->
+    <link rel="stylesheet" href="css/pages/team.css"> <!-- クラブ紹介ページ固有のスタイル (新規作成想定) -->
+</head>
+<body>
+    <!-- ヘッダー部分 - サイトタイトルとハンバーガーメニューボタンを含む -->
+    <header>
+        <!-- サイトタイトル -->
+        <div class="site-title">ヴァレロッソ 福岡<img src="img/vso.ico" alt="Valerosso Fukuoka Logo" class="logo"></div>
+        
+        <!-- ハンバーガーメニューボタン - 3本の横線（span要素）で構成 -->
+        <div class="hamburger">
+            <span></span> <!-- 上の線 -->
+            <span></span> <!-- 中央の線 -->
+            <span></span> <!-- 下の線 -->
+        </div>
+    </header>
+
+    <!-- オーバーレイ - メニュー表示時に背景を暗くするための要素 -->
+    <div class="overlay"></div>
+
+    <!-- ナビゲーションメニュー - 各ページへのリンクリスト -->
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="index.html">ホーム</a></li>
+            <li><a href="team.html" class="current">クラブ紹介</a></li> <!-- currentクラスを移動 -->
+            <li><a href="schedule.html">練習・試合予定</a></li>
+            <li><a href="news.html">お知らせ</a></li>
+            <li><a href="gallery.html">フォトギャラリー</a></li>
+            <li><a href="join.html">入部案内</a></li>
+            <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツエリア -->
+    <main>
+        <!-- ここにクラブ紹介ページのコンテンツを追加します -->
+        <section class="page-title-section">
+            <h1>クラブ紹介</h1>
+        </section>
+
+        <section class="club-overview-section">
+            <h2>クラブ概要</h2>
+            <p>Valerosso Fukuokaは、福岡県筑後地域を拠点に活動する中学生・高校生年代のサッカークラブです。</p>
+            <p>私たちは、サッカーを通じて技術の向上はもちろん、礼儀、協調性、自立心といった人間的な成長を重視し、将来社会で活躍できる人材の育成を目指しています。</p>
+            <!-- 必要に応じて表などを追加 -->
+            <table>
+                <tr>
+                    <th>クラブ名</th>
+                    <td>Valerosso Fukuoka (ヴァレロッソ フクオカ)</td>
+                </tr>
+                <tr>
+                    <th>設立</th>
+                    <td>2024年6月</td>
+                </tr>
+                <tr>
+                    <th>対象</th>
+                    <td>中学生・高校生</td>
+                </tr>
+                <tr>
+                    <th>活動拠点</th>
+                    <td>筑後地域グラウンド（詳細は<a href="schedule.html">練習・試合予定</a>をご確認ください）</td>
+                </tr>
+                <!-- 他の項目を追加 -->
+            </table>
+        </section>
+
+        <section class="philosophy-section">
+            <h2>指導方針</h2>
+            <p>当クラブでは、以下の3つの柱を大切に指導を行っています。</p>
+            <div class="philosophy-points">
+                <div class="philosophy-point">
+                    <img src="img/technique.png" alt="技術力向上アイコン"> <!-- 仮の画像パス -->
+                    <h3>技術力向上</h3>
+                    <p>個々のスキルアップとチーム戦術の理解を深め、全国で活躍できる選手を育成します。基礎技術の反復練習を徹底し、応用力を養います。</p>
+                </div>
+                <div class="philosophy-point">
+                    <img src="images/icon_humanity.png" alt="人間力育成アイコン"> <!-- 仮の画像パス -->
+                    <h3>人間力育成</h3>
+                    <p>サッカーはチームスポーツです。仲間を尊重し、協力することの大切さを学びます。挨拶、時間管理、整理整頓など、社会性の基礎を身につけます。</p>
+                </div>
+                <div class="philosophy-point">
+                    <img src="img/healsy.png" alt="健全な心身アイコン"> <!-- 仮の画像パス -->
+                    <h3>健全な心身</h3>
+                    <p>スポーツ選手として、健康な体づくりは不可欠です。怪我の予防、適切な栄養摂取、十分な休養など、コンディショニングの重要性を指導します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="staff-section">
+            <h2>スタッフ紹介</h2>
+            <div class="staff-container">
+                <div class="staff-member">
+                    <img src="img/manager.PNG" alt="監督"> <!-- 仮の画像パス -->
+                    <h3>監督：中山 ひろやす</h3>
+                    <p>一生懸命頑張ります。</p>
+                </div>
+                <div class="staff-member">
+                    <img src="images/staff_coach2.jpg" alt="コーチB 写真"> <!-- 仮の画像パス -->
+                    <h3>コーチ：氏名 B</h3>
+                    <p>経歴や指導への想いなどをここに記載します。</p>
+                </div>
+                <!-- 必要に応じてスタッフを追加 -->
+            </div>
+            <a href="join.html" class="btn-primary btn-join">入会・1日体験はこちら</a> <!-- 入部案内ページへのリンク -->
+        </section>
+
+    </main>
+
+    <!-- フッター -->
+    <footer>
+        <p>&copy; <span class="copyright-year">2024</span> Valerosso Fukuoka. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScriptファイルの読み込み -->
+    <script src="js/main.js"></script> <!-- 共通のJavaScript -->
+    <script src="js/navigation.js"></script> <!-- ナビゲーション用JavaScript -->
+    <!-- <script src="js/pages/team.js"></script> --> <!-- クラブ紹介ページ固有のJavaScript (必要なら) -->
+</body>
+</html>

@@ -1,0 +1,243 @@
+/* team.css - クラブ紹介ページ固有のスタイル */
+
+/* ページタイトルセクション */
+.page-title-section {
+    background-color: #f5f5f5; /* 背景色を明るいグレーに (home.cssのhero-section参考) */
+    padding: 30px 20px; /* 内側の余白 */
+    text-align: center; /* テキスト中央揃え */
+    margin-bottom: 30px; /* 下部の余白 */
+}
+
+.page-title-section h1 {
+    font-size: 2rem; /* 見出しのフォントサイズ */
+    color: #0611e3; /* クラブカラー */
+}
+
+/* クラブ概要セクション */
+.club-overview-section {
+    padding: 0 20px 30px; /* 左右と下の余白 */
+    margin-bottom: 30px;
+}
+
+.club-overview-section h2 {
+    color: #0611e3; /* 見出しの色 (home.css参考) */
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.6rem;
+}
+
+.club-overview-section p {
+    margin-bottom: 15px;
+    line-height: 1.7;
+    text-align: left; /* 説明文は左揃えに */
+    max-width: 800px; /* 最大幅を設定 */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.club-overview-section table {
+    width: 100%;
+    max-width: 800px; /* テーブルの最大幅 */
+    margin: 20px auto; /* 上下マージンと中央揃え */
+    border-collapse: collapse; /* ボーダーを重ねる */
+    border: 1px solid #ddd; /* テーブル全体の枠線 */
+}
+
+.club-overview-section th,
+.club-overview-section td {
+    border: 1px solid #ddd; /* セルの枠線 */
+    padding: 12px 15px; /* セルの内側余白 */
+    text-align: left; /* テキスト左揃え */
+    vertical-align: top; /* 上揃え */
+}
+
+.club-overview-section th {
+    background-color: #f9f9f9; /* 見出しセルの背景色 */
+    font-weight: bold;
+    width: 30%; /* 見出しセルの幅 */
+}
+
+.club-overview-section td a {
+    color: #0611e3;
+    text-decoration: underline;
+}
+.club-overview-section td a:hover {
+    color: #0410b0;
+}
+
+
+/* 指導方針セクション */
+.philosophy-section {
+    background-color: #f9f9f9; /* 背景色 (home.cssのcoach-section参考) */
+    padding: 30px 20px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.philosophy-section h2 {
+    color: #0611e3; /* 見出しの色 */
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+}
+
+.philosophy-section > p { /* セクション直下の説明文 */
+    max-width: 800px;
+    margin: 0 auto 25px;
+    line-height: 1.7;
+}
+
+.philosophy-points {
+    display: flex;
+    flex-direction: column; /* モバイルでは縦積み */
+    gap: 20px; /* 各ポイント間の余白 */
+    max-width: 900px; /* 最大幅 */
+    margin: 0 auto; /* 中央揃え */
+}
+
+.philosophy-point {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* home.css参考 */
+    text-align: center;
+}
+
+.philosophy-point img {
+    width: 60px; /* アイコンサイズ */
+    height: 60px;
+    margin-bottom: 15px;
+    object-fit: contain; /* 画像が潰れないように */
+}
+
+.philosophy-point h3 {
+    color: #0611e3; /* ポイントの見出し色 */
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+}
+
+.philosophy-point p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #444;
+}
+
+/* スタッフ紹介セクション */
+.staff-section {
+    padding: 0 20px 40px; /* 左右と下の余白 */
+    margin-bottom: 40px;
+   text-align: center; /* テキスト中央揃え */
+    background-color: #f9f9f9; /* 背景色 */
+    border-radius: 5px; /* 角を丸くする */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 影をつける */
+}
+
+.staff-section h2 {
+    color: #0611e3; /* 見出しの色 */
+    margin-bottom: 30px;
+    
+    text-align: center;
+    font-size: 1.6rem;
+}
+
+.staff-container {
+    display: flex;
+    flex-direction: column; /* モバイルでは縦積み */
+    gap: 30px; /* スタッフ間の余白 */
+    max-width: 900px; /* 最大幅 */
+    margin: 0 auto; /* 中央揃え */
+}
+
+.staff-member {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border: 1px solid #eee;
+}
+
+.staff-member img {
+    width: 150px; /* 写真のサイズ */
+    height: 150px;
+    border-radius: 50%; /* 円形にする */
+    object-fit: cover; /* 画像をトリミングして合わせる */
+    margin: 0 auto 20px; /* 中央揃えと下の余白 */
+    display: block;
+    border: 3px solid #f0f0f0; /* 写真の周りに薄い枠線 */
+}
+
+.staff-member h3 {
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+    color: #333;
+}
+
+.staff-member p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #555;
+    text-align: left; /* 説明文は左揃えに */
+    white-space: pre-line; /* 改行を反映させる */
+}
+
+/* レスポンシブ設定 - タブレット以上 */
+@media (min-width: 768px) {
+    .page-title-section h1 {
+        font-size: 2.5rem;
+    }
+
+    .club-overview-section h2,
+    .philosophy-section h2,
+    .staff-section h2 {
+        font-size: 1.8rem;
+    }
+
+    .philosophy-points {
+        flex-direction: row; /* 横並びにする */
+    }
+
+    .philosophy-point {
+        flex: 1; /* 幅を均等に分配 */
+        padding: 25px;
+    }
+
+    .staff-container {
+        flex-direction: row; /* 横並びにする */
+        flex-wrap: wrap; /* 折り返す */
+        justify-content: center; /* 中央揃え */
+    }
+
+    .staff-member {
+        flex-basis: calc(50% - 20px); /* 2カラムレイアウト (gap考慮) */
+        /* gapが30pxなので、(100% - 30px) / 2 でも良い */
+        /* flex-basis: calc((100% - 30px) / 2); */
+        text-align: center; /* 中央揃えに戻す場合 */
+    }
+    .staff-member p {
+         text-align: left; /* 説明文は左揃え維持 */
+    }
+}
+
+/* レスポンシブ設定 - デスクトップ */
+@media (min-width: 1024px) {
+    .page-title-section {
+        padding: 40px 20px;
+    }
+    .page-title-section h1 {
+        font-size: 2.8rem;
+    }
+
+    .club-overview-section h2,
+    .philosophy-section h2,
+    .staff-section h2 {
+        font-size: 2rem;
+    }
+
+    .staff-member {
+         /* 3カラムレイアウトを試す場合 (gap考慮) */
+         /* flex-basis: calc(33.333% - 20px); */ /* gapが30pxなので (100% - 30px*2) / 3 */
+         flex-basis: calc((100% - 60px) / 3);
+    }
+}
+
+

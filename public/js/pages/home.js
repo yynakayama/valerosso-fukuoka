@@ -58,42 +58,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // カウントダウンタイマー - 次の大会まで
-    function updateCountdown() {
-        // 次の大会日時（例: 2025年4月15日 9:00）
-        const matchDate = new Date('2025-04-15T09:00:00');
-        const now = new Date();
-        
-        // 現在時刻と大会時刻の差（ミリ秒）
-        const diff = matchDate - now;
-        
-        // タイマー表示要素を取得
-        const countdownElement = document.querySelector('.match-countdown');
-        
-        // カウントダウン要素が存在する場合
-        if (countdownElement) {
-            // 大会日時が過去の場合
-            if (diff <= 0) {
-                countdownElement.textContent = '大会開始！';
-                return;
-            }
-            
-            // 日、時間、分、秒を計算
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            // カウントダウン表示を更新
-            countdownElement.textContent = `${days}日 ${hours}時間 ${minutes}分 ${seconds}秒`;
-        }
-    }
     
-    // カウントダウン要素が存在する場合、タイマーを開始
-    if (document.querySelector('.match-countdown')) {
-        // 初回実行
-        updateCountdown();
-        // 1秒ごとに更新
-        setInterval(updateCountdown, 1000);
-    }
 });

@@ -19,24 +19,11 @@
     margin: 0 auto 20px; /* 中央揃えにして下部に余白を設定 */
 }
 
-.hero-button {
-    display: inline-block; /* インラインブロック要素として表示 */
-    background-color: #0611e3; /* ボタンの背景色を青に */
-    color: white; /* 文字色を白に */
-    padding: 10px 20px; /* 内側の余白を設定 */
-    border-radius: 5px; /* 角を丸くする */
-    font-weight: bold; /* 太字に設定 */
-    text-transform: uppercase; /* 大文字に変換 */
-    transition: background-color 0.3s ease; /* 背景色の変化をアニメーション */
-}
-
-.hero-button:hover {
-    background-color: #0410b0; /* ホバー時の背景色を少し暗めの青に */
-}
 
 /* 最新ニュースセクションのスタイル */
 .news-section {
     margin-bottom: 40px; /* 下部に余白を設定 */
+    text-align: center; /* テキストを中央揃えに */
 }
 
 .news-section h2 {
@@ -93,21 +80,6 @@
 
 .news-link:hover {
     color: #0410b0; /* ホバー時の色を少し暗めの青に */
-}
-
-/* 次の大会セクションのスタイル */
-.next-match {
-    background-color: #1a1a1a; /* 背景色を暗めのグレーに */
-    color: white; /* 文字色を白に */
-    padding: 25px 20px; /* 内側の余白を設定 */
-    border-radius: 5px; /* 角を丸くする */
-    margin-bottom: 40px; /* 下部に余白を設定 */
-    text-align: center; /* テキストを中央揃えに */
-}
-
-.next-match h2 {
-    color: #0611e3; /* 見出しの色を青に */
-    margin-bottom: 15px; /* 下部に余白を設定 */
 }
 
 /* コーチ紹介セクションのスタイル */
@@ -199,35 +171,26 @@
     opacity: 0.8; /* 少し透明に */
 }
 
-.schedule-button {
-    display: inline-block; /* インラインブロック要素として表示 */
-    background-color: #0611e3; /* ボタンの背景色をクラブカラーに */
-    color: white; /* 文字色を白に */
-    padding: 10px 25px; /* 内側の余白を設定 */
-    border-radius: 5px; /* 角を丸くする */
-    font-weight: bold; /* 太字に設定 */
-    margin-top: 10px; /* 上部に余白を設定 */
-    transition: background-color 0.3s ease; /* 背景色の変化をアニメーション */
+/* ボタンのバリエーション */
+.btn-hero {
+    text-transform: uppercase;
 }
 
-.schedule-button:hover {
-    background-color: #b00510; /* ホバー時の背景色を少し暗めに */
+.btn-schedule {
+    padding: 10px 25px;
+    margin-top: 10px;
 }
 
-.more-button {
-    display: inline-block; /* インラインブロック要素として表示 */
-    background-color: #333; /* ボタンの背景色をグレーに */
-    color: white; /* 文字色を白に */
-    padding: 8px 20px; /* 内側の余白を設定 */
-    border-radius: 5px; /* 角を丸くする */
-    font-weight: bold; /* 太字に設定 */
-    margin-top: 15px; /* 上部に余白を設定 */
-    transition: background-color 0.3s ease; /* 背景色の変化をアニメーション */
+.btn-news {
+    padding: 10px 20px;
+    margin-top: 15px;
 }
 
-.more-button:hover {
-    background-color: #0410b0; /* ホバー時の背景色を少し暗めの青に */
+.btn-more {
+    padding: 8px 10px;
+    margin-top: 15px;
 }
+
 
 /* レスポンシブ設定 */
 @media (min-width: 768px) {

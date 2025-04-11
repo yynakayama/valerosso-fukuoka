@@ -1,15 +1,40 @@
 /* ヘッダーのCSS */
+/* ヘッダーのCSS */
 header {
     background-color: aliceblue; /* ヘッダーの背景色 */
-    position: relative; /* または position: fixed; でヘッダーを固定 */
+    /* display: flex; */ /* モバイルではFlexboxを一旦解除 */
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    padding: 15px 20px 45px; /* 上15px, 左右20px, 下45pxのパディング (下の余白を増やしてハンバーガーのスペース確保) */
+    position: relative; /* ハンバーガーメニューの絶対配置の基準点 */
     width: 100%;
-    z-index: 10; /* より大きな値を設定して最前面に表示 */
-  }
+    z-index: 10;
+    min-height: 50px; /* ヘッダーの最低高さを確保（タイトルの高さに応じて調整） */
+}
 
-  /*サイトタイトルのスタイル*/
+/* サイトタイトルのスタイル */
 .site-title {
-    font-size: 2rem; /* フォントサイズを2remに設定 */
-  }
+    /* display: flex; */ /* モバイルでは一旦解除 */
+    /* align-items: center; */
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0611e3;
+    text-align: center; /* タイトルを中央揃えにする場合 */
+    margin-bottom: 15px; /* タイトルとハンバーガーの間に余白 */
+    /* ロゴを表示するためにFlexboxを再度適用する場合 */
+    display: flex;
+    justify-content: center; /* 中央揃え */
+    align-items: center;
+}
+
+/* ロゴのスタイル (既存のものを流用) */
+.site-title .logo {
+    height: 2em; /* 文字の高さに合わせる */
+    width: auto;
+    margin-left: 8px;
+    vertical-align: middle; /*念のため*/
+}
+
 /* ハンバーガーメニューボタンのスタイル */
   .hamburger {
     display: flex; /* フレックスボックスを使用 */
@@ -25,7 +50,7 @@ header {
     display: block; /* ブロック要素として表示 */
     height: 3px; /* 線の高さ（太さ）を3pxに設定 */
     width: 100%; /* 線の幅を親要素いっぱいに設定 */
-    background-color: white; /* 線の色を白に設定 */
+    background-color:  #0611e3; /* 線の色を青色に設定 */
     transition: all 0.3s ease; /* すべてのプロパティに0.3秒のトランジションを設定 */
 }
 
@@ -124,9 +149,9 @@ header {
         width: auto; /* 幅を自動調整 */
         height: auto; /* 高さを自動調整 */
         padding-top: 0; /* 上部の余白をリセット */
-        background-color: transparent; /* 背景色を透明に */
+        background-color: transparent; /* 背景色を設定 */
         right: 0; /* 右端をリセット */
-        transition: none; /* アニメーションを無効化 */
+        transition: none; /* アニメーション */
     }
     
     .nav-menu ul {
