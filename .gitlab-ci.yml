@@ -11,4 +11,4 @@ pages:
     paths:
       - .public
   only:
-    - main #メインブランチにpushされたときのみ実行されるようにする
+    - master #マスターブランチにpushされたときのみ実行されるようにする
