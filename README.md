@@ -1,6 +1,6 @@
 # ValerossoHukuoka
 
-サッカークラブのウェブサイト作成を通したフロントエンド学習プロジェスト。
+サッカークラブのウェブサイト作成を通したフロントエンド学習プロジェクト。
 
 ## 概要
 
@@ -25,10 +25,13 @@ cd valerosso-hukuoka
 ## ディレクトリ構成
 valerosso-hukuoka/
 ├── index.html        # トップページ
+├── ....html
 ├── css/              # スタイルシート
 │   └── style.css
+|   └──...
 ├── js/               # JavaScriptファイル
 │   └── main.js
+|   └── ...
 ├── images/           # 画像ファイル
 └── README.md         #このファイル
 
