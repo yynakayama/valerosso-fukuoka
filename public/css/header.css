@@ -5,7 +5,7 @@ header {
     /* display: flex; */ /* モバイルではFlexboxを一旦解除 */
     /* justify-content: space-between; */
     /* align-items: center; */
-    padding: 15px 20px 45px; /* 上15px, 左右20px, 下45pxのパディング (下の余白を増やしてハンバーガーのスペース確保) */
+    padding: 15px 20px 35px; /* 上15px, 左右20px, 下45pxのパディング (下の余白を増やしてハンバーガーのスペース確保) */
     position: relative; /* ハンバーガーメニューの絶対配置の基準点 */
     width: 100%;
     z-index: 10;
@@ -33,6 +33,8 @@ header {
     width: auto;
     margin-left: 8px;
     vertical-align: middle; /*念のため*/
+    border-radius: 50%; /* 角を丸くする */
+
 }
 
 /* ハンバーガーメニューボタンのスタイル */
