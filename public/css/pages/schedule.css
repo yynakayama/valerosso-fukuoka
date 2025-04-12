@@ -126,6 +126,7 @@
     .schedule-table td,
     .tournament-table td {
         padding: 8px; /* 内側余白を小さく調整 */
+        width: 100px; /* セルの幅を100pxに設定 */
     }
     
     /* ヘッダーとセクションの余白調整 */
@@ -136,6 +137,7 @@
     .schedule-section,
     .tournament-section,
     .notice-section {
+
         padding: 15px; /* セクションの余白を小さく調整 */
     }
 }
@@ -146,10 +148,25 @@
     .tournament-container {
         overflow-x: auto; /* 横スクロールを可能にする */
     }
+
+    /* 特定の列の横幅を調整 */
+.schedule-table th:nth-child(1),
+.schedule-table td:nth-child(1),
+.tournament-table th:nth-child(1),
+.tournament-table td:nth-child(1) {
+    width: 50px; /* 曜日の列の幅を狭く設定 */
+}
+
+.schedule-table th:nth-child(2),
+.schedule-table td:nth-child(2),
+.tournament-table th:nth-child(2),
+.tournament-table td:nth-child(2) {
+    width: 70px; /* 時間の列の幅を狭く設定 */
+}
     
     .schedule-table,
     .tournament-table {
-        min-width: 450px; /* スクロールできるように最小幅を設定 */
+        min-width: 400px; /* スクロールできるように最小幅を設定 */
         table-layout: fixed; /* テーブルレイアウトを固定に設定 */
     }
 }
