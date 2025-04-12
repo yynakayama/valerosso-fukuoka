@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <!-- ビューポートの設定 - モバイル表示を最適化するための設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valerosso Fukuoka - 練習・試合予定</title>
+    <!-- CSSファイルの読み込み -->
+    <link rel="stylesheet" href="css/style.css"> <!-- 共通スタイル -->
+    <link rel="stylesheet" href="css/header.css"> <!-- ヘッダー用スタイル -->
+    <link rel="stylesheet" href="css/footer.css"> <!-- フッター用スタイル -->
+    <link rel="stylesheet" href="css/pages/schedule.css"> <!-- スケジュールページ固有のスタイル -->
+</head>
+<body>
+    <!-- ヘッダー部分 - サイトタイトルとハンバーガーメニューボタンを含む -->
+    <header>
+        <!-- サイトタイトル -->
+        <div class="site-title">Valerosso Fukuoka</div>
+        
+        <!-- ハンバーガーメニューボタン - 3本の横線（span要素）で構成 -->
+        <div class="hamburger">
+            <span></span> <!-- 上の線 -->
+            <span></span> <!-- 中央の線 -->
+            <span></span> <!-- 下の線 -->
+        </div>
+    </header>
+    
+    <!-- オーバーレイ - メニュー表示時に背景を暗くするための要素 -->
+    <div class="overlay"></div>
+    
+    <!-- ナビゲーションメニュー - 各ページへのリンクリスト -->
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="index.html">ホーム</a></li>
+            <li><a href="team.html">クラブ紹介</a></li>
+            <li><a href="schedule.html" class="current">練習・試合予定</a></li>
+            <li><a href="news.html">お知らせ</a></li>
+            <li><a href="gallery.html">フォトギャラリー</a></li>
+            <li><a href="join.html">入部案内</a></li>
+            <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+    </nav>
+    
+    <!-- メインコンテンツエリア -->
+    <main>
+        <!-- ページタイトル -->
+        <section class="page-header">
+            <h1>練習・試合予定</h1>
+            <p>Valerosso Fukuokaの定期練習と年間の主要大会スケジュールをご案内します</p>
+        </section>
+        
+        <!-- 定期練習スケジュール -->
+        <section class="schedule-section">
+            <h2>定期練習スケジュール</h2>
+            <div class="schedule-info">
+                <p>※雨天時は室内練習場または中止となる場合があります。詳細はLINEグループにてお知らせします。</p>
+            </div>
+            
+            <div class="schedule-container">
+                <h3>中学生チーム</h3>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>曜日</th>
+                            <th>時間</th>
+                            <th>場所</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>火曜日</td>
+                            <td>17:00～19:00</td>
+                            <td>筑後広域公園</td>
+                        </tr>
+                        <tr>
+                            <td>木曜日</td>
+                            <td>17:00～19:00</td>
+                            <td>筑後広域公園</td>
+                        </tr>
+                        <tr>
+                            <td>土曜日※</td>
+                            <td>9:00～12:00</td>
+                            <td>筑後広域公園</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>高校生チーム</h3>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>曜日</th>
+                            <th>時間</th>
+                            <th>場所</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>水曜日</td>
+                            <td>18:00～20:00</td>
+                            <td>筑後広域公園</td>
+                        </tr>
+                        <tr>
+                            <td>金曜日</td>
+                            <td>18:00～20:00</td>
+                            <td>筑後広域公園</td>
+                        </tr>
+                        <tr>
+                            <td>日曜日※</td>
+                            <td>9:00～12:00</td>
+                            <td>筑後広域公園</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>※試合がある場合は練習はありません</p>
+        </section>
+        
+        <!-- 年間主要大会スケジュール -->
+        <section class="tournament-section">
+            <h2>年間主要大会スケジュール（2025年度）</h2>
+            <div class="tournament-container">
+                <table class="tournament-table">
+                    <thead>
+                        <tr>
+                            <th>時期</th>
+                            <th>大会名</th>
+                            <th>カテゴリー</th>
+                            <th>場所</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>4月</td>
+                            <td>福岡市春季サッカー大会</td>
+                            <td>中学生・高校生</td>
+                            <td>福岡市総合運動場</td>
+                        </tr>
+                        <tr>
+                            <td>5月</td>
+                            <td>九州ユースカップ</td>
+                            <td>高校生</td>
+                            <td>熊本県営陸上競技場</td>
+                        </tr>
+                        <tr>
+                            <td>6月</td>
+                            <td>福岡県中学生サッカー選手権</td>
+                            <td>中学生</td>
+                            <td>福岡フットボールセンター</td>
+                        </tr>
+                        <tr>
+                            <td>7-8月</td>
+                            <td>夏季強化合宿</td>
+                            <td>中学生・高校生</td>
+                            <td>大分県別府市</td>
+                        </tr>
+                        <tr>
+                            <td>9月</td>
+                            <td>福岡市秋季サッカー大会</td>
+                            <td>中学生・高校生</td>
+                            <td>福岡市東区運動公園</td>
+                        </tr>
+                        <tr>
+                            <td>10月</td>
+                            <td>九州ジュニアサッカーフェスティバル</td>
+                            <td>中学生</td>
+                            <td>鹿児島県鴨池陸上競技場</td>
+                        </tr>
+                        <tr>
+                            <td>11月</td>
+                            <td>福岡県ユースサッカー選手権</td>
+                            <td>高校生</td>
+                            <td>北九州市立総合運動場</td>
+                        </tr>
+                        <tr>
+                            <td>12月</td>
+                            <td>冬季招待トーナメント</td>
+                            <td>中学生・高校生</td>
+                            <td>福岡市博多の森陸上競技場</td>
+                        </tr>
+                        <tr>
+                            <td>1月</td>
+                            <td>新春カップ</td>
+                            <td>中学生</td>
+                            <td>福岡市西部運動公園</td>
+                        </tr>
+                        <tr>
+                            <td>2-3月</td>
+                            <td>福岡県クラブユースフットボール大会</td>
+                            <td>中学生・高校生</td>
+                            <td>県内各地</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- 参加に関する注意事項 -->
+        <section class="notice-section">
+            <h2>参加に関する注意事項</h2>
+            <div class="notice-container">
+                <ul>
+                    <li>大会参加には別途参加費が必要な場合があります。</li>
+                    <li>遠征を伴う大会は、交通費・宿泊費が別途必要です。</li>
+                    <li>大会日程は変更になる場合があります。最新情報はお知らせやLINEグループでご確認ください。</li>
+                    <li>各大会の詳細な日程や集合時間は、大会の1ヶ月前までにお知らせします。</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+        <p>&copy; <span class="copyright-year">2024</span> Valerosso Fukuoka. All rights reserved.</p>
+    </footer>
+    
+    <!-- JavaScriptファイルの読み込み -->
+    <script src="js/main.js"></script> <!-- 共通のJavaScript -->
+    <script src="js/navigation.js"></script> <!-- ナビゲーション用JavaScript -->
+    <script src="js/pages/schedule.js"></script> <!-- スケジュールページ固有のJavaScript -->
+</body>
+</html>
