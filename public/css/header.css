@@ -1,11 +1,10 @@
 /* ヘッダーのCSS */
-/* ヘッダーのCSS */
 header {
     background-color: aliceblue; /* ヘッダーの背景色 */
-    /* display: flex; */ /* モバイルではFlexboxを一旦解除 */
-    /* justify-content: space-between; */
-    /* align-items: center; */
-    padding: 15px 20px 35px; /* 上15px, 左右20px, 下45pxのパディング (下の余白を増やしてハンバーガーのスペース確保) */
+    display: flex;
+    justify-content: center; /* 中央揃えに変更 */
+    align-items: center;
+    padding: 15px 20px 15px; /* 上15px, 左右20px, 下15pxのパディング */
     position: relative; /* ハンバーガーメニューの絶対配置の基準点 */
     width: 100%;
     z-index: 10;
@@ -14,17 +13,11 @@ header {
 
 /* サイトタイトルのスタイル */
 .site-title {
-    /* display: flex; */ /* モバイルでは一旦解除 */
-    /* align-items: center; */
+    display: flex;
+    align-items: center;
     font-size: 1.5rem;
     font-weight: bold;
     color: #0611e3;
-    text-align: center; /* タイトルを中央揃えにする場合 */
-    margin-bottom: 15px; /* タイトルとハンバーガーの間に余白 */
-    /* ロゴを表示するためにFlexboxを再度適用する場合 */
-    display: flex;
-    justify-content: center; /* 中央揃え */
-    align-items: center;
 }
 
 /* ロゴのスタイル (既存のものを流用) */
@@ -34,19 +27,23 @@ header {
     margin-left: 8px;
     vertical-align: middle; /*念のため*/
     border-radius: 50%; /* 角を丸くする */
-
 }
 
 /* ハンバーガーメニューボタンのスタイル */
   .hamburger {
-    display: flex; /* フレックスボックスを使用 */
-    flex-direction: column; /* 縦に並べる */
-    justify-content: space-between; /* 各行の間隔を均等に */
-    width: 30px; /* ハンバーガーメニューの幅 */
-    height: 20px; /* ハンバーガーメニューの高さ */
-    cursor: pointer; /* カーソルをポインターに変更 */
-    z-index: 100; /* より大きな値を設定して最前面に表示 */  
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 100;
+    position: absolute; /* 絶対配置を追加 */
+    left: 20px;
+    top: 50%; /* 垂直中央揃え */
+    transform: translateY(-50%); /* 垂直中央揃え */
   }
+
 /* ハンバーガーメニューの線（span要素）のスタイル */
 .hamburger span {
     display: block; /* ブロック要素として表示 */
@@ -138,6 +135,10 @@ header {
 
 /* デスクトップ表示用のスタイル（レスポンシブ対応） */
 @media (min-width: 768px) {
+    header { /* デスクトップ用にheaderの設定を追加 */
+        justify-content: space-between; /* デスクトップでは左右配置に戻す */
+    }
+
     .hamburger {
         display: none; /* ハンバーガーメニューボタンを非表示 */
     }

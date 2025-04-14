@@ -1,0 +1,66 @@
+/* public/css/pages/join.css */
+
+/* 入部情報セクション */
+.join-info-section {
+    max-width: 800px;
+    margin: 0 auto 40px auto; /* 中央寄せと下のマージン */
+    padding: 0 15px;
+}
+
+.join-info-section h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    color: #0611e3; /* style.css のクラブカラーに合わせる */
+}
+
+.join-info-section > p {
+    text-align: center;
+    margin-bottom: 35px;
+    line-height: 1.6;
+}
+
+/* 各情報項目 */
+.info-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.info-item h3 {
+    font-size: 1.4em;
+    color: #333;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #0611e3; /* style.css のクラブカラーに合わせる */
+    padding-bottom: 5px;
+}
+
+.info-item p,
+.info-item ul {
+    margin-bottom: 10px;
+    line-height: 1.7;
+    color: #555;
+}
+
+.info-item ul {
+    padding-left: 20px;
+    list-style: disc;
+}
+
+.info-item li {
+    margin-bottom: 8px;
+}
+
+/* ボタン(.btn-primary)のスタイルは style.css から継承されるため、
+   join.css での特別な指定は不要です。
+   もし join.html 内のボタンに個別の調整が必要な場合は、以下に追加します。
+.info-item .btn-primary {
+    display: inline-block; 
+    margin-top: 15px; 
+    padding: 10px 20px; 
+    font-size: 1em; 
+}
+*/
