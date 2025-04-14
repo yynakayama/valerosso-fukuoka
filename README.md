@@ -32,7 +32,7 @@ valerosso-hukuoka/
 ├── js/               # JavaScriptファイル
 │   └── main.js
 |   └── ...
-├── images/           # 画像ファイル
+├── img/           # 画像ファイル
 └── README.md         #このファイル
 
 ## 昨日
