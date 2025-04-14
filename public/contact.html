@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <!-- ビューポートの設定 - モバイル表示を最適化するための設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valerosso Fukuoka - お問い合わせ</title>
+    <!-- CSSファイルの読み込み -->
+    <link rel="stylesheet" href="css/style.css"> <!-- 共通スタイル -->
+    <link rel="stylesheet" href="css/header.css"> <!-- ヘッダー用スタイル -->
+    <link rel="stylesheet" href="css/footer.css"> <!-- フッター用スタイル -->
+    <link rel="stylesheet" href="css/pages/contact.css"> <!-- お問い合わせページ固有のスタイル -->
+</head>
+<body>
+    <!-- ヘッダー部分 - サイトタイトルとハンバーガーメニューボタンを含む -->
+    <header>
+        <!-- サイトタイトル -->
+        <div class="site-title">Valerosso Fukuoka</div>
+        
+        <!-- ハンバーガーメニューボタン - 3本の横線（span要素）で構成 -->
+        <div class="hamburger">
+            <span></span> <!-- 上の線 -->
+            <span></span> <!-- 中央の線 -->
+            <span></span> <!-- 下の線 -->
+        </div>
+    </header>
+    
+    <!-- オーバーレイ - メニュー表示時に背景を暗くするための要素 -->
+    <div class="overlay"></div>
+    
+    <!-- ナビゲーションメニュー - 各ページへのリンクリスト -->
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="index.html">ホーム</a></li>
+            <li><a href="team.html">クラブ紹介</a></li>
+            <li><a href="schedule.html">練習・試合予定</a></li>
+            <li><a href="news.html">お知らせ</a></li>
+            <li><a href="gallery.html">フォトギャラリー</a></li>
+            <li><a href="join.html">入部案内</a></li>
+            <li><a href="contact.html" class="current">お問い合わせ</a></li>
+        </ul>
+    </nav>
+    
+    <!-- メインコンテンツエリア -->
+    <main>
+        <!-- お問い合わせセクション -->
+        <section class="page-title-section">
+            <h1>お問い合わせ</h1>
+            <p class="contact-intro">Valerosso Fukuokaへのお問い合わせは、以下のフォームからお願いいたします。<br>
+            1~2営業日以内に担当者よりご連絡いたします。</p>
+        </section>
+            
+            <!-- お問い合わせフォーム -->
+            <form id="contact-form" class="contact-form">
+                <!-- 基本情報 -->
+                <div class="form-group">
+                    <label for="name">お名前 <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">メールアドレス <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">電話番号 <span class="required">*</span></label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                
+                <!-- お問い合わせ種類 -->
+                <div class="form-group">
+                    <label for="inquiry-type">お問い合わせ内容 <span class="required">*</span></label>
+                    <select id="inquiry-type" name="inquiry-type" required>
+                        <option value="">選択してください</option>
+                        <option value="one-day-trial">1日体験</option>
+                        <option value="join">入部希望</option>
+                        <option value="media">取材</option>
+                        <option value="other">その他お問い合わせ</option>
+                    </select>
+                </div>
+                
+                <!-- 条件付きフィールド - お問い合わせ種類に応じて表示/非表示 -->
+                <div id="player-info" class="conditional-fields hidden">
+                    <h3>選手情報</h3>
+                    
+                    <div class="form-group">
+                        <label for="grade">学年 <span class="required">*</span></label>
+                        <select id="grade" name="grade">
+                            <option value="">選択してください</option>
+                            <option value="中学1年">中学1年</option>
+                            <option value="中学2年">中学2年</option>
+                            <option value="中学3年">中学3年</option>
+                            <option value="高校1年">高校1年</option>
+                            <option value="高校2年">高校2年</option>
+                            <option value="高校3年">高校3年</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experience">サッカー経験年数 <span class="required">*</span></label>
+                        <select id="experience" name="experience">
+                            <option value="">選択してください</option>
+                            <option value="未経験">未経験</option>
+                            <option value="1年未満">1年未満</option>
+                            <option value="1-3年">1-3年</option>
+                            <option value="4-6年">4-6年</option>
+                            <option value="7年以上">7年以上</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="position">主なポジション</label>
+                        <select id="position" name="position">
+                            <option value="">選択してください</option>
+                            <option value="GK">ゴールキーパー (GK)</option>
+                            <option value="DF">ディフェンダー (DF)</option>
+                            <option value="MF">ミッドフィルダー (MF)</option>
+                            <option value="FW">フォワード (FW)</option>
+                            <option value="未定">未定</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="current-team">現在/以前の所属チーム</label>
+                        <input type="text" id="current-team" name="current-team">
+                    </div>
+                    <div class="form-group">
+                        <label for="preferred-player-date">希望日 <span class="required">*</span></label>
+                        <input type="date" id="preferred-player-date" name="preferred-player-date">
+                    </div>
+                </div>
+                
+                <!-- 取材関連フィールド -->
+                <div id="media-info" class="conditional-fields hidden">
+                    <h3>取材情報</h3>
+                    
+                    <div class="form-group">
+                        <label for="media-name">媒体名 <span class="required">*</span></label>
+                        <input type="text" id="media-name" name="media-name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="media-type">媒体種類 <span class="required">*</span></label>
+                        <select id="media-type" name="media-type">
+                            <option value="">選択してください</option>
+                            <option value="newspaper">新聞</option>
+                            <option value="magazine">雑誌</option>
+                            <option value="tv">テレビ</option>
+                            <option value="web">Webメディア</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="preferred-date">希望取材日</label>
+                        <input type="date" id="preferred-date" name="preferred-date">
+                    </div>
+                </div>
+                
+                <!-- メッセージ欄 -->
+                <div class="form-group">
+                    <label for="message">メッセージ <span class="required">*</span></label>
+                    <textarea id="message" name="message" rows="6" required></textarea>
+                </div>
+                
+                <!-- プライバシーポリシー同意 -->
+                <div class="form-group privacy-policy">
+                    <input type="checkbox" id="privacy-agreement" name="privacy-agreement" required>
+                    <label for="privacy-agreement">
+                        <a href="#" class="privacy-link">プライバシーポリシー</a>に同意します <span class="required">*</span>
+                    </label>
+                </div>
+                
+                <!-- 送信ボタン -->
+                <div class="form-group submit-container">
+                    <button type="submit" class="btn-primary">送信する</button>
+                </div>
+            </form>
+            
+            <!-- その他のお問い合わせ方法 -->
+            <div class="other-contact-info">
+                <h2>その他のお問い合わせ方法</h2>
+                <p>お急ぎの場合は、以下の連絡先までご連絡ください。</p>
+                
+                <div class="contact-methods">
+                    <div class="contact-method">
+                        <h3>電話</h3>
+                        <p>092-XXX-XXXX（平日 10:00-17:00）</p>
+                    </div>
+                    
+                    <div class="contact-method">
+                        <h3>メール</h3>
+                        <p>info@valerosso-fukuoka.jp</p>
+                    </div>
+                </div>
+            </div>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+        <p>&copy; <span class="copyright-year">2024</span> Valerosso Fukuoka. All rights reserved.</p>
+    </footer>
+    
+    <!-- JavaScriptファイルの読み込み -->
+    <script src="js/main.js"></script> <!-- 共通のJavaScript -->
+    <script src="js/navigation.js"></script> <!-- ナビゲーション用JavaScript -->
+    <script src="js/pages/contact.js"></script> <!-- お問い合わせページ固有のJavaScript -->
+</body>
+</html>
