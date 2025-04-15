@@ -18,27 +18,46 @@ document.addEventListener('DOMContentLoaded', function() {
         imageObserver.observe(img);
     });
 
-    // 画像クリック時の拡大表示機能
-    const galleryItems = document.querySelectorAll('.gallery-item');
-    
-    galleryItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const img = this.querySelector('img');
-            const modal = document.createElement('div');
-            modal.className = 'image-modal';
-            
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <img src="${img.src}" alt="${img.alt}">
-                    <div class="modal-caption">${this.querySelector('.gallery-caption').textContent}</div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            modal.addEventListener('click', function() {
-                document.body.removeChild(modal);
+    // スマートフォンの場合は拡大表示を無効化
+    if (window.innerWidth > 768) {
+        // 画像クリック時の拡大表示機能
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        
+        galleryItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const img = this.querySelector('img');
+                const modal = document.createElement('div');
+                modal.className = 'image-modal';
+                
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <img src="${img.src}" alt="${img.alt}">
+                        <div class="modal-caption">${this.querySelector('.gallery-caption').textContent}</div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // ESCキーでモーダルを閉じる
+                const closeModal = function() {
+                    document.body.removeChild(modal);
+                    document.removeEventListener('keydown', handleKeyPress);
+                };
+                
+                const handleKeyPress = function(e) {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                    }
+                };
+                
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeModal();
+                    }
+                });
+                
+                document.addEventListener('keydown', handleKeyPress);
             });
         });
-    });
+    }
 }); 
