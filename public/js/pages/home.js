@@ -18,51 +18,54 @@ document.addEventListener('DOMContentLoaded', function() {
         // ローディング表示
         newsContainer.innerHTML = '<div class="loading">読み込み中...</div>';
         
-        // ローカルストレージから投稿を取得
-        let posts = JSON.parse(localStorage.getItem('newsPosts')) || [];
-        
-        // 少し遅延を入れてローディング表示を確認できるようにする（実際の実装では不要）
-        setTimeout(() => {
-            // 投稿がない場合
-            if (posts.length === 0) {
-                newsContainer.innerHTML = '<p class="no-news">現在お知らせはありません。</p>';
-                return;
-            }
-            
-            // リストをクリア
-            newsContainer.innerHTML = '';
-            
-            // 最新の3件だけを表示
-            const recentPosts = posts.slice(0, 3);
-            
-            // 各投稿をニュースカードとして表示
-            recentPosts.forEach(post => {
-                // 日付をフォーマット
-                const date = new Date(post.date);
-                const formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+        // APIからニュースデータを取得
+        fetch('/api/news')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('サーバーからのレスポンスが正常ではありません');
+                }
+                return response.json();
+            })
+            .then(newsItems => {
+                // 投稿がない場合
+                if (newsItems.length === 0) {
+                    newsContainer.innerHTML = '<p class="no-news">現在お知らせはありません。</p>';
+                    return;
+                }
                 
-                // ニュースカード要素を作成
-                const newsCard = document.createElement('div');
-                newsCard.className = 'news-card';
+                // リストをクリア
+                newsContainer.innerHTML = '';
                 
-                // カードの内容をHTMLで構成
-                newsCard.innerHTML = `
-                    <div class="news-content">
-                        <div class="news-date">${formattedDate}</div>
-                        <h3 class="news-title">${post.title}</h3>
-                        <div class="news-instagram-embed">${post.embedCode}</div>
-                    </div>
-                `;
+                // 最新の3件だけを表示
+                const recentPosts = newsItems.slice(0, 3);
                 
-                // ニュースコンテナに追加
-                newsContainer.appendChild(newsCard);
+                // 各投稿をニュースカードとして表示
+                recentPosts.forEach(post => {
+                    // 日付をフォーマット
+                    const date = new Date(post.date);
+                    const formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+                    
+                    // ニュースカード要素を作成
+                    const newsCard = document.createElement('div');
+                    newsCard.className = 'news-card';
+                    
+                    // カードの内容をHTMLで構成
+                    newsCard.innerHTML = `
+                        <div class="news-content">
+                            <div class="news-date">${formattedDate}</div>
+                            <h3 class="news-title">${post.title}</h3>
+                            <p>${post.content}</p>
+                        </div>
+                    `;
+                    
+                    // ニュースコンテナに追加
+                    newsContainer.appendChild(newsCard);
+                });
+            })
+            .catch(error => {
+                console.error('ニュース取得エラー:', error);
+                newsContainer.innerHTML = '<p class="error">ニュースの読み込みに失敗しました。後でもう一度お試しください。</p>';
             });
-            
-            // インスタグラム埋め込みを処理（インスタグラムの埋め込みスクリプトを実行）
-            if (window.instgrm) {
-                window.instgrm.Embeds.process();
-            }
-        }, 500); // 500msの遅延（デモ用、実際の実装では不要）
     }
 });
 
