@@ -14,7 +14,7 @@
 }
 
 /* お知らせコンテナのスタイル */
-.news-page-container {
+.news-container {
     display: grid;
     grid-template-columns: 1fr; /* モバイルでは1列 */
     gap: 30px;
@@ -85,7 +85,7 @@
 
 /* レスポンシブ対応 */
 @media (min-width: 768px) {
-    .news-page-container {
+    .news-container {
         grid-template-columns: repeat(2, 1fr); /* タブレットでは2列 */
     }
 }
