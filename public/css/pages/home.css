@@ -2,231 +2,221 @@
 
 /* ヒーローセクションのスタイル */
 .hero-section {
-    background-color: #f5f5f5; /* 背景色を明るいグレーに設定 */
-    padding: 30px 20px; /* 内側の余白を設定（上下30px、左右20px） */
-    text-align: center; /* テキストを中央揃えに */
-    margin-bottom: 30px; /* 下部に余白を設定 */
+    position: relative;
+    background-image: url('../img/soccer-field.jpg'); /* 背景画像 */
+    background-size: cover;
+    background-position: center;
+    padding: 100px 20px;
+    text-align: center;
+    color: white;
+    margin-bottom: 50px;
+    border-radius: 0 0 10px 10px;
+}
+
+/* 背景画像の上に暗いオーバーレイを追加して文字を見やすくする */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒 */
+    z-index: 1;
+}
+
+/* ヒーローセクション内のコンテンツを前面に出す */
+.hero-section h1,
+.hero-section p,
+.hero-section .btn-hero {
+    position: relative;
+    z-index: 2;
 }
 
 .hero-section h1 {
-    font-size: 2rem; /* 見出しのフォントサイズを設定 */
-    margin-bottom: 15px; /* 下部に余白を設定 */
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* テキストの影 */
 }
 
 .hero-section p {
-    font-size: 1.1rem; /* 段落のフォントサイズを設定 */
-    max-width: 800px; /* 最大幅を設定 */
-    margin: 0 auto 20px; /* 中央揃えにして下部に余白を設定 */
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* テキストの影 */
 }
 
+/* ヒーローボタンのスタイル */
+.btn-hero {
+    font-size: 1.1rem;
+    padding: 12px 30px;
+}
 
-/* 最新ニュースセクションのスタイル */
+/* ニュースセクションのスタイル */
 .news-section {
-    margin-bottom: 40px; /* 下部に余白を設定 */
-    text-align: center; /* テキストを中央揃えに */
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto 50px;
 }
 
 .news-section h2 {
-    color: #0611e3; /* 見出しの色を青に */
-    margin-bottom: 20px; /* 下部に余白を設定 */
-    text-align: center; /* テキストを中央揃えに */
+    text-align: center;
+    margin-bottom: 30px;
+    color: #0611e3; /* サッカークラブの青色に変更 */
 }
 
+/* ニュースコンテナのスタイル - フレックスボックスレイアウト */
 .news-container {
-    display: flex; /* フレックスボックスレイアウトを使用 */
-    flex-direction: column; /* モバイルではカードを縦に並べる */
-    gap: 20px; /* カード間の間隔を設定 */
+    display: grid;
+    grid-template-columns: 1fr; /* モバイルでは1列 */
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
+/* ニュースカードのスタイル */
 .news-card {
-    border: 1px solid #ddd; /* 境界線を設定 */
-    border-radius: 5px; /* 角を丸くする */
-    overflow: hidden; /* はみ出た内容を非表示 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 影を設定 */
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.news-card img {
-    width: 100%; /* 画像の幅を親要素いっぱいに */
-    height: auto; /* 高さを自動調整 */
-    display: block; /* ブロック要素として表示 */
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
+/* ニュースカード内のコンテンツスタイル */
 .news-content {
-    padding: 15px; /* 内側に余白を設定 */
+    padding: 20px;
 }
 
 .news-date {
-    color: #666; /* 日付の色をグレーに */
-    font-size: 0.9rem; /* フォントサイズを小さく */
-    margin-bottom: 5px; /* 下部に余白を設定 */
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
 }
 
 .news-title {
-    font-size: 1.2rem; /* タイトルのフォントサイズを設定 */
-    margin-bottom: 10px; /* 下部に余白を設定 */
+    color: #0611e3;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
 }
 
-.news-excerpt {
-    font-size: 0.95rem; /* 抜粋のフォントサイズを設定 */
-    color: #444; /* 文字色を少し明るめに */
+/* インスタグラム埋め込み投稿のスタイル調整 */
+.news-instagram-embed {
+    margin: 0;
+    max-width: 100%;
+    overflow: hidden;
 }
 
-.news-link {
-    display: inline-block; /* インラインブロック要素として表示 */
-    margin-top: 10px; /* 上部に余白を設定 */
-    color: #0611e3; /* リンクの色を青に */
-    font-weight: bold; /* 太字に設定 */
+/* インスタグラム埋め込みのレスポンシブ対応 */
+.news-instagram-embed iframe {
+    max-width: 100% !important;
 }
 
-.news-link:hover {
-    color: #0410b0; /* ホバー時の色を少し暗めの青に */
+/* お知らせがない場合のスタイル */
+.no-news {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+    font-style: italic;
 }
 
-/* コーチ紹介セクションのスタイル */
+/* お知らせ一覧ボタンのスタイル */
+.btn-news {
+    display: block;
+    width: 200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* コーチセクションのスタイル */
 .coach-section {
-    background-color: #f9f9f9; /* 背景色を明るいグレーに */
-    padding: 30px 20px; /* 内側の余白を設定 */
-    border-radius: 5px; /* 角を丸くする */
-    margin-bottom: 40px; /* 下部に余白を設定 */
-    text-align: center; /* テキストを中央揃えに */
+    background-color: #f5f5f5;
+    padding: 40px 20px;
+    margin-bottom: 50px;
 }
 
 .coach-section h2 {
-    color: #0611e3; /* 見出しの色をクラブカラーに */
-    margin-bottom: 20px; /* 下部に余白を設定 */
+    text-align: center;
+    margin-bottom: 30px;
+    color: #0611e3;
 }
 
 .coach-philosophy {
-    max-width: 800px; /* 最大幅を設定 */
-    margin: 0 auto 20px; /* 中央揃えにして下部に余白を設定 */
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
 }
 
 .coach-philosophy p {
-    margin-bottom: 20px; /* 下部に余白を設定 */
-    line-height: 1.6; /* 行間を広めに設定 */
+    margin-bottom: 30px;
 }
 
+/* 指導方針ポイントのスタイル */
 .philosophy-points {
-    display: flex; /* フレックスボックスレイアウトを使用 */
-    flex-direction: column; /* モバイルでは縦に並べる */
-    gap: 20px; /* 間隔を設定 */
-    margin-top: 20px; /* 上部に余白を設定 */
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
 .philosophy-point {
-    background-color: white; /* 背景色を白に */
-    padding: 15px; /* 内側に余白を設定 */
-    border-radius: 5px; /* 角を丸くする */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 影を設定 */
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .philosophy-point h3 {
-    color: #0611e3; /* 見出しの色を青に */
-    margin-bottom: 10px; /* 下部に余白を設定 */
+    color: #0611e3;
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
-/* レスポンシブ設定 - タブレット以上 */
-@media (min-width: 768px) {
-    .philosophy-points {
-        flex-direction: row; /* タブレット以上では横並びに */
-    }
-    
-    .philosophy-point {
-        flex: 1; /* 均等に幅を分配 */
-    }
-}
-
-.match-details {
-    display: flex; /* フレックスボックスレイアウトを使用 */
-    flex-direction: column; /* モバイルでは縦に並べる */
-    align-items: center; /* 中央揃えに */
-    margin-bottom: 15px; /* 下部に余白を設定 */
-}
-
-.team-logo {
-    width: 80px; /* ロゴの幅を設定 */
-    height: 80px; /* ロゴの高さを設定 */
-    margin: 10px; /* 余白を設定 */
-}
-
-.match-info {
-    margin: 10px 0; /* 上下に余白を設定 */
-}
-
-.match-date {
-    font-weight: bold; /* 太字に設定 */
-    font-size: 1.1rem; /* フォントサイズを設定 */
-    margin-bottom: 5px; /* 下部に余白を設定 */
-}
-
-.match-time {
-    color: #0611e3; /* 時間の色を青に */
-    font-size: 1.3rem; /* フォントサイズを大きく */
-    font-weight: bold; /* 太字に設定 */
-}
-
-.match-venue {
-    margin-top: 5px; /* 上部に余白を設定 */
-    font-size: 0.9rem; /* フォントサイズを小さく */
-    opacity: 0.8; /* 少し透明に */
-}
-
-/* ボタンのバリエーション */
-.btn-hero {
-    text-transform: uppercase;
-}
-
-.btn-schedule {
-    padding: 10px 25px;
-    margin-top: 10px;
-}
-
-.btn-news {
-    padding: 10px 20px;
-    margin-top: 15px;
-}
-
+/* 詳細ボタンのスタイル */
 .btn-more {
-    padding: 8px 10px;
-    margin-top: 15px;
+    display: block;
+    width: 200px;
+    margin: 0 auto;
+    text-align: center;
 }
 
+/* ローディング表示のスタイル */
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
 
-/* レスポンシブ設定 */
+/* レスポンシブ対応 */
 @media (min-width: 768px) {
     .hero-section {
-        padding: 50px 30px; /* タブレット以上では余白を広げる */
+        padding: 150px 20px;
     }
     
     .hero-section h1 {
-        font-size: 2.5rem; /* フォントサイズを大きく */
+        font-size: 2.5rem;
     }
     
     .news-container {
-        flex-direction: row; /* タブレット以上では横並びに */
-        flex-wrap: wrap; /* 複数行に折り返す */
+        grid-template-columns: repeat(2, 1fr); /* タブレットでは2列 */
     }
     
-    .news-card {
-        flex: 0 0 calc(50% - 10px); /* 2カラムレイアウト */
-    }
-    
-    .match-details {
-        flex-direction: row; /* タブレット以上では横並びに */
-        justify-content: center; /* 中央揃えに */
+    .philosophy-points {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (min-width: 1024px) {
-    .hero-section {
-        padding: 70px 40px; /* デスクトップでは更に余白を広げる */
-    }
-    
     .hero-section h1 {
-        font-size: 3rem; /* フォントサイズをより大きく */
+        font-size: 3rem;
     }
     
-    .news-card {
-        flex: 0 0 calc(33.333% - 14px); /* 3カラムレイアウト */
+    .news-container {
+        grid-template-columns: repeat(3, 1fr); /* デスクトップでは3列 */
     }
 }

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <!-- ビューポートの設定 - モバイル表示を最適化するための設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valerosso Fukuoka - お知らせ</title>
+    <!-- CSSファイルの読み込み -->
+    <link rel="stylesheet" href="css/style.css"> <!-- 共通スタイル -->
+    <link rel="stylesheet" href="css/header.css"> <!-- ヘッダー用スタイル -->
+    <link rel="stylesheet" href="css/footer.css"> <!-- フッター用スタイル -->
+    <link rel="stylesheet" href="css/pages/news.css"> <!-- お知らせページ固有のスタイル -->
+</head>
+<body>
+    <!-- ヘッダー部分 - サイトタイトルとハンバーガーメニューボタンを含む -->
+    <header>
+        <!-- ハンバーガーメニューボタン -->
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <!-- サイトタイトル -->
+        <div class="site-title">Valerosso Fukuoka<img src="img/vso.ico" alt="Valerosso Fukuoka Logo" class="logo"></div>
+    </header>
+    
+    <!-- オーバーレイ - メニュー表示時に背景を暗くするための要素 -->
+    <div class="overlay"></div>
+    
+    <!-- ナビゲーションメニュー - 各ページへのリンクリスト -->
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="index.html">ホーム</a></li>
+            <li><a href="team.html">クラブ紹介</a></li>
+            <li><a href="schedule.html">練習・試合予定</a></li>
+            <li><a href="news.html" class="current">お知らせ</a></li>
+            <li><a href="gallery.html">フォトギャラリー</a></li>
+            <li><a href="join.html">入部案内</a></li>
+            <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+    </nav>
+    
+    <!-- メインコンテンツエリア -->
+    <main>
+        <!-- お知らせセクション -->
+        <section class="news-page-section">
+            <h1>お知らせ一覧</h1>
+            
+            <!-- お知らせコンテナ - JavaScriptで動的に生成 -->
+            <div class="news-page-container">
+                <!-- ローディング表示（JavaScriptで置き換えられる） -->
+                <div class="loading">読み込み中...</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+        <p>&copy; <span class="copyright-year"></span> Valerosso Fukuoka. All rights reserved.</p>
+    </footer>
+    
+    <!-- JavaScriptファイルの読み込み -->
+    <script src="js/main.js"></script> <!-- 共通のJavaScript -->
+    <script src="js/navigation.js"></script> <!-- ナビゲーション用JavaScript -->
+    <script src="js/pages/news.js"></script> <!-- お知らせページ固有のJavaScript -->
+</body>
+</html>

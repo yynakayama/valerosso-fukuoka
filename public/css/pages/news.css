@@ -1,0 +1,101 @@
+/* news.css - お知らせページ固有のスタイル */
+
+/* お知らせページセクションのスタイル */
+.news-page-section {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.news-page-section h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #0611e3; /* サッカークラブの青色 */
+}
+
+/* お知らせコンテナのスタイル */
+.news-page-container {
+    display: grid;
+    grid-template-columns: 1fr; /* モバイルでは1列 */
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+/* お知らせカードのスタイル */
+.news-page-card {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.news-page-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* お知らせコンテンツのスタイル */
+.news-page-content {
+    padding: 25px;
+}
+
+.news-page-date {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.news-page-title {
+    color: #0611e3;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+/* インスタグラム埋め込み投稿のスタイル調整 */
+.news-page-embed {
+    margin: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* インスタグラム埋め込みのレスポンシブ対応 */
+.news-page-embed iframe {
+    max-width: 100% !important;
+}
+
+/* お知らせがない場合のスタイル */
+.no-news-message {
+    text-align: center;
+    color: #666;
+    padding: 40px 20px;
+    font-style: italic;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+
+/* ローディング表示のスタイル */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+/* レスポンシブ対応 */
+@media (min-width: 768px) {
+    .news-page-container {
+        grid-template-columns: repeat(2, 1fr); /* タブレットでは2列 */
+    }
+}
+
+@media (min-width: 1024px) {
+    .news-page-section {
+        padding: 0 40px;
+    }
+    
+    .news-page-container {
+        grid-template-columns: repeat(3, 1fr); /* デスクトップでは3列 */
+    }
+}

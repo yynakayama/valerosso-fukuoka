@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valerosso Fukuoka - 管理者画面</title>
+    <!-- 共通スタイルの読み込み -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <!-- 管理画面用のスタイルシート -->
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <!-- ヘッダー部分（共通要素） -->
+    <header>
+        <!-- ハンバーガーメニュー -->
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <!-- サイトタイトル -->
+        <div class="site-title">Valerosso Fukuoka - 管理者画面<img src="img/vso.ico" alt="Valerosso Fukuoka Logo" class="logo"></div>
+    </header>
+    
+    <!-- オーバーレイとナビゲーションメニュー（共通要素） -->
+    <div class="overlay"></div>
+    <nav class="nav-menu">
+        <!-- 省略 - index.htmlと同じナビゲーション -->
+    </nav>
+    
+    <!-- メインコンテンツ - 管理パネル -->
+    <main>
+        <section class="admin-panel-section">
+            <h1>お知らせ管理</h1>
+            
+            <!-- 管理メニュー -->
+            <div class="admin-menu">
+                <button id="btn-logout" class="btn-secondary">ログアウト</button>
+                <button id="btn-refresh" class="btn-primary">お知らせ一覧を更新</button>
+            </div>
+            
+            <!-- インスタグラム埋め込み投稿フォーム -->
+            <div class="admin-form-container">
+                <h2>新規お知らせ投稿</h2>
+                <form id="instagram-post-form" class="admin-form">
+                    <!-- お知らせタイトル入力欄 -->
+                    <div class="form-group">
+                        <label for="post-title">お知らせタイトル</label>
+                        <input type="text" id="post-title" name="title" required>
+                    </div>
+                    
+                    <!-- インスタグラム埋め込みコード入力欄 -->
+                    <div class="form-group">
+                        <label for="instagram-embed-code">インスタグラム埋め込みコード</label>
+                        <textarea id="instagram-embed-code" name="embedCode" rows="6" required placeholder="インスタグラムの投稿から「埋め込み」を選択してコピーしたコードを貼り付けてください"></textarea>
+                    </div>
+                    
+                    <!-- 投稿ボタン -->
+                    <button type="submit" class="btn-primary">投稿する</button>
+                </form>
+                
+                <!-- 処理結果メッセージ表示エリア -->
+                <div id="post-message" class="message"></div>
+            </div>
+            
+            <!-- お知らせ一覧表示エリア -->
+            <div class="news-list-container">
+                <h2>投稿済みお知らせ一覧</h2>
+                <div id="news-list" class="news-list">
+                    <!-- JavaScriptで動的に投稿リストを表示 -->
+                    <div class="loading">読み込み中...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- フッター（共通要素） -->
+    <footer>
+        <p>&copy; <span class="copyright-year"></span> Valerosso Fukuoka. All rights reserved.</p>
+    </footer>
+    
+    <!-- JavaScriptの読み込み -->
+    <script src="js/main.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/admin/admin-panel.js"></script>
+</body>
+</html>

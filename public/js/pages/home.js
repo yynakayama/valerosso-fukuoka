@@ -1,62 +1,79 @@
-/**
- * home.js
- * ホームページ固有のJavaScript
- */
+// home.js - ホームページのお知らせ欄にインスタグラム投稿を表示するJavaScript
 
-// DOMが完全に読み込まれた後に実行
+/**
+ * DOMが完全に読み込まれたときに実行される関数
+ */
 document.addEventListener('DOMContentLoaded', function() {
-    // お知らせカードのサンプルデータ
-    // 実際のプロジェクトでは、APIやバックエンドからデータを取得する場合が多い
-    const newsData = [
-        {
-            title: '福岡ジュニアカップの組み合わせ決定',
-            date: '2025年4月8日',
-            image: 'images/news-1.jpg',
-            excerpt: '4月15日に開催される福岡ジュニアカップの組み合わせが決定しました。高校生チームは午前9時から第1試合です。',
-            link: 'news.html#news1'
-        },
-        {
-            title: '春休み特別練習のお知らせ',
-            date: '2025年4月5日',
-            image: 'images/news-2.jpg',
-            excerpt: '春休み期間中の特別練習を実施します。練習時間と持ち物の詳細はお知らせをご確認ください。',
-            link: 'news.html#news2'
-        },
-        {
-            title: '新入部員募集のお知らせ',
-            date: '2025年4月1日',
-            image: 'images/news-3.jpg',
-            excerpt: '2025年度の新入部員を募集しています。体験練習も随時受け付けていますので、お気軽にお問い合わせください。',
-            link: 'news.html#news3'
-        }
-    ];
-    
-    // ニュースコンテナを取得
+    // ニュースコンテナの参照を取得
     const newsContainer = document.querySelector('.news-container');
     
-    // ニュースデータがあり、コンテナが存在する場合
-    if (newsData && newsContainer) {
-        // 各ニュースデータをループしてカードを生成
-        newsData.forEach(news => {
-            // カード要素を作成
-            const newsCard = document.createElement('div');
-            newsCard.className = 'news-card';
+    // お知らせ投稿を読み込んで表示
+    loadNewsForHomePage();
+    
+    /**
+     * ホームページ用のお知らせを読み込む関数
+     * 最新の3件だけを表示する
+     */
+    function loadNewsForHomePage() {
+        // ローディング表示
+        newsContainer.innerHTML = '<div class="loading">読み込み中...</div>';
+        
+        // ローカルストレージから投稿を取得
+        let posts = JSON.parse(localStorage.getItem('newsPosts')) || [];
+        
+        // 少し遅延を入れてローディング表示を確認できるようにする（実際の実装では不要）
+        setTimeout(() => {
+            // 投稿がない場合
+            if (posts.length === 0) {
+                newsContainer.innerHTML = '<p class="no-news">現在お知らせはありません。</p>';
+                return;
+            }
             
-            // カードの内容を作成（画像とテキストコンテンツ）
-            newsCard.innerHTML = `
-                <img src="${news.image}" alt="${news.title}" loading="lazy">
-                <div class="news-content">
-                    <div class="news-date">${news.date}</div>
-                    <h3 class="news-title">${news.title}</h3>
-                    <p class="news-excerpt">${news.excerpt}</p>
-                    <a href="${news.link}" class="news-link">続きを読む &raquo;</a>
-                </div>
-            `;
+            // リストをクリア
+            newsContainer.innerHTML = '';
             
-            // カードをコンテナに追加
-            newsContainer.appendChild(newsCard);
-        });
+            // 最新の3件だけを表示
+            const recentPosts = posts.slice(0, 3);
+            
+            // 各投稿をニュースカードとして表示
+            recentPosts.forEach(post => {
+                // 日付をフォーマット
+                const date = new Date(post.date);
+                const formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+                
+                // ニュースカード要素を作成
+                const newsCard = document.createElement('div');
+                newsCard.className = 'news-card';
+                
+                // カードの内容をHTMLで構成
+                newsCard.innerHTML = `
+                    <div class="news-content">
+                        <div class="news-date">${formattedDate}</div>
+                        <h3 class="news-title">${post.title}</h3>
+                        <div class="news-instagram-embed">${post.embedCode}</div>
+                    </div>
+                `;
+                
+                // ニュースコンテナに追加
+                newsContainer.appendChild(newsCard);
+            });
+            
+            // インスタグラム埋め込みを処理（インスタグラムの埋め込みスクリプトを実行）
+            if (window.instgrm) {
+                window.instgrm.Embeds.process();
+            }
+        }, 500); // 500msの遅延（デモ用、実際の実装では不要）
     }
-    
-    
 });
+
+// インスタグラム埋め込みスクリプトを動的に読み込む
+(function() {
+    // スクリプト要素を作成
+    const script = document.createElement('script');
+    script.src = '//www.instagram.com/embed.js';
+    script.async = true;
+    script.defer = true;
+    
+    // bodyの最後に追加
+    document.body.appendChild(script);
+})();
