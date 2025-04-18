@@ -1,29 +1,34 @@
+# Docker Composeのバージョンを指定
 version: '3'
-services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-    depends_on:
-      - db
-  
-  db:
-    image: mysql:8.0
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword
-      - MYSQL_DATABASE=valerosso
-      - MYSQL_USER=valerosso_user
-      - MYSQL_PASSWORD=valerosso_password
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d
 
+services:
+  # Nodeアプリケーションのサービス設定
+  app:
+    build: .  # カレントディレクトリのDockerfileを使用してビルド
+    ports:
+      - "3000:3000"  # ホストの3000番ポートをコンテナの3000番ポートにマッピング
+    volumes:
+      - .:/app  # カレントディレクトリをコンテナの/appにマウント
+      - /app/node_modules  # node_modulesを永続化
+    environment:
+      - NODE_ENV=development  # 開発環境用の環境変数を設定
+    depends_on:
+      - db  # dbサービスが起動してから起動するように設定
+  
+  # MySQLデータベースのサービス設定
+  db:
+    image: mysql:8.0  # MySQL version 8.0のイメージを使用
+    ports:
+      - "3307:3306"  # ホストの3307番ポートをMySQLの3306番ポートにマッピング
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword  # rootユーザーのパスワード
+      - MYSQL_DATABASE=valerosso  # 作成するデータベース名
+      - MYSQL_USER=valerosso_user  # 作成するMySQLユーザー
+      - MYSQL_PASSWORD=valerosso_password  # MySQLユーザーのパスワード
+    volumes:
+      - mysql_data:/var/lib/mysql  # MySQLデータを永続化
+      - ./mysql-init:/docker-entrypoint-initdb.d  # 初期化SQLスクリプトを配置
+
+# 永続化するボリュームの定義
 volumes:
-  mysql_data:
+  mysql_data:  # MySQLデータを保存するボリューム

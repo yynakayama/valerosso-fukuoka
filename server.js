@@ -92,3 +92,33 @@ app.delete('/api/news/:id', (req, res) => {
 app.listen(PORT, () => {
   console.log(`サーバーがポート${PORT}で起動しました`);
 });
+
+// MySQL接続テストコードはいったん削除（または以下のようにコメントアウト）
+/*
+// 必要なパッケージがインストールされたら以下のコメントを解除
+const mysql = require('mysql2/promise');
+
+// データベース接続プール
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'db',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'password',
+  database: process.env.DB_NAME || 'valerosso_db',
+  port: process.env.DB_PORT || 3306,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
+// MySQL接続テスト
+async function testConnection() {
+  try {
+    const [result] = await pool.query('SELECT 1 + 1 AS solution');
+    console.log('MySQL接続テスト成功:', result[0].solution);
+  } catch (err) {
+    console.error('MySQL接続テスト失敗:', err);
+  }
+}
+
+testConnection();
+*/
