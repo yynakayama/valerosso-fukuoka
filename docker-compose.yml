@@ -1,5 +1,3 @@
-# Docker Composeのバージョンを指定
-version: '3'
 
 services:
   # Nodeアプリケーションのサービス設定
