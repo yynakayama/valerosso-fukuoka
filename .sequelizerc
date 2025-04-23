@@ -1,0 +1,16 @@
+const path = require('path');
+
+module.exports = {
+  // Sequelizeの設定ファイルへのパスを指定します。
+  // `path.resolve` は、現在のディレクトリを基準にして絶対パスを生成します。
+  'config': path.resolve('config', 'config.js'),
+
+  // Sequelizeモデルファイルが格納されるディレクトリへのパスを指定します。
+  'models-path': path.resolve('models'),
+
+  // Sequelizeシーダーファイル（初期データ投入用ファイル）が格納されるディレクトリへのパスを指定します。
+  'seeders-path': path.resolve('seeders'),
+
+  // Sequelizeマイグレーションファイル（データベーススキーマ変更履歴ファイル）が格納されるディレクトリへのパスを指定します。
+  'migrations-path': path.resolve('migrations')
+};

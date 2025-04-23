@@ -1,9 +1,8 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    // newsテーブルの作成
+  up: async (queryInterface, Sequelize) => {
+    // ニュースのテーブル作成
     await queryInterface.createTable('news', {
       id: {
         allowNull: false,
@@ -12,27 +11,14 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING,
         allowNull: false
       },
       content: {
         type: Sequelize.TEXT,
         allowNull: false
       },
-      image_url: {
-        type: Sequelize.STRING(255),
-        allowNull: true
-      },
-      published_at: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-      },
-      is_featured: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-      },
-      user_id: {
+      author_id: {
         type: Sequelize.INTEGER,
         references: {
           model: 'users',
@@ -40,6 +26,18 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
+      },
+      publish_date: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW
+      },
+      is_published: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
+      },
+      image_url: {
+        type: Sequelize.STRING,
+        allowNull: true
       },
       created_at: {
         allowNull: false,
@@ -52,7 +50,8 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  down: async (queryInterface, Sequelize) => {
+    // テーブル削除
     await queryInterface.dropTable('news');
   }
 };

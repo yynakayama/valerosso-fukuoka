@@ -1,9 +1,8 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    // usersテーブルの作成
+  up: async (queryInterface, Sequelize) => {
+    // テーブル作成を行うコード
     await queryInterface.createTable('users', {
       id: {
         allowNull: false,
@@ -12,21 +11,28 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       username: {
-        type: Sequelize.STRING(50),
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
       password: {
-        type: Sequelize.STRING(255),  // ハッシュ化されたパスワード用
+        type: Sequelize.STRING,
         allowNull: false
       },
       email: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
+        validate: {
+          isEmail: true
+        }
+      },
+      full_name: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
       role: {
-        type: Sequelize.ENUM('admin', 'editor'),
+        type: Sequelize.ENUM('admin', 'editor', 'viewer'),
         defaultValue: 'editor'
       },
       created_at: {
@@ -40,7 +46,8 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  down: async (queryInterface, Sequelize) => {
+    // テーブル削除を行うコード
     await queryInterface.dropTable('users');
   }
 };
