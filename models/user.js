@@ -1,51 +1,31 @@
 'use strict';
-const { Model } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
-    static associate(models) {
-      // ユーザーは複数のニュース記事を持つ
-      User.hasMany(models.News, { foreignKey: 'user_id', as: 'news' });
-    }
-  }
-  
-  User.init({
-    // ユーザー名
+  const User = sequelize.define('User', {
     username: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true
     },
-    // メールアドレス
-    email: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true
-      }
-    },
-    // パスワード（ハッシュ化して保存）
     password: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    // ユーザーの役割（管理者、編集者など）
     role: {
-      type: DataTypes.ENUM('admin', 'editor', 'viewer'),
+      type: DataTypes.ENUM('admin', 'editor'),
       defaultValue: 'editor'
-    },
-    // アカウントが有効かどうか
-    is_active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
     }
   }, {
-    sequelize,
-    modelName: 'User',
-    tableName: 'users',
-    underscored: true, // スネークケース命名規則を使用
+    underscored: true, // snake_caseのカラム名を使用
+    tableName: 'users' // テーブル名を明示的に指定
   });
+  
+  User.associate = function(models) {
+    // ユーザーは多くのニュース記事を持つ可能性がある
+    User.hasMany(models.News, {
+      foreignKey: 'author_id',
+      as: 'articles'
+    });
+  };
   
   return User;
 };
