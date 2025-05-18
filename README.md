@@ -8,7 +8,6 @@
 - **バックエンド**: Node.js, Express.js
 - **データベース**: MySQL
 - **開発環境**: Docker, Docker Compose
-- **外部API連携**: Instagram Basic Display API (予定)
 
 ## 開発環境のセットアップ
 
