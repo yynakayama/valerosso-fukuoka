@@ -16,6 +16,8 @@ services:
       - DB_PORT=3306
     depends_on:
       - db  # dbサービスが起動してから起動するように設定
+    command: >
+      sh -c "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && node server.js"
   
   # MySQLデータベースのサービス設定
   db:
