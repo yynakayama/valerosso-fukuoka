@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お知らせ一覧 - Valerosso Fukuoka</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* 管理画面共通スタイル */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* 管理画面ヘッダー */
+        .admin-header {
+            background-color: #0611e3;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .admin-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .admin-nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+        
+        .admin-nav a:hover {
+            text-decoration: underline;
+        }
+        
+        /* メインコンテンツエリア */
+        .admin-content {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        
+        /* ニュース一覧テーブル */
+        .news-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .news-table th,
+        .news-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .news-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .news-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* Instagram埋め込みインジケーター */
+        .instagram-indicator {
+            display: inline-block;
+            background-color: #e1306c;
+            color: white;
+            font-size: 12px;
+            padding: 3px 6px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+        
+        /* ボタンスタイル */
+        .btn-admin {
+            display: inline-block;
+            background-color: #0611e3;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-admin:hover {
+            background-color: #0410b0;
+        }
+        
+        .btn-create {
+            margin-bottom: 20px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .news-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .admin-nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 管理画面ヘッダー -->
+    <header class="admin-header">
+        <div class="admin-title">ヴァレロッソ福岡 管理システム</div>
+        <nav class="admin-nav">
+            <a href="/admin/panel">ダッシュボード</a>
+            <a href="/admin/news">お知らせ管理</a>
+            <a href="/" target="_blank">サイト確認</a>
+            <a href="/admin/logout">ログアウト</a>
+        </nav>
+    </header>
+    
+    <!-- メインコンテンツエリア -->
+    <main class="admin-content">
+        <h1>お知らせ一覧</h1>
+        
+        <a href="/admin/news/create" class="btn-admin btn-create">新規お知らせ作成</a>
+        
+        <% if (news.length > 0) { %>
+            <table class="news-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>タイトル</th>
+                        <th>投稿日</th>
+                        <th>Instagramの埋め込み</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% news.forEach(item => { %>
+                        <tr>
+                            <td><%= item.id %></td>
+                            <td>
+                                <%= item.title %>
+                            </td>
+                            <td><%= item.date %></td>
+                            <td>
+                                <% if (item.instagram_embed_code) { %>
+                                    <span class="instagram-indicator">あり</span>
+                                <% } else { %>
+                                    なし
+                                <% } %>
+                            </td>
+                            <td class="action-buttons">
+                                <a href="/admin/news/edit/<%= item.id %>" class="btn-admin">編集</a>
+                                <form method="POST" action="/admin/news/delete/<%= item.id %>" style="display: inline;">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="btn-admin" onclick="return confirm('本当に削除しますか？');">削除</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <div class="empty-state">
+                <p>お知らせはまだありません。</p>
+                <p><a href="/admin/news/create" class="btn-admin">新規お知らせを作成する</a></p>
+            </div>
+        <% } %>
+    </main>
+    
+    <script>
+        // 現在のページをナビゲーションでハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.admin-nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.style.textDecoration = 'underline';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

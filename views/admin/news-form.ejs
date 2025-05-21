@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= formTitle %> - Valerosso Fukuoka</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* 管理画面共通スタイル */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* 管理画面ヘッダー */
+        .admin-header {
+            background-color: #0611e3;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .admin-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .admin-nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+        
+        .admin-nav a:hover {
+            text-decoration: underline;
+        }
+        
+        /* メインコンテンツエリア */
+        .admin-content {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        
+        /* フォームスタイル */
+        .news-form {
+            background-color: white;
+            padding: 25px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        /* Instagram埋め込みフィールド */
+        .instagram-embed-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .instagram-embed-info h3 {
+            margin-top: 0;
+            font-size: 16px;
+        }
+        
+        .instagram-embed-info ol {
+            margin-left: 20px;
+            margin-bottom: 0;
+        }
+        
+        /* ボタンスタイル */
+        .btn-admin {
+            display: inline-block;
+            background-color: #0611e3;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn-admin:hover {
+            background-color: #0410b0;
+        }
+        
+        .btn-cancel {
+            background-color: #6c757d;
+            margin-right: 10px;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+        
+        .form-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-start;
+        }
+    </style>
+</head>
+<body>
+    <!-- 管理画面ヘッダー -->
+    <header class="admin-header">
+        <div class="admin-title">ヴァレロッソ福岡 管理システム</div>
+        <nav class="admin-nav">
+            <a href="/admin/panel">ダッシュボード</a>
+            <a href="/admin/news">お知らせ管理</a>
+            <a href="/" target="_blank">サイト確認</a>
+            <a href="/admin/logout">ログアウト</a>
+        </nav>
+    </header>
+    
+    <!-- メインコンテンツエリア -->
+    <main class="admin-content">
+        <h1><%= formTitle %></h1>
+        
+        <form class="news-form" method="POST" action="<%= formAction %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            
+            <div class="form-group">
+                <label for="title">タイトル</label>
+                <input type="text" id="title" name="title" required value="<%= news ? news.title : '' %>">
+            </div>
+            
+            <div class="form-group">
+                <label for="content">内容</label>
+                <textarea id="content" name="content" required><%= news ? news.content : '' %></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="instagram_embed_code">Instagram埋め込みコード（オプション）</label>
+                <textarea id="instagram_embed_code" name="instagram_embed_code"><%= news && news.instagram_embed_code ? news.instagram_embed_code : '' %></textarea>
+                
+                <div class="instagram-embed-info">
+                    <h3>Instagram埋め込みコードの取得方法</h3>
+                    <ol>
+                        <li>Instagramで投稿を開きます。</li>
+                        <li>右上のメニュー（…）をクリックします。</li>
+                        <li>「埋め込み」を選択します。</li>
+                        <li>表示されたコードをコピーします。</li>
+                        <li>コピーしたコードを上のテキストエリアに貼り付けます。</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <a href="/admin/news" class="btn-admin btn-cancel">キャンセル</a>
+                <button type="submit" class="btn-admin">保存する</button>
+            </div>
+        </form>
+    </main>
+    
+    <script>
+        // 現在のページをナビゲーションでハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.admin-nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.style.textDecoration = 'underline';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
