@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者パネル - Valerosso Fukuoka</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* 管理画面共通スタイル */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 管理画面ヘッダー */
+        .admin-header {
+            background-color: #0611e3;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+
+        .admin-nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* メインコンテンツエリア */
+        .admin-content {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        /* ダッシュボードカード */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+
+        .dashboard-card h2 {
+            margin-top: 0;
+            color: #0611e3;
+            font-size: 18px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* 最新ニュースセクション */
+        .latest-news {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+
+        .latest-news h2 {
+            margin-top: 0;
+            color: #0611e3;
+            font-size: 18px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .news-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .news-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .news-date {
+            font-size: 12px;
+            color: #777;
+        }
+
+        /* ボタンスタイル */
+        .btn-admin {
+            display: inline-block;
+            background-color: #0611e3;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn-admin:hover {
+            background-color: #0410b0;
+        }
+
+        .news-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 管理画面ヘッダー -->
+    <header class="admin-header">
+        <div class="admin-title">ヴァレロッソ福岡 管理システム</div>
+        <nav class="admin-nav">
+            <a href="/admin/panel">ダッシュボード</a>
+            <a href="/admin/news">お知らせ管理</a>
+            <a href="/" target="_blank">サイト確認</a>
+            <a href="/admin/logout">ログアウト</a>
+        </nav>
+    </header>
+
+    <!-- メインコンテンツエリア -->
+    <main class="admin-content">
+        <h1>管理者ダッシュボード</h1>
+
+        <!-- ダッシュボードカード -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h2>サイト情報</h2>
+                <p>ヴァレロッソ福岡公式サイト</p>
+                <p>管理者: <%= locals.currentUser ? currentUser.fullName : 'ゲスト' %>
+                </p>
+            </div>
+
+            <div class="dashboard-card">
+                <h2>クイックリンク</h2>
+                <p><a href="/admin/news/create" class="btn-admin">新規お知らせ作成</a></p>
+                <p><a href="/admin/news" class="btn-admin">お知らせ一覧</a></p>
+            </div>
+        </div>
+
+        <!-- 最新ニュースセクション -->
+        <div class="latest-news">
+            <h2>最新のお知らせ（<%= news.length %>件）</h2>
+
+            <% if (news.length> 0) { %>
+                <ul class="news-list">
+                    <% news.forEach(item=> { %>
+                        <li class="news-item">
+                            <div class="news-title">
+                                <%= item.title %>
+                            </div>
+                            <div class="news-date">投稿日：<%= item.date %>
+                            </div>
+                            <div class="news-buttons">
+                                <a href="/admin/news/edit/<%= item.id %>" class="btn-admin">編集</a>
+                                <form method="POST" action="/admin/news/delete/<%= item.id %>" style="display: inline;">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="btn-admin"
+                                        onclick="return confirm('本当に削除しますか？');">削除</button>
+                                </form>
+                            </div>
+                        </li>
+                        <% }); %>
+                </ul>
+
+                <p><a href="/admin/news" class="btn-admin">すべてのお知らせを表示</a></p>
+                <% } else { %>
+                    <p>お知らせはまだありません。</p>
+                    <p><a href="/admin/news/create" class="btn-admin">新規お知らせを作成する</a></p>
+                    <% } %>
+        </div>
+    </main>
+
+    <script>
+        // 現在のページをナビゲーションでハイライト
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.admin-nav a');
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.style.textDecoration = 'underline';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

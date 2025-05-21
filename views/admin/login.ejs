@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者ログイン - Valerosso Fukuoka</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* ログイン画面固有のスタイル */
+        .login-container {
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #0611e3;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #0611e3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .btn-login:hover {
+            background-color: #0410b0;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="login-container">
+            <h1 class="login-title">ヴァレロッソ福岡<br>管理システム</h1>
+            
+            <% if (error) { %>
+            <div class="error-message">
+                <%= error %>
+            </div>
+            <% } %>
+            
+            <form action="/admin/login" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                
+                <div class="form-group">
+                    <label for="username">ユーザー名</label>
+                    <input type="text" id="username" name="username" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="btn-login">ログイン</button>
+            </form>
+            
+            <div class="login-footer">
+                &copy; <span id="year"></span> Valerosso Fukuoka
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // フッターの年表示を現在の年に設定
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
