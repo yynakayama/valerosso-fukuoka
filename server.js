@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs'); // パスワードハッシュ化
 const path = require('path');      // パス操作
 const csrf = require('csurf');     // CSRF保護
 const cookieParser = require('cookie-parser'); // Cookieの解析
+const MySQLStore = require('express-mysql-session')(session);
+const { User } = require('./models');
 require('dotenv').config();         // 環境変数の読み込み
 
 // データベースモデルのインポート（コメントアウトを解除する予定）
@@ -43,15 +45,7 @@ app.use(session({
 const csrfProtection = csrf({ cookie: true });
 
 // 仮のユーザーデータ（後でデータベースに置き換え予定）
-const users = [
-  {
-    id: 1,
-    username: 'admin',
-    password: '$2a$10$rrCvWn9N6y1kgzwN69DZEeVEgHLVILpAQOmL4.fZVuU5.6h/O7NES', // 'admin123'のハッシュ
-    full_name: 'システム管理者',
-    role: 'admin'
-  }
-];
+const users = [];
 
 // 仮のニュースデータ（後でデータベースに置き換え予定）
 let newsItems = [
@@ -90,16 +84,19 @@ const requireNoAuth = (req, res, next) => {
 };
 
 // 管理者情報をレスポンスに含める
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   if (req.session.userId) {
-    const user = users.find(u => u.id === req.session.userId);
-    if (user) {
-      res.locals.currentUser = {
-        id: user.id,
-        username: user.username,
-        fullName: user.full_name,
-        role: user.role
-      };
+    try {
+      const user = await User.findByPk(req.session.userId);
+      if (user) {
+        res.locals.currentUser = {
+          id: user.id,
+          username: user.username,
+          role: user.role
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error);
     }
   }
   next();
@@ -188,8 +185,8 @@ app.post('/admin/login', requireNoAuth, csrfProtection, async (req, res) => {
   try {
     const { username, password } = req.body;
     
-    // ユーザー名でユーザーを検索
-    const user = users.find(u => u.username === username);
+    // データベースからユーザーを検索
+    const user = await User.findOne({ where: { username } });
     
     if (!user) {
       return res.render('admin/login', { 
