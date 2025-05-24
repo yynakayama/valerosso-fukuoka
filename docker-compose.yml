@@ -1,38 +1,43 @@
 services:
   # Nodeアプリケーションのサービス設定
   app:
-    build: .  # カレントディレクトリのDockerfileを使用してビルド
+    build: .
     ports:
-      - "3000:3000"  # ホストの3000番ポートをコンテナの3000番ポートにマッピング
+      - "3000:3000"
     volumes:
-      - .:/app  # カレントディレクトリをコンテナの/appにマウント
-      - /app/node_modules  # node_modulesを永続化
+      - .:/app
+      - /app/node_modules
     environment:
-      - NODE_ENV=development  # 開発環境用の環境変数を設定
+      - NODE_ENV=development
       - DB_HOST=db
       - DB_USER=valerosso_user
       - DB_PASSWORD=valerosso_password
       - DB_NAME=valerosso
       - DB_PORT=3306
     depends_on:
-      - db  # dbサービスが起動してから起動するように設定
+      db:
+        condition: service_healthy
+    # migrationのみ実行（seedersは不使用）
     command: >
-      sh -c "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && node server.js"
+      sh -c "npx sequelize-cli db:migrate && node server.js"
   
   # MySQLデータベースのサービス設定
   db:
-    image: mysql:8.0  # MySQL version 8.0のイメージを使用
+    image: mysql:8.0
     ports:
-      - "3307:3306"  # ホストの3307番ポートをMySQLの3306番ポートにマッピング
+      - "3307:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword  # rootユーザーのパスワード
-      - MYSQL_DATABASE=valerosso  # 作成するデータベース名
-      - MYSQL_USER=valerosso_user  # 作成するMySQLユーザー
-      - MYSQL_PASSWORD=valerosso_password  # MySQLユーザーのパスワード
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=valerosso
+      - MYSQL_USER=valerosso_user
+      - MYSQL_PASSWORD=valerosso_password
     volumes:
-      - mysql_data:/var/lib/mysql  # MySQLデータを永続化
-      - ./mysql-init:/docker-entrypoint-initdb.d  # 初期化SQLスクリプトを配置
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d  # init.sqlによる初期データ投入
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
-# 永続化するボリュームの定義
 volumes:
-  mysql_data:  # MySQLデータを保存するボリューム
+  mysql_data:

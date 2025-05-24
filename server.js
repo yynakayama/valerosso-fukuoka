@@ -7,13 +7,10 @@ const path = require('path');      // パス操作
 const csrf = require('csurf');     // CSRF保護
 const cookieParser = require('cookie-parser'); // Cookieの解析
 const MySQLStore = require('express-mysql-session')(session);
-const { User } = require('./models');
 require('dotenv').config();         // 環境変数の読み込み
 
-// データベースモデルのインポート（コメントアウトを解除する予定）
-// const db = require('./models');
-// const User = db.User;
-// const News = db.News;
+// データベースモデルのインポート
+const { User, News } = require('./models');
 
 // Expressアプリケーションの初期化
 const app = express();
@@ -43,29 +40,6 @@ app.use(session({
 
 // CSRF保護の設定（管理画面で使用）
 const csrfProtection = csrf({ cookie: true });
-
-// 仮のユーザーデータ（後でデータベースに置き換え予定）
-const users = [];
-
-// 仮のニュースデータ（後でデータベースに置き換え予定）
-let newsItems = [
-  {
-    id: 1,
-    title: '夏季トレーニングキャンプの日程発表',
-    content: '今年の夏季トレーニングキャンプは8月10日から15日まで福岡市内で行われます。詳細は後日お知らせします。',
-    date: '2025-04-15',
-    instagram_embed_code: null,
-    author_id: 1
-  },
-  {
-    id: 2,
-    title: '新入部員募集のお知らせ',
-    content: '2025年度の新入部員を募集しています。体験練習も随時受け付けていますので、興味のある方はお問い合わせください。',
-    date: '2025-04-16',
-    instagram_embed_code: null,
-    author_id: 1
-  }
-];
 
 // 認証ミドルウェア - 管理者ページへのアクセスを制限
 const requireAuth = (req, res, next) => {
@@ -108,68 +82,94 @@ app.get('/api/test', (req, res) => {
 });
 
 // ニュース一覧を取得するAPIエンドポイント
-app.get('/api/news', (req, res) => {
-  // Instagram埋め込みコードを含めないようにフィルタリング
-  const publicNewsItems = newsItems.map(item => ({
-    id: item.id,
-    title: item.title,
-    content: item.content,
-    date: item.date
-  }));
-  res.json(publicNewsItems);
+app.get('/api/news', async (req, res) => {
+  try {
+    // データベースからニュース一覧を取得（日付順にソート）
+    const news = await News.findAll({
+      order: [['created_at', 'DESC']], // 新しい記事を先頭に
+      attributes: ['id', 'title', 'content', 'created_at'], // 公開用フィールドのみ
+      include: [{
+        model: User,
+        as: 'author',
+        attributes: ['username', 'full_name'] // 作成者情報も含める
+      }]
+    });
+    
+    res.json(news);
+  } catch (error) {
+    console.error('News fetch error:', error);
+    res.status(500).json({ message: 'ニュースの取得に失敗しました' });
+  }
 });
 
 // 特定のニュース記事を取得するAPIエンドポイント
-app.get('/api/news/:id', (req, res) => {
-  // URLパラメータから記事IDを取得し、整数に変換
-  const newsItem = newsItems.find(item => item.id === parseInt(req.params.id));
-  
-  // 記事が見つからない場合は404エラーを返す
-  if (!newsItem) return res.status(404).json({ message: '記事が見つかりません' });
-  
-  // 記事が見つかった場合はJSONとして返す（内部フィールドを除く）
-  const { id, title, content, date } = newsItem;
-  res.json({ id, title, content, date });
-});
-
-// 新規ニュース投稿APIエンドポイント（仮実装）
-app.post('/api/news', (req, res) => {
-  const { title, content } = req.body;
-  
-  // 新しいニュース記事オブジェクトを作成
-  const newItem = {
-    id: newsItems.length + 1,
-    title,
-    content,
-    date: new Date().toISOString().split('T')[0], // 現在の日付をYYYY-MM-DD形式で設定
-    instagram_embed_code: null,
-    author_id: 1 // 仮の作成者ID
-  };
-  
-  // 配列に追加
-  newsItems.push(newItem);
-  
-  // 作成された記事を返す（ステータスコード201：Created）
-  res.status(201).json(newItem);
-});
-
-// ニュース記事を削除するAPIエンドポイント（仮実装）
-app.delete('/api/news/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  
-  // 削除前の配列の長さを記録
-  const initialLength = newsItems.length;
-  
-  // 指定されたIDの記事を除外して新しい配列を作成
-  newsItems = newsItems.filter(item => item.id !== id);
-  
-  // 配列の長さが変わらなかった場合、記事が見つからなかったことを意味する
-  if (newsItems.length === initialLength) {
-    return res.status(404).json({ message: '削除する記事が見つかりません' });
+app.get('/api/news/:id', async (req, res) => {
+  try {
+    const newsId = parseInt(req.params.id);
+    
+    // データベースから特定の記事を取得
+    const newsItem = await News.findByPk(newsId, {
+      attributes: ['id', 'title', 'content', 'created_at'], // 公開用フィールドのみ
+      include: [{
+        model: User,
+        as: 'author',
+        attributes: ['username', 'full_name']
+      }]
+    });
+    
+    // 記事が見つからない場合は404エラーを返す
+    if (!newsItem) {
+      return res.status(404).json({ message: '記事が見つかりません' });
+    }
+    
+    res.json(newsItem);
+  } catch (error) {
+    console.error('News fetch error:', error);
+    res.status(500).json({ message: '記事の取得に失敗しました' });
   }
-  
-  // 正常に削除された場合の応答
-  res.json({ message: '記事が正常に削除されました' });
+});
+
+// 新規ニュース投稿APIエンドポイント
+app.post('/api/news', async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    
+    // データベースに新しいニュース記事を作成
+    const newItem = await News.create({
+      title,
+      content,
+      author_id: req.session?.userId || 1 // ログイン中のユーザーIDまたはデフォルト
+    });
+    
+    // 作成された記事を返す（ステータスコード201：Created）
+    res.status(201).json(newItem);
+  } catch (error) {
+    console.error('News creation error:', error);
+    res.status(500).json({ message: 'ニュース記事の作成に失敗しました' });
+  }
+});
+
+// ニュース記事を削除するAPIエンドポイント
+app.delete('/api/news/:id', async (req, res) => {
+  try {
+    const newsId = parseInt(req.params.id);
+    
+    // データベースから記事を削除
+    const deletedCount = await News.destroy({
+      where: { id: newsId }
+    });
+    
+    // 削除された記事がない場合は404エラーを返す
+    if (deletedCount === 0) {
+      return res.status(404).json({ message: '削除する記事が見つかりません' });
+    }
+    
+    // 正常に削除された場合の応答
+    res.json({ message: '記事が正常に削除されました' });
+  } catch (error) {
+    console.error('News deletion error:', error);
+    res.status(500).json({ message: 'ニュース記事の削除に失敗しました' });
+  }
 });
 
 // 管理者ログインページ
@@ -220,27 +220,50 @@ app.post('/admin/login', requireNoAuth, csrfProtection, async (req, res) => {
 });
 
 // 管理者パネル
-app.get('/admin/panel', requireAuth, csrfProtection, (req, res) => {
-  // 最新のニュースを取得（最大10件）
-  const latestNews = [...newsItems]
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 10);
-  
-  res.render('admin/panel', { 
-    news: latestNews,
-    csrfToken: req.csrfToken()
-  });
+app.get('/admin/panel', requireAuth, csrfProtection, async (req, res) => {
+  try {
+    // データベースから最新のニュースを取得（最大10件）
+    const latestNews = await News.findAll({
+      order: [['created_at', 'DESC']],
+      limit: 10,
+      include: [{
+        model: User,
+        as: 'author',
+        attributes: ['username', 'full_name']
+      }]
+    });
+    
+    res.render('admin/panel', { 
+      news: latestNews,
+      csrfToken: req.csrfToken()
+    });
+  } catch (error) {
+    console.error('Admin panel error:', error);
+    res.status(500).send('管理者パネルの読み込み中にエラーが発生しました');
+  }
 });
 
 // ニュース一覧ページ
-app.get('/admin/news', requireAuth, csrfProtection, (req, res) => {
-  // ニュースを日付順にソート
-  const sortedNews = [...newsItems].sort((a, b) => new Date(b.date) - new Date(a.date));
-  
-  res.render('admin/news-list', { 
-    news: sortedNews,
-    csrfToken: req.csrfToken()
-  });
+app.get('/admin/news', requireAuth, csrfProtection, async (req, res) => {
+  try {
+    // データベースからニュースを日付順に取得
+    const sortedNews = await News.findAll({
+      order: [['created_at', 'DESC']],
+      include: [{
+        model: User,
+        as: 'author',
+        attributes: ['username', 'full_name']
+      }]
+    });
+    
+    res.render('admin/news-list', { 
+      news: sortedNews,
+      csrfToken: req.csrfToken()
+    });
+  } catch (error) {
+    console.error('News list error:', error);
+    res.status(500).send('ニュース一覧の読み込み中にエラーが発生しました');
+  }
 });
 
 // 新規ニュース作成フォーム
@@ -254,22 +277,17 @@ app.get('/admin/news/create', requireAuth, csrfProtection, (req, res) => {
 });
 
 // ニュース作成処理
-app.post('/admin/news/create', requireAuth, csrfProtection, (req, res) => {
+app.post('/admin/news/create', requireAuth, csrfProtection, async (req, res) => {
   try {
     const { title, content, instagram_embed_code } = req.body;
     
-    // 新しいニュース記事を作成
-    const newItem = {
-      id: newsItems.length + 1,
+    // データベースに新しいニュース記事を作成
+    await News.create({
       title,
       content,
       instagram_embed_code: instagram_embed_code || null,
-      date: new Date().toISOString().split('T')[0],
       author_id: req.session.userId
-    };
-    
-    // 配列に追加
-    newsItems.push(newItem);
+    });
     
     res.redirect('/admin/news');
   } catch (error) {
@@ -279,10 +297,12 @@ app.post('/admin/news/create', requireAuth, csrfProtection, (req, res) => {
 });
 
 // ニュース編集フォーム
-app.get('/admin/news/edit/:id', requireAuth, csrfProtection, (req, res) => {
+app.get('/admin/news/edit/:id', requireAuth, csrfProtection, async (req, res) => {
   try {
     const newsId = parseInt(req.params.id);
-    const news = newsItems.find(item => item.id === newsId);
+    
+    // データベースから記事を取得
+    const news = await News.findByPk(newsId);
     
     if (!news) {
       return res.status(404).send('ニュース記事が見つかりません');
@@ -301,26 +321,23 @@ app.get('/admin/news/edit/:id', requireAuth, csrfProtection, (req, res) => {
 });
 
 // ニュース更新処理
-app.post('/admin/news/edit/:id', requireAuth, csrfProtection, (req, res) => {
+app.post('/admin/news/edit/:id', requireAuth, csrfProtection, async (req, res) => {
   try {
     const newsId = parseInt(req.params.id);
     const { title, content, instagram_embed_code } = req.body;
     
-    // 該当のニュース記事を検索
-    const newsIndex = newsItems.findIndex(item => item.id === newsId);
-    
-    if (newsIndex === -1) {
-      return res.status(404).send('ニュース記事が見つかりません');
-    }
-    
-    // ニュース記事を更新
-    newsItems[newsIndex] = {
-      ...newsItems[newsIndex],
+    // データベースの記事を更新
+    const [updatedCount] = await News.update({
       title,
       content,
-      instagram_embed_code: instagram_embed_code || null,
-      date: newsItems[newsIndex].date // 日付は変更しない
-    };
+      instagram_embed_code: instagram_embed_code || null
+    }, {
+      where: { id: newsId }
+    });
+    
+    if (updatedCount === 0) {
+      return res.status(404).send('ニュース記事が見つかりません');
+    }
     
     res.redirect('/admin/news');
   } catch (error) {
@@ -330,18 +347,16 @@ app.post('/admin/news/edit/:id', requireAuth, csrfProtection, (req, res) => {
 });
 
 // ニュース削除処理
-app.post('/admin/news/delete/:id', requireAuth, csrfProtection, (req, res) => {
+app.post('/admin/news/delete/:id', requireAuth, csrfProtection, async (req, res) => {
   try {
     const newsId = parseInt(req.params.id);
     
-    // 削除前の配列の長さを記録
-    const initialLength = newsItems.length;
+    // データベースから記事を削除
+    const deletedCount = await News.destroy({
+      where: { id: newsId }
+    });
     
-    // 指定されたIDの記事を除外して新しい配列を作成
-    newsItems = newsItems.filter(item => item.id !== newsId);
-    
-    // 配列の長さが変わらなかった場合、記事が見つからなかったことを意味する
-    if (newsItems.length === initialLength) {
+    if (deletedCount === 0) {
       return res.status(404).send('削除する記事が見つかりません');
     }
     
@@ -383,35 +398,5 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`サーバーがポート${PORT}で起動しました`);
 });
-
-// MySQL接続テストコードはいったん削除（または以下のようにコメントアウト）
-/*
-// 必要なパッケージがインストールされたら以下のコメントを解除
-const mysql = require('mysql2/promise');
-
-// データベース接続プール
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'db',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'password',
-  database: process.env.DB_NAME || 'valerosso_db',
-  port: process.env.DB_PORT || 3306,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
-
-// MySQL接続テスト
-async function testConnection() {
-  try {
-    const [result] = await pool.query('SELECT 1 + 1 AS solution');
-    console.log('MySQL接続テスト成功:', result[0].solution);
-  } catch (err) {
-    console.error('MySQL接続テスト失敗:', err);
-  }
-}
-
-testConnection();
-*/
 
 module.exports = app; // テスト用にエクスポート

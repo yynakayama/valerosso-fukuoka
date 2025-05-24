@@ -19,6 +19,10 @@ module.exports = {
         type: Sequelize.STRING, // 文字列型
         allowNull: false // NULLを許可しない
       },
+      full_name: {
+        type: Sequelize.STRING, // 文字列型（追加）
+        allowNull: true // NULLを許可する
+      },
       role: {
         type: Sequelize.ENUM('admin', 'editor'), // ENUM型（'admin'または'editor'）
         defaultValue: 'editor', // デフォルト値
