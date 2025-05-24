@@ -1,63 +1,235 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= formTitle %> - Valerosso Fukuoka</title>
+    <title>
+        <%= formTitle %> - Valerosso Fukuoka
+    </title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        /* 管理画面共通スタイル */
+        /* ===========================================
+           完全修正版 news-form.ejs CSS
+           ========================================= */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f9f9f9;
+        }
+        
+        /* 1. 管理画面ヘッダーの修正 */
+        .admin-header {
+            background-color: #0611e3;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            position: relative;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 2. 管理画面タイトル */
+        .admin-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            flex: 1;
+            text-align: center;
+        }
+        
+        /* 3. ハンバーガーメニューボタン */
+        .admin-hamburger {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 22px;
+            cursor: pointer;
+            z-index: 1001;
+            background: none;
+            border: none;
+            padding: 0;
+            order: -1;
+        }
+        
+        .admin-hamburger span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: white;
+            border-radius: 1px;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        
+        .admin-hamburger.active span:nth-child(1) {
+            transform: translateY(9.5px) rotate(45deg);
+        }
+        
+        .admin-hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .admin-hamburger.active span:nth-child(3) {
+            transform: translateY(-9.5px) rotate(-45deg);
+        }
+        
+        /* 4. デスクトップナビゲーション */
+        .admin-nav-desktop {
+            display: none;
+        }
+        
+        .admin-nav-desktop ul {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            gap: 5px;
             margin: 0;
             padding: 0;
         }
         
-        /* 管理画面ヘッダー */
-        .admin-header {
-            background-color: #0611e3;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .admin-nav-desktop li {
+            margin: 0;
         }
         
-        .admin-title {
-            font-size: 20px;
+        .admin-nav-desktop a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .admin-nav-desktop a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .admin-nav-desktop a.current {
+            background-color: rgba(255, 255, 255, 0.2);
             font-weight: bold;
         }
         
-        .admin-nav {
-            display: flex;
-            gap: 20px;
+        /* 5. モバイルナビゲーション */
+        .admin-nav-mobile {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 280px;
+            height: 100vh;
+            background-color: #1a1a1a;
+            padding-top: 80px;
+            transition: right 0.5s ease;
+            z-index: 999;
+            overflow-y: auto;
         }
         
-        .admin-nav a {
+        .admin-nav-mobile.active {
+            right: 0;
+        }
+        
+        .admin-nav-mobile ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .admin-nav-mobile li {
+            border-bottom: 1px solid #333;
+        }
+        
+        .admin-nav-mobile a {
             color: white;
             text-decoration: none;
-            padding: 5px 10px;
+            display: block;
+            padding: 18px 25px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
         }
         
-        .admin-nav a:hover {
-            text-decoration: underline;
+        .admin-nav-mobile a:hover {
+            background-color: #333;
+            color: #bdd810;
         }
         
-        /* メインコンテンツエリア */
+        .admin-nav-mobile a.current {
+            background-color: #0611e3;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            padding: 20px 25px;
+            background-color: #0611e3;
+            color: white;
+            border-bottom: 2px solid #333;
+        }
+        
+        .user-info .username {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .user-info .status {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .logout-link {
+            background-color: #dc3545 !important;
+        }
+        
+        .logout-link:hover {
+            background-color: #c82333 !important;
+        }
+        
+        /* 6. オーバーレイ */
+        .admin-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+        }
+        
+        .admin-overlay.active {
+            display: block;
+        }
+        
+        /* 7. メインコンテンツ */
         .admin-content {
-            max-width: 800px;
-            margin: 20px auto;
             padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
-        /* フォームスタイル */
+        .admin-content h1 {
+            color: #0611e3;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        /* 8. フォームスタイル */
         .news-form {
             background-color: white;
-            padding: 25px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
         .form-group {
@@ -66,55 +238,71 @@
         
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: bold;
+            font-size: 14px;
         }
         
         input[type="text"],
         textarea {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0611e3;
+            box-shadow: 0 0 0 2px rgba(6, 17, 227, 0.1);
         }
         
         textarea {
-            min-height: 200px;
+            min-height: 120px;
             resize: vertical;
         }
         
-        /* Instagram埋め込みフィールド */
+        /* Instagram埋め込み情報 */
         .instagram-embed-info {
             background-color: #f8f9fa;
-            padding: 15px;
+            padding: 12px;
             border-radius: 4px;
             margin-top: 10px;
-            font-size: 14px;
+            font-size: 13px;
         }
         
         .instagram-embed-info h3 {
             margin-top: 0;
-            font-size: 16px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #0611e3;
         }
         
         .instagram-embed-info ol {
-            margin-left: 20px;
+            margin-left: 18px;
+            padding-left: 0;
             margin-bottom: 0;
         }
         
-        /* ボタンスタイル */
+        /* 9. ボタンスタイル */
         .btn-admin {
             display: inline-block;
             background-color: #0611e3;
             color: white;
-            padding: 12px 25px;
+            padding: 12px 20px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             border: none;
             cursor: pointer;
             font-size: 16px;
+            min-width: 100px;
+            text-align: center;
+            transition: background-color 0.3s ease;
         }
         
         .btn-admin:hover {
@@ -123,7 +311,6 @@
         
         .btn-cancel {
             background-color: #6c757d;
-            margin-right: 10px;
         }
         
         .btn-cancel:hover {
@@ -131,45 +318,172 @@
         }
         
         .form-actions {
-            margin-top: 30px;
+            margin-top: 25px;
             display: flex;
-            justify-content: flex-start;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-actions .btn-admin {
+            width: 100%;
+        }
+        
+        /* 10. アイコンスタイル */
+        .nav-icon {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        
+        /* 11. タブレット・デスクトップ対応 */
+        @media (min-width: 768px) {
+            .admin-hamburger {
+                display: none;
+            }
+            
+            .admin-nav-desktop {
+                display: block;
+            }
+            
+            .admin-nav-mobile {
+                display: none;
+            }
+            
+            .admin-overlay {
+                display: none !important;
+            }
+            
+            .admin-title {
+                text-align: left;
+                font-size: 1.5rem;
+            }
+            
+            .admin-content {
+                padding: 30px;
+                margin: 20px auto;
+            }
+            
+            .news-form {
+                padding: 25px;
+            }
+            
+            .form-actions {
+                flex-direction: row;
+                gap: 10px;
+            }
+            
+            .form-actions .btn-admin {
+                width: auto;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .admin-header {
+                padding: 20px 40px;
+            }
+            
+            .admin-title {
+                font-size: 1.8rem;
+            }
+            
+            .admin-nav-desktop a {
+                font-size: 1rem;
+                padding: 10px 15px;
+            }
+        }
+        
+        /* 12. アニメーション */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
+
 <body>
     <!-- 管理画面ヘッダー -->
     <header class="admin-header">
+        <!-- ハンバーガーメニューボタン（スマホのみ） -->
+        <button class="admin-hamburger" type="button" aria-label="メニューを開く">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- 管理画面タイトル -->
         <div class="admin-title">ヴァレロッソ福岡 管理システム</div>
-        <nav class="admin-nav">
-            <a href="/admin/panel">ダッシュボード</a>
-            <a href="/admin/news">お知らせ管理</a>
-            <a href="/" target="_blank">サイト確認</a>
-            <a href="/admin/logout">ログアウト</a>
+
+        <!-- デスクトップナビゲーション（768px以上で表示） -->
+        <nav class="admin-nav-desktop">
+            <ul>
+                <li><a href="/admin/panel">ダッシュボード</a></li>
+                <li><a href="/admin/news">お知らせ管理</a></li>
+                <li><a href="/admin/news/create" class="current">新規作成</a></li>
+                <li><a href="/" target="_blank">サイト確認</a></li>
+                <li><a href="/admin/logout" class="logout-link">ログアウト</a></li>
+            </ul>
         </nav>
     </header>
-    
+
+    <!-- オーバーレイ（スマホのみ） -->
+    <div class="admin-overlay"></div>
+
+    <!-- モバイルナビゲーション（スマホのみ） -->
+    <nav class="admin-nav-mobile">
+        <!-- ユーザー情報 -->
+        <div class="user-info">
+            <div class="username">
+                <%= locals.currentUser ? currentUser.username : 'admin' %>
+            </div>
+            <div class="status">ログイン中</div>
+        </div>
+
+        <ul>
+            <li><a href="/admin/panel">
+                    <span class="nav-icon">📊</span>ダッシュボード
+                </a></li>
+            <li><a href="/admin/news">
+                    <span class="nav-icon">📰</span>お知らせ管理
+                </a></li>
+            <li><a href="/admin/news/create" class="current">
+                    <span class="nav-icon">✏️</span>新規作成
+                </a></li>
+            <li><a href="/" target="_blank">
+                    <span class="nav-icon">🌐</span>サイト確認
+                </a></li>
+            <li><a href="/admin/logout" class="logout-link">
+                    <span class="nav-icon">🚪</span>ログアウト
+                </a></li>
+        </ul>
+    </nav>
+
     <!-- メインコンテンツエリア -->
-    <main class="admin-content">
-        <h1><%= formTitle %></h1>
-        
+    <main class="admin-content fade-in">
+        <h1>
+            <%= formTitle %>
+        </h1>
+
         <form class="news-form" method="POST" action="<%= formAction %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            
+
             <div class="form-group">
                 <label for="title">タイトル</label>
                 <input type="text" id="title" name="title" required value="<%= news ? news.title : '' %>">
             </div>
-            
+
             <div class="form-group">
                 <label for="content">内容</label>
                 <textarea id="content" name="content" required><%= news ? news.content : '' %></textarea>
             </div>
-            
+
             <div class="form-group">
                 <label for="instagram_embed_code">Instagram埋め込みコード（オプション）</label>
-                <textarea id="instagram_embed_code" name="instagram_embed_code"><%= news && news.instagram_embed_code ? news.instagram_embed_code : '' %></textarea>
-                
+                <textarea id="instagram_embed_code"
+                    name="instagram_embed_code"><%= news && news.instagram_embed_code ? news.instagram_embed_code : '' %></textarea>
+
                 <div class="instagram-embed-info">
                     <h3>Instagram埋め込みコードの取得方法</h3>
                     <ol>
@@ -181,26 +495,59 @@
                     </ol>
                 </div>
             </div>
-            
+
             <div class="form-actions">
                 <a href="/admin/news" class="btn-admin btn-cancel">キャンセル</a>
                 <button type="submit" class="btn-admin">保存する</button>
             </div>
         </form>
     </main>
-    
+
     <script>
-        // 現在のページをナビゲーションでハイライト
         document.addEventListener('DOMContentLoaded', function() {
-            const currentPath = window.location.pathname;
-            const navLinks = document.querySelectorAll('.admin-nav a');
+            const hamburger = document.querySelector('.admin-hamburger');
+            const mobileNav = document.querySelector('.admin-nav-mobile');
+            const overlay = document.querySelector('.admin-overlay');
             
-            navLinks.forEach(link => {
-                if (link.getAttribute('href') === currentPath) {
-                    link.style.textDecoration = 'underline';
+            function toggleMenu() {
+                hamburger.classList.toggle('active');
+                mobileNav.classList.toggle('active');
+                overlay.classList.toggle('active');
+                
+                const isOpen = hamburger.classList.contains('active');
+                hamburger.setAttribute('aria-label', isOpen ? 'メニューを閉じる' : 'メニューを開く');
+            }
+            
+            function closeMenu() {
+                hamburger.classList.remove('active');
+                mobileNav.classList.remove('active');
+                overlay.classList.remove('active');
+                hamburger.setAttribute('aria-label', 'メニューを開く');
+            }
+            
+            hamburger?.addEventListener('click', toggleMenu);
+            overlay?.addEventListener('click', closeMenu);
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeMenu();
+                }
+            });
+            
+            const currentPath = window.location.pathname;
+            const allNavLinks = document.querySelectorAll('.admin-nav-desktop a, .admin-nav-mobile a');
+            
+            allNavLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === currentPath || 
+                    (href !== '/admin/panel' && href !== '/' && currentPath.startsWith(href))) {
+                    link.classList.add('current');
+                } else {
+                    link.classList.remove('current');
                 }
             });
         });
     </script>
 </body>
+
 </html>
