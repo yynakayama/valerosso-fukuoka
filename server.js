@@ -81,17 +81,23 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'APIが正常に動作しています' });
 });
 
-// ニュース一覧を取得するAPIエンドポイント
+// ニュース一覧を取得するAPIエンドポイント（修正版）
 app.get('/api/news', async (req, res) => {
   try {
     // データベースからニュース一覧を取得（日付順にソート）
     const news = await News.findAll({
       order: [['created_at', 'DESC']], // 新しい記事を先頭に
-      attributes: ['id', 'title', 'content', 'created_at'], // 公開用フィールドのみ
+      attributes: [
+        'id', 
+        'title', 
+        'content', 
+        'instagram_embed_code', // ★追加
+        'created_at'
+      ], 
       include: [{
         model: User,
         as: 'author',
-        attributes: ['username', 'full_name'] // 作成者情報も含める
+        attributes: ['username', 'full_name']
       }]
     });
     
@@ -102,14 +108,20 @@ app.get('/api/news', async (req, res) => {
   }
 });
 
-// 特定のニュース記事を取得するAPIエンドポイント
+// 特定のニュース記事を取得するAPIエンドポイント（修正版）
 app.get('/api/news/:id', async (req, res) => {
   try {
     const newsId = parseInt(req.params.id);
     
     // データベースから特定の記事を取得
     const newsItem = await News.findByPk(newsId, {
-      attributes: ['id', 'title', 'content', 'created_at'], // 公開用フィールドのみ
+      attributes: [
+        'id', 
+        'title', 
+        'content', 
+        'instagram_embed_code', // ★追加
+        'created_at'
+      ], 
       include: [{
         model: User,
         as: 'author',
@@ -117,7 +129,6 @@ app.get('/api/news/:id', async (req, res) => {
       }]
     });
     
-    // 記事が見つからない場合は404エラーを返す
     if (!newsItem) {
       return res.status(404).json({ message: '記事が見つかりません' });
     }
