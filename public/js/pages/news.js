@@ -1,8 +1,8 @@
-// お知らせページ用JavaScript - APIからデータを取得して表示
+// お知らせページ用JavaScript - APIからデータを取得して表示（Instagram画像表示修正版）
 
-// DOMContentLoaded*イベント：ページのHTMLが読み込み完了した時に実行
+// DOMContentLoadedイベント：ページのHTMLが読み込み完了した時に実行
 document.addEventListener('DOMContentLoaded', function() {
-    // お知らせ一覧を読み込む関数を呼び出し
+    console.log('ページ読み込み完了 - ニュース一覧読み込み開始');
     loadNewsList();
 });
 
@@ -12,7 +12,7 @@ async function loadNewsList() {
         // 読み込み中表示を見つける
         const loadingElement = document.querySelector('.loading');
         
-        // APIエンドポイント*からお知らせデータを取得
+        // APIエンドポイントからお知らせデータを取得
         const response = await fetch('/api/news');
         
         // レスポンスが正常でない場合はエラーを投げる
@@ -20,8 +20,9 @@ async function loadNewsList() {
             throw new Error('ニュースの取得に失敗しました');
         }
         
-        // JSONデータ*として解析
+        // JSONデータとして解析
         const newsData = await response.json();
+        console.log('取得したニュースデータ:', newsData);
         
         // お知らせコンテナ要素を取得
         const newsContainer = document.querySelector('.news-container');
@@ -43,8 +44,10 @@ async function loadNewsList() {
         // 生成したHTMLをコンテナに挿入
         newsContainer.innerHTML = newsHTML;
         
-        // インスタグラム埋め込みの初期化を実行
-        initializeInstagramEmbeds();
+        // Instagram埋め込みの初期化を実行（少し遅延させる）
+        setTimeout(() => {
+            initializeInstagramEmbeds();
+        }, 500);
         
     } catch (error) {
         console.error('ニュース読み込みエラー:', error);
@@ -60,20 +63,27 @@ function createNewsCard(news) {
     // 日付をフォーマット（YYYY-MM-DD形式に変換）
     const formattedDate = formatDate(news.created_at);
     
-    // 記事本文の処理（HTMLタグのエスケープ*）
+    // 記事本文の処理（HTMLタグのエスケープ）
     const safeContent = escapeHtml(news.content);
     
-    // インスタグラム埋め込みコードの処理
+    // Instagram埋め込みコードの処理
     let instagramEmbed = '';
     if (news.instagram_embed_code && news.instagram_embed_code.trim()) {
+        console.log('Instagram埋め込みコード検出:', news.title);
+        
         // 埋め込みコードが有効かチェック
         if (isValidInstagramEmbed(news.instagram_embed_code)) {
+            // ユニークIDを生成
+            const uniqueId = 'instagram-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            
             instagramEmbed = `
-                <div class="instagram-embed" data-instagram-post="true">
-                    <div class="instagram-wrapper">
-                        ${news.instagram_embed_code}
+                <div class="instagram-embed" data-instagram-post="true" id="${uniqueId}">
+                    <div class="instagram-loading">
+                        <span>📷 Instagram投稿を読み込み中...</span>
                     </div>
-                    <p class="instagram-caption">📷 Instagram投稿</p>
+                    <div class="instagram-wrapper" style="display: none;">
+                        ${cleanInstagramEmbedCode(news.instagram_embed_code)}
+                    </div>
                 </div>
             `;
         } else {
@@ -81,6 +91,7 @@ function createNewsCard(news) {
             instagramEmbed = `
                 <div class="instagram-embed-error">
                     <p>⚠️ Instagram投稿の読み込みに失敗しました</p>
+                    <p class="error-detail">埋め込みコードが無効です</p>
                 </div>
             `;
         }
@@ -110,6 +121,20 @@ function createNewsCard(news) {
     `;
 }
 
+// Instagram埋め込みコードをクリーンアップする関数
+function cleanInstagramEmbedCode(embedCode) {
+    // 重複するscriptタグを除去（JavaScriptは別途読み込むため）
+    let cleanCode = embedCode.replace(/<script[^>]*src[^>]*instagram\.com\/embed\.js[^>]*><\/script>/gi, '');
+    
+    // data-instgrm-captioned属性を追加（画像表示を改善）
+    cleanCode = cleanCode.replace(
+        /class="instagram-media"/gi, 
+        'class="instagram-media" data-instgrm-captioned'
+    );
+    
+    return cleanCode;
+}
+
 // 日付をフォーマットする関数（YYYY-MM-DD形式に変換）
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -125,7 +150,7 @@ function formatDate(dateString) {
            String(date.getDate()).padStart(2, '0');
 }
 
-// HTMLタグをエスケープする関数（XSS対策*）
+// HTMLタグをエスケープする関数（XSS対策）
 function escapeHtml(text) {
     if (!text) return '';
     
@@ -134,74 +159,151 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// インスタグラム埋め込みコードが有効かチェックする関数
+// Instagram埋め込みコードが有効かチェックする関数
 function isValidInstagramEmbed(embedCode) {
-    // 基本的なバリデーション*：instagram-mediaクラスが含まれているかチェック
-    return embedCode.includes('instagram-media') || 
-           embedCode.includes('instagram.com/p/') ||
-           embedCode.includes('instagram.com/reel/');
+    // 基本的なバリデーション
+    const checks = [
+        embedCode.includes('instagram-media'),
+        embedCode.includes('instagram.com/p/') || embedCode.includes('instagram.com/reel/'),
+        embedCode.includes('data-instgrm-permalink')
+    ];
+    
+    const isValid = checks.filter(check => check).length >= 2;
+    console.log('Instagram埋め込みコード検証:', { isValid, checks });
+    
+    return isValid;
 }
 
-// インスタグラム埋め込みを初期化する関数（改良版）
+// Instagram埋め込みを初期化する関数（改良版）
 function initializeInstagramEmbeds() {
-    // インスタグラムの埋め込みスクリプトが既に読み込まれているかチェック
+    console.log('Instagram埋め込み初期化開始');
+    
+    // 既存のInstagramスクリプトを除去
+    const existingScripts = document.querySelectorAll('script[src*="instagram.com/embed.js"]');
+    existingScripts.forEach(script => {
+        script.remove();
+        console.log('既存のInstagramスクリプトを除去しました');
+    });
+    
+    // window.instgrmをリセット
     if (window.instgrm) {
-        // 既に読み込まれている場合は埋め込みを再処理
-        try {
-            window.instgrm.Embeds.process();
-            console.log('Instagram埋め込みを再処理しました');
-        } catch (error) {
-            console.warn('Instagram埋め込みの再処理でエラー:', error);
-            loadInstagramScript();
-        }
-    } else {
-        // インスタグラムの埋め込みスクリプトを動的に読み込み
-        loadInstagramScript();
+        delete window.instgrm;
+        console.log('Instagram埋め込みオブジェクトをリセットしました');
     }
+    
+    // 新しいスクリプトを読み込み
+    loadInstagramScript();
 }
 
-// インスタグラムスクリプトを読み込む関数
+// Instagramスクリプトを読み込む関数
 function loadInstagramScript() {
-    // 既存のスクリプトタグがないかチェック
-    if (document.querySelector('script[src*="instagram.com/embed.js"]')) {
-        console.log('Instagramスクリプトは既に読み込まれています');
-        return;
-    }
+    console.log('Instagramスクリプト読み込み開始');
     
     const script = document.createElement('script');
     script.src = 'https://www.instagram.com/embed.js';
     script.async = true;
-    script.defer = true; // 非同期読み込みを確実に
+    script.defer = true;
     
-    // スクリプト読み込み完了後に埋め込みを処理
     script.onload = function() {
-        console.log('Instagramスクリプトが読み込まれました');
-        if (window.instgrm) {
-            try {
-                window.instgrm.Embeds.process();
-                console.log('Instagram埋め込みの処理が完了しました');
-            } catch (error) {
-                console.error('Instagram埋め込み処理でエラー:', error);
-            }
-        }
+        console.log('Instagramスクリプト読み込み完了');
+        
+        // スクリプト読み込み後に少し待ってから処理実行
+        setTimeout(() => {
+            processInstagramEmbeds();
+        }, 1000);
     };
     
-    // スクリプト読み込みエラー時の処理
-    script.onerror = function() {
-        console.error('Instagramスクリプトの読み込みに失敗しました');
-        // エラー表示を更新
-        const errorElements = document.querySelectorAll('[data-instagram-post="true"]');
-        errorElements.forEach(element => {
-            element.innerHTML = `
-                <div class="instagram-embed-error">
-                    <p>⚠️ Instagram投稿の読み込みに失敗しました</p>
-                    <p class="error-detail">ネットワーク接続を確認してページを再読み込みしてください</p>
-                </div>
-            `;
-        });
+    script.onerror = function(error) {
+        console.error('Instagramスクリプト読み込みエラー:', error);
+        showInstagramError();
     };
     
     document.head.appendChild(script);
+}
+
+// Instagram埋め込み処理実行
+function processInstagramEmbeds() {
+    console.log('Instagram埋め込み処理開始');
+    
+    if (!window.instgrm || !window.instgrm.Embeds) {
+        console.error('Instagram埋め込みオブジェクトが利用できません');
+        showInstagramError();
+        return;
+    }
+    
+    try {
+        // 各Instagram埋め込み要素を個別に処理
+        const instagramElements = document.querySelectorAll('[data-instagram-post="true"]');
+        console.log('処理対象のInstagram要素数:', instagramElements.length);
+        
+        instagramElements.forEach((element, index) => {
+            const loadingElement = element.querySelector('.instagram-loading');
+            const wrapperElement = element.querySelector('.instagram-wrapper');
+            
+            if (loadingElement && wrapperElement) {
+                // 読み込み中表示を隠して、実際のコンテンツを表示
+                setTimeout(() => {
+                    loadingElement.style.display = 'none';
+                    wrapperElement.style.display = 'block';
+                    
+                    console.log(`Instagram要素${index + 1}を表示しました`);
+                }, index * 200); // 各要素を200ms間隔で表示
+            }
+        });
+        
+        // Instagram埋め込み処理を実行
+        window.instgrm.Embeds.process();
+        console.log('Instagram埋め込み処理が完了しました');
+        
+        // 処理完了後に再度確認
+        setTimeout(() => {
+            checkInstagramProcessing();
+        }, 3000); // 3秒後に確認
+        
+    } catch (error) {
+        console.error('Instagram埋め込み処理でエラー:', error);
+        showInstagramError();
+    }
+}
+
+// Instagram処理結果を確認
+function checkInstagramProcessing() {
+    const instagramElements = document.querySelectorAll('[data-instagram-post="true"]');
+    
+    instagramElements.forEach((element, index) => {
+        const iframe = element.querySelector('iframe');
+        const blockquote = element.querySelector('blockquote.instagram-media');
+        
+        console.log(`Instagram要素${index + 1}:`, {
+            hasIframe: !!iframe,
+            hasBlockquote: !!blockquote
+        });
+        
+        // iframeが生成されていない場合の対処
+        if (blockquote && !iframe) {
+            console.warn(`Instagram要素${index + 1}でiframeが生成されていません - 再処理を試行`);
+            
+            setTimeout(() => {
+                if (window.instgrm && window.instgrm.Embeds) {
+                    window.instgrm.Embeds.process();
+                }
+            }, 1000);
+        }
+    });
+}
+
+// エラー表示
+function showInstagramError() {
+    const errorElements = document.querySelectorAll('[data-instagram-post="true"]');
+    errorElements.forEach(element => {
+        element.innerHTML = `
+            <div class="instagram-embed-error">
+                <p>⚠️ Instagram投稿の読み込みに失敗しました</p>
+                <p class="error-detail">ネットワーク接続を確認してページを再読み込みしてください</p>
+                <button onclick="location.reload()" class="retry-button" style="background-color: #0611e3; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">再読み込み</button>
+            </div>
+        `;
+    });
 }
 
 /* 
@@ -210,6 +312,6 @@ function loadInstagramScript() {
 - APIエンドポイント: サーバーサイドでデータを提供するURL
 - JSONデータ: JavaScript Object Notationの略、データ交換形式
 - HTMLタグのエスケープ: <や>などの特殊文字を安全な形式に変換すること
-- サニタイズ: 悪意のあるコードを除去してデータを安全にすること
 - XSS対策: Cross-Site Scriptingという攻撃手法への対策
+- バリデーション: データが正しい形式や条件を満たしているかチェックすること
 */

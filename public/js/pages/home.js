@@ -196,7 +196,8 @@ function loadInstagramScript() {
     };
     
     document.head.appendChild(script);
-}埋め込みスクリプトが既に読み込まれているかチェック
+}
+// 埋め込みスクリプトが既に読み込まれているかチェック
     if (window.instgrm) {
         // 既に読み込まれている場合は埋め込みを再処理
         window.instgrm.Embeds.process();
@@ -215,4 +216,3 @@ function loadInstagramScript() {
         
         document.head.appendChild(script);
     }
-}

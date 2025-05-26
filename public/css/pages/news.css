@@ -228,3 +228,99 @@
     font-style: italic; /* 斜体 */
     padding: 40px 20px; /* 内側に余白 */
 }
+
+/* Instagram埋め込み強制スタイル（画像表示問題解決用） */
+.instagram-embed blockquote.instagram-media {
+    background: white !important;
+    border: 0 !important;
+    border-radius: 3px !important;
+    box-shadow: 0 0 1px 0 rgba(0,0,0,0.5), 0 1px 10px 0 rgba(0,0,0,0.15) !important;
+    margin: 1px auto !important;
+    max-width: 540px !important;
+    min-width: 326px !important;
+    padding: 0 !important;
+    width: calc(100% - 2px) !important;
+}
+
+/* Instagram iframe要素の強制設定 */
+.instagram-embed iframe {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    border: none !important;
+    border-radius: 3px !important;
+    min-height: 400px !important;
+}
+
+/* Instagram画像要素の強制表示 */
+.instagram-embed img {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+}
+
+/* 読み込み中表示のスタイル改善 */
+.instagram-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 15px 0;
+    border: 1px dashed #dee2e6;
+}
+
+.instagram-loading span {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* 再読み込みボタンのスタイル */
+.retry-button {
+    background-color: #0611e3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+    background-color: #0510c7;
+}
+
+/* Instagram処理完了後のアニメーション */
+.instagram-embed.loaded {
+    animation: fadeInScale 0.5s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* スマートフォン対応の改善 */
+@media (max-width: 480px) {
+    .instagram-embed blockquote.instagram-media {
+        min-width: 280px !important;
+    }
+    
+    .instagram-embed iframe {
+        min-height: 350px !important;
+    }
+    
+    .instagram-loading {
+        padding: 30px 15px;
+    }
+}
