@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ユーザー管理 - Valerosso Fukuoka</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* ユーザー管理画面のスタイル */
+        .users-list {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit {
+            background-color: #28a745;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+        }
+
+        .btn-edit:hover {
+            background-color: #218838;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .role-admin {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .role-editor {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .role-viewer {
+            background-color: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 管理画面ヘッダー -->
+    <header class="admin-header">
+        <!-- ハンバーガーメニューボタン（スマホのみ） -->
+        <button class="admin-hamburger" type="button" aria-label="メニューを開く">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- 管理画面タイトル -->
+        <div class="admin-title">ヴァレロッソ福岡 管理システム</div>
+
+        <!-- デスクトップナビゲーション（768px以上で表示） -->
+        <nav class="admin-nav-desktop">
+            <ul>
+                <li><a href="/admin/panel">ダッシュボード</a></li>
+                <li><a href="/admin/news">お知らせ管理</a></li>
+                <li><a href="/admin/news/create">新規作成</a></li>
+                <% if (locals.currentUser && currentUser.role === 'admin') { %>
+                <li><a href="/admin/users" class="current">ユーザー管理</a></li>
+                <% } %>
+                <li><a href="/" target="_blank">サイト確認</a></li>
+                <li><a href="/admin/logout" class="logout-link">ログアウト</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- オーバーレイ（スマホのみ） -->
+    <div class="admin-overlay"></div>
+
+    <!-- モバイルナビゲーション（スマホのみ） -->
+    <nav class="admin-nav-mobile">
+        <!-- ユーザー情報 -->
+        <div class="user-info">
+            <div class="username">
+                <%= locals.currentUser ? currentUser.username : 'admin' %>
+            </div>
+            <div class="status">ログイン中</div>
+        </div>
+
+        <ul>
+            <li><a href="/admin/panel">
+                    <span class="nav-icon">📊</span>ダッシュボード
+                </a></li>
+            <li><a href="/admin/news">
+                    <span class="nav-icon">📰</span>お知らせ管理
+                </a></li>
+            <li><a href="/admin/news/create">
+                    <span class="nav-icon">✏️</span>新規作成
+                </a></li>
+            <% if (locals.currentUser && currentUser.role === 'admin') { %>
+            <li><a href="/admin/users" class="current">
+                    <span class="nav-icon">👥</span>ユーザー管理
+                </a></li>
+            <% } %>
+            <li><a href="/" target="_blank">
+                    <span class="nav-icon">🌐</span>サイト確認
+                </a></li>
+            <li><a href="/admin/logout" class="logout-link">
+                    <span class="nav-icon">🚪</span>ログアウト
+                </a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツエリア -->
+    <main class="admin-content fade-in">
+        <h1>ユーザー管理</h1>
+
+        <a href="/admin/users/create" class="btn-admin">新規ユーザー作成</a>
+
+        <div class="users-list">
+            <% users.forEach(user => { %>
+            <div class="user-item">
+                <div class="user-info">
+                    <div class="user-name">
+                        <%= user.username %>
+                        <span class="role-badge role-<%= user.role %>">
+                            <%= user.role === 'admin' ? '管理者' : '編集者' %>
+                        </span>
+                    </div>
+                    <div class="user-role">
+                        <%= user.full_name || '名前未設定' %>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <a href="/admin/users/edit/<%= user.id %>" class="btn-admin btn-edit">編集</a>
+                    <form action="/admin/users/delete/<%= user.id %>" method="POST" style="display: inline;">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit" class="btn-admin btn-delete" 
+                                onclick="return confirm('本当にこのユーザーを削除しますか？')">削除</button>
+                    </form>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.admin-hamburger');
+            const mobileNav = document.querySelector('.admin-nav-mobile');
+            const overlay = document.querySelector('.admin-overlay');
+            
+            function toggleMenu() {
+                hamburger.classList.toggle('active');
+                mobileNav.classList.toggle('active');
+                overlay.classList.toggle('active');
+                
+                const isOpen = hamburger.classList.contains('active');
+                hamburger.setAttribute('aria-label', isOpen ? 'メニューを閉じる' : 'メニューを開く');
+            }
+            
+            function closeMenu() {
+                hamburger.classList.remove('active');
+                mobileNav.classList.remove('active');
+                overlay.classList.remove('active');
+                hamburger.setAttribute('aria-label', 'メニューを開く');
+            }
+            
+            hamburger?.addEventListener('click', toggleMenu);
+            overlay?.addEventListener('click', closeMenu);
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeMenu();
+                }
+            });
+            
+            const currentPath = window.location.pathname;
+            const allNavLinks = document.querySelectorAll('.admin-nav-desktop a, .admin-nav-mobile a');
+            
+            allNavLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === currentPath || 
+                    (href !== '/admin/panel' && href !== '/' && currentPath.startsWith(href))) {
+                    link.classList.add('current');
+                } else {
+                    link.classList.remove('current');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html> 

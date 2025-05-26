@@ -390,6 +390,184 @@ app.get('/admin/logout', (req, res) => {
   });
 });
 
+// 管理者権限チェックミドルウェア
+const requireAdmin = (req, res, next) => {
+  if (!req.session.userId || !res.locals.currentUser || res.locals.currentUser.role !== 'admin') {
+    return res.status(403).send('このページにアクセスする権限がありません');
+  }
+  next();
+};
+
+// ユーザー一覧ページ
+app.get('/admin/users', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ['id', 'username', 'full_name', 'role'],
+      order: [['username', 'ASC']]
+    });
+    
+    res.render('admin/users', { 
+      users,
+      csrfToken: req.csrfToken()
+    });
+  } catch (error) {
+    console.error('Users list error:', error);
+    res.status(500).send('ユーザー一覧の読み込み中にエラーが発生しました');
+  }
+});
+
+// 新規ユーザー作成フォーム
+app.get('/admin/users/create', requireAuth, requireAdmin, csrfProtection, (req, res) => {
+  res.render('admin/user-form', { 
+    user: null,
+    formAction: '/admin/users/create',
+    formTitle: '新規ユーザーの作成',
+    csrfToken: req.csrfToken()
+  });
+});
+
+// ユーザー作成処理
+app.post('/admin/users/create', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    const { username, password, full_name, role } = req.body;
+    
+    // ユーザー名の重複チェック
+    const existingUser = await User.findOne({ where: { username } });
+    if (existingUser) {
+      return res.render('admin/user-form', {
+        user: null,
+        formAction: '/admin/users/create',
+        formTitle: '新規ユーザーの作成',
+        error: 'このユーザー名は既に使用されています',
+        csrfToken: req.csrfToken()
+      });
+    }
+    
+    // パスワードのハッシュ化
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // ユーザーの作成
+    await User.create({
+      username,
+      password: hashedPassword,
+      full_name,
+      role
+    });
+    
+    res.redirect('/admin/users');
+  } catch (error) {
+    console.error('User creation error:', error);
+    res.status(500).send('ユーザーの作成中にエラーが発生しました');
+  }
+});
+
+// ユーザー編集フォーム
+app.get('/admin/users/edit/:id', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    
+    // 自分自身の編集は許可しない
+    if (userId === req.session.userId) {
+      return res.status(403).send('自分自身のアカウントはこの画面から編集できません');
+    }
+    
+    const user = await User.findByPk(userId, {
+      attributes: ['id', 'username', 'full_name', 'role']
+    });
+    
+    if (!user) {
+      return res.status(404).send('ユーザーが見つかりません');
+    }
+    
+    res.render('admin/user-form', { 
+      user,
+      formAction: `/admin/users/edit/${user.id}`,
+      formTitle: 'ユーザーの編集',
+      csrfToken: req.csrfToken()
+    });
+  } catch (error) {
+    console.error('User edit form error:', error);
+    res.status(500).send('ユーザー編集フォームの読み込み中にエラーが発生しました');
+  }
+});
+
+// ユーザー更新処理
+app.post('/admin/users/edit/:id', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const { username, password, full_name, role } = req.body;
+    
+    // 自分自身の編集は許可しない
+    if (userId === req.session.userId) {
+      return res.status(403).send('自分自身のアカウントはこの画面から編集できません');
+    }
+    
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).send('ユーザーが見つかりません');
+    }
+    
+    // ユーザー名の重複チェック（自分以外）
+    if (username !== user.username) {
+      const existingUser = await User.findOne({ where: { username } });
+      if (existingUser) {
+        return res.render('admin/user-form', {
+          user,
+          formAction: `/admin/users/edit/${user.id}`,
+          formTitle: 'ユーザーの編集',
+          error: 'このユーザー名は既に使用されています',
+          csrfToken: req.csrfToken()
+        });
+      }
+    }
+    
+    // 更新データの準備
+    const updateData = {
+      username,
+      full_name,
+      role
+    };
+    
+    // パスワードが入力されている場合のみ更新
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+    
+    // ユーザーの更新
+    await user.update(updateData);
+    
+    res.redirect('/admin/users');
+  } catch (error) {
+    console.error('User update error:', error);
+    res.status(500).send('ユーザーの更新中にエラーが発生しました');
+  }
+});
+
+// ユーザー削除処理
+app.post('/admin/users/delete/:id', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    
+    // 自分自身の削除は許可しない
+    if (userId === req.session.userId) {
+      return res.status(403).send('自分自身のアカウントは削除できません');
+    }
+    
+    const deletedCount = await User.destroy({
+      where: { id: userId }
+    });
+    
+    if (deletedCount === 0) {
+      return res.status(404).send('削除するユーザーが見つかりません');
+    }
+    
+    res.redirect('/admin/users');
+  } catch (error) {
+    console.error('User deletion error:', error);
+    res.status(500).send('ユーザーの削除中にエラーが発生しました');
+  }
+});
+
 // その他のページは静的ファイルとして提供
 app.get('*', (req, res) => {
   // path部分を抽出してHTMLファイルを探す
