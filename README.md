@@ -6,7 +6,7 @@
 ## 技術スタック
 - **フロントエンド**: HTML5, CSS3, JavaScript
 - **バックエンド**: Node.js, Express.js
-- **データベース**: MySQL
+- **データベース**: MySQL, Sequelize ORM
 - **開発環境**: Docker, Docker Compose
 
 ## 開発環境のセットアップ
@@ -43,29 +43,38 @@ http://localhost:3000
 ## プロジェクト構造
 ```
 VALEROSSO-FUKUOKA/
-├── mysql-init/         # MySQLデータベース初期化スクリプト
-├── node_modules/       # Node.js依存パッケージ
-├── public/             # 静的ファイル
-│   ├── css/            # CSSファイル
-│   ├── img/            # 画像ファイル
-│   ├── js/             # JavaScriptファイル
+├── config/             # 設定ファイル
+├── controllers/        # コントローラー
+├── middleware/         # ミドルウェア
+├── migrations/         # データベースマイグレーション
+├── models/            # データモデル
+├── mysql-init/        # MySQLデータベース初期化スクリプト
+├── public/            # 静的ファイル
+│   ├── css/           # CSSファイル
+│   ├── img/           # 画像ファイル
+│   ├── js/            # JavaScriptファイル
 │   ├── admin-login.html  # 管理者ログインページ
 │   ├── admin-panel.html  # 管理パネルページ
-│   ├── contact.html    # お問い合わせページ
-│   ├── gallery.html    # フォトギャラリーページ
-│   ├── index.html      # トップページ
-│   ├── join.html       # 入部案内ページ
-│   ├── news.html       # お知らせページ
-│   ├── schedule.html   # 練習・試合予定ページ
-│   └── team.html       # クラブ紹介ページ
-├── .env                # 環境変数
-├── .gitlab-ci.yml      # GitLab CI/CD設定
-├── docker-compose.yml  # Docker Compose設定
-├── Dockerfile          # Dockerビルド設定
-├── package.json        # NPMパッケージ管理
-├── package-lock.json   # NPM依存関係ロック
-├── README.md           # このファイル
-└── server.js           # サーバー起動スクリプト
+│   ├── contact.html   # お問い合わせページ
+│   ├── gallery.html   # フォトギャラリーページ
+│   ├── index.html     # トップページ
+│   ├── join.html      # 入部案内ページ
+│   ├── news.html      # お知らせページ
+│   ├── schedule.html  # 練習・試合予定ページ
+│   └── team.html      # クラブ紹介ページ
+├── routes/            # ルーティング
+├── utils/             # ユーティリティ関数
+├── views/             # ビューテンプレート
+├── .env               # 環境変数
+├── .gitlab-ci.yml     # GitLab CI/CD設定
+├── .sequelizerc       # Sequelize設定
+├── docker-compose.yml # Docker Compose設定
+├── Dockerfile         # Dockerビルド設定
+├── package.json       # NPMパッケージ管理
+├── package-lock.json  # NPM依存関係ロック
+├── README.md          # このファイル
+├── SECURITY.md        # セキュリティポリシー
+└── server.js          # サーバー起動スクリプト
 ```
 
 ## 主な機能
@@ -91,9 +100,9 @@ VALEROSSO-FUKUOKA/
 
 ## 開発フェーズ
 1. Docker環境構築 (完了)
-2. プロジェクト初期化 (進行中)
-3. データベース設計 (予定)
-4. バックエンド開発 (予定)
+2. プロジェクト初期化 (完了)
+3. データベース設計 (完了)
+4. バックエンド開発 (進行中)
 5. フロントエンド開発 (予定)
 6. インスタグラム連携 (予定)
 7. テスト・デプロイ (予定)
