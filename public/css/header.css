@@ -186,3 +186,12 @@ header {
         font-size: 1.1rem; /* フォントサイズを少し大きく */
     }
 }
+
+@media (max-width: 767px) {
+  header {
+    justify-content: flex-start; /* 左詰めに */
+  }
+  .site-title {
+    margin-left: 48px; /* ハンバーガー分だけ左に余白 */
+  }
+}
