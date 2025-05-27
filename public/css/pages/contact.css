@@ -170,3 +170,36 @@
         padding: 40px; /* 内側の余白をさらに広げる */
     }
 }
+
+/* モーダルの基本スタイル */
+.modal {
+  display: none; /* 初期は非表示 */
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background: rgba(0,0,0,0.5);
+}
+.modal-content {
+  background: #fff;
+  margin: 5% auto;
+  padding: 30px 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+}
+.close-modal {
+  position: absolute;
+  right: 16px; top: 12px;
+  font-size: 2rem;
+  color: #333;
+  cursor: pointer;
+}
+.privacy-policy-text {
+  max-height: 60vh;
+  overflow-y: auto;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}

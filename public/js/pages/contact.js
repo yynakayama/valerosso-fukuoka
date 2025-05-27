@@ -102,11 +102,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const name = document.getElementById('name').value.trim();
         const email = document.getElementById('email').value.trim();
         const phone = document.getElementById('phone').value.trim();
-        const message = document.getElementById('message').value.trim();
+        // メッセージ欄は任意なのでバリデーションから除外
+        // const message = document.getElementById('message').value.trim();
         const inquiryType = inquiryTypeSelect.value;
         
-        // 基本的な空チェック
-        if (!name || !email || !phone || !message || !inquiryType) {
+        // 基本的な空チェック（メッセージは除外）
+        if (!name || !email || !phone || !inquiryType) {
             alert('必須項目を入力してください。');
             return false;
         }
@@ -155,5 +156,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         return isValid;
+    }
+
+    // プライバシーポリシーモーダル表示
+    const privacyLink = document.querySelector('.privacy-link');
+    const modal = document.getElementById('privacy-modal');
+    const closeBtn = document.querySelector('.close-modal');
+
+    if (privacyLink && modal && closeBtn) {
+        privacyLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            modal.style.display = 'block';
+        });
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
     }
 });
