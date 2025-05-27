@@ -422,7 +422,7 @@
             <ul>
                 <li><a href="/admin/panel">ダッシュボード</a></li>
                 <li><a href="/admin/news">お知らせ管理</a></li>
-                <li><a href="/admin/news/create" class="current">新規作成</a></li>
+                <li><a href="/admin/news/create">新規作成</a></li>
                 <% if (locals.currentUser && currentUser.role === 'admin') { %>
                 <li><a href="/admin/users">ユーザー管理</a></li>
                 <% } %>
@@ -452,7 +452,7 @@
             <li><a href="/admin/news">
                     <span class="nav-icon">📰</span>お知らせ管理
                 </a></li>
-            <li><a href="/admin/news/create" class="current">
+            <li><a href="/admin/news/create">
                     <span class="nav-icon">✏️</span>新規作成
                 </a></li>
             <% if (locals.currentUser && currentUser.role === 'admin') { %>
@@ -548,8 +548,7 @@
             
             allNavLinks.forEach(link => {
                 const href = link.getAttribute('href');
-                if (href === currentPath || 
-                    (href !== '/admin/panel' && href !== '/' && currentPath.startsWith(href))) {
+                if (href === currentPath) {
                     link.classList.add('current');
                 } else {
                     link.classList.remove('current');

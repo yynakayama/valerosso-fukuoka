@@ -258,7 +258,6 @@
         
         .news-table {
             width: 100%;
-            min-width: 600px;
             border-collapse: collapse;
         }
         
@@ -399,6 +398,69 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* スマホ向けテーブルレイアウト */
+        @media (max-width: 767px) {
+            .news-table-container {
+                overflow-x: visible;
+            }
+
+            .news-table, 
+            .news-table tbody, 
+            .news-table tr, 
+            .news-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .news-table thead {
+                display: none;
+            }
+
+            .news-table tr {
+                margin-bottom: 15px;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                background-color: white;
+            }
+
+            .news-table td {
+                padding: 12px;
+                text-align: left;
+                position: relative;
+                padding-left: 50%;
+                border-bottom: 1px solid #eee;
+            }
+
+            .news-table td:last-child {
+                border-bottom: none;
+            }
+
+            .news-table td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 12px;
+                width: 45%;
+                font-weight: bold;
+                color: #333;
+            }
+
+            .action-buttons {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 10px;
+                padding-left: 0 !important;
+            }
+
+            .action-buttons:before {
+                display: none;
+            }
+
+            .action-buttons .btn-admin {
+                flex: 1;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 
@@ -419,7 +481,7 @@
         <nav class="admin-nav-desktop">
             <ul>
                 <li><a href="/admin/panel">ダッシュボード</a></li>
-                <li><a href="/admin/news" class="current">お知らせ管理</a></li>
+                <li><a href="/admin/news">お知らせ管理</a></li>
                 <li><a href="/admin/news/create">新規作成</a></li>
                 <% if (locals.currentUser && currentUser.role === 'admin') { %>
                 <li><a href="/admin/users">ユーザー管理</a></li>
@@ -445,7 +507,7 @@
             <li><a href="/admin/panel">
                 <span class="nav-icon">📊</span>ダッシュボード
             </a></li>
-            <li><a href="/admin/news" class="current">
+            <li><a href="/admin/news">
                 <span class="nav-icon">📰</span>お知らせ管理
             </a></li>
             <li><a href="/admin/news/create">
@@ -486,17 +548,17 @@
                     <tbody>
                         <% news.forEach(item => { %>
                             <tr>
-                                <td><%= item.id %></td>
-                                <td><%= item.title %></td>
-                                <td><%= item.created_at ? new Date(item.created_at).toLocaleDateString('ja-JP') : '不明' %></td>
-                                <td>
+                                <td data-label="ID"><%= item.id %></td>
+                                <td data-label="タイトル"><%= item.title %></td>
+                                <td data-label="投稿日"><%= item.created_at ? new Date(item.created_at).toLocaleDateString('ja-JP') : '不明' %></td>
+                                <td data-label="Instagram">
                                     <% if (item.instagram_embed_code) { %>
                                         <span class="instagram-indicator">あり</span>
                                     <% } else { %>
                                         なし
                                     <% } %>
                                 </td>
-                                <td class="action-buttons">
+                                <td data-label="操作" class="action-buttons">
                                     <a href="/admin/news/edit/<%= item.id %>" class="btn-admin">編集</a>
                                     <form method="POST" action="/admin/news/delete/<%= item.id %>" style="display: inline;">
                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -553,8 +615,7 @@
             
             allNavLinks.forEach(link => {
                 const href = link.getAttribute('href');
-                if (href === currentPath || 
-                    (href !== '/admin/panel' && href !== '/' && currentPath.startsWith(href))) {
+                if (href === currentPath) {
                     link.classList.add('current');
                 } else {
                     link.classList.remove('current');
