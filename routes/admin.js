@@ -5,7 +5,8 @@ const csrf = require('csurf');     // CSRF保護ライブラリ
 const router = express.Router();
 
 // データベースモデルのインポート
-const { User, News } = require('../models');
+const db = require('../models');
+const { User, News, Inquiry } = db;
 
 // ミドルウェアのインポート
 const { requireAuth, requireNoAuth, requireAdmin } = require('../middleware/auth');
@@ -407,11 +408,49 @@ router.get('/logout', (req, res) => {
 });
 
 // お問い合わせ管理ページ
-router.get('/inquiries', requireAuth, requireAdmin, (req, res) => {
-  res.render('admin/inquiries', {
-    title: 'お問い合わせ管理',
-    user: req.user
-  });
+router.get('/inquiries', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    res.render('admin/inquiries', {
+      title: 'お問い合わせ管理',
+      currentUser: req.user,
+      csrfToken: req.csrfToken()
+    });
+  } catch (error) {
+    console.error('Inquiries page error:', error);
+    res.status(500).send('お問い合わせ管理ページの読み込み中にエラーが発生しました');
+  }
+});
+
+// お問い合わせデータ取得API
+router.get('/api/inquiries', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const inquiries = await Inquiry.findAll({
+      order: [['created_at', 'DESC']]
+    });
+    res.json(inquiries);
+  } catch (error) {
+    console.error('Error fetching inquiries:', error);
+    res.status(500).json({ error: 'お問い合わせデータの取得に失敗しました' });
+  }
+});
+
+// お問い合わせステータス更新API
+router.patch('/api/inquiries/:id/status', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const inquiry = await Inquiry.findByPk(id);
+    if (!inquiry) {
+      return res.status(404).json({ error: 'お問い合わせが見つかりません' });
+    }
+
+    await inquiry.update({ status });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating inquiry status:', error);
+    res.status(500).json({ error: 'ステータスの更新に失敗しました' });
+  }
 });
 
 module.exports = router;

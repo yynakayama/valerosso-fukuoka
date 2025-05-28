@@ -1,218 +1,598 @@
-<%- include('../partials/admin-header') %>
+<!DOCTYPE html>
+<html lang="ja">
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- サイドバー -->
-        <%- include('../partials/admin-sidebar') %>
-
-        <!-- メインコンテンツ -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">お問い合わせ管理</h1>
-            </div>
-
-            <!-- お問い合わせ一覧 -->
-            <div class="inquiry-list" id="inquiryList">
-                <!-- お問い合わせ一覧がここに動的に表示されます -->
-            </div>
-        </main>
-    </div>
-</div>
-
-<!-- スタイル -->
-<style>
-    .inquiry-list {
-        margin: 20px 0;
-    }
-    .inquiry-item {
-        border: 1px solid #ddd;
-        padding: 15px;
-        margin-bottom: 10px;
-        border-radius: 5px;
-        background-color: #fff;
-    }
-    .inquiry-item:hover {
-        background-color: #f8f9fa;
-    }
-    .inquiry-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    .inquiry-status {
-        padding: 5px 10px;
-        border-radius: 3px;
-        font-size: 0.9em;
-    }
-    .status-new { background-color: #e3f2fd; color: #1976d2; }
-    .status-in-progress { background-color: #fff3e0; color: #f57c00; }
-    .status-completed { background-color: #e8f5e9; color: #388e3c; }
-    .status-cancelled { background-color: #ffebee; color: #d32f2f; }
-    .inquiry-details {
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid #eee;
-    }
-    .status-select {
-        padding: 5px;
-        border-radius: 3px;
-        border: 1px solid #ddd;
-        margin-right: 10px;
-    }
-    .player-info, .media-info {
-        margin-top: 15px;
-        padding: 10px;
-        background-color: #f8f9fa;
-        border-radius: 3px;
-    }
-    .player-info h4, .media-info h4 {
-        margin-bottom: 10px;
-        color: #495057;
-    }
-</style>
-
-<!-- スクリプト -->
-<script>
-    // お問い合わせ一覧の取得と表示
-    async function fetchInquiries() {
-        try {
-            const response = await fetch('/api/inquiries');
-            if (!response.ok) {
-                throw new Error('お問い合わせ一覧の取得に失敗しました。');
-            }
-            const inquiries = await response.json();
-            displayInquiries(inquiries);
-        } catch (error) {
-            console.error('Error fetching inquiries:', error);
-            alert('お問い合わせ一覧の取得に失敗しました。');
-        }
-    }
-
-    // お問い合わせ一覧の表示
-    function displayInquiries(inquiries) {
-        const inquiryList = document.getElementById('inquiryList');
-        inquiryList.innerHTML = '';
-
-        inquiries.forEach(inquiry => {
-            const inquiryElement = document.createElement('div');
-            inquiryElement.className = 'inquiry-item';
-            
-            // ステータスに応じたクラス名を設定
-            const statusClass = `status-${inquiry.status}`;
-            
-            inquiryElement.innerHTML = `
-                <div class="inquiry-header">
-                    <div>
-                        <strong>${inquiry.name}</strong>
-                        <span class="ms-3">${inquiry.email}</span>
-                        <span class="ms-3">${inquiry.phone}</span>
-                    </div>
-                    <div>
-                        <select class="status-select" data-id="${inquiry._id}" onchange="updateStatus(this)">
-                            <option value="new" ${inquiry.status === 'new' ? 'selected' : ''}>新規</option>
-                            <option value="in-progress" ${inquiry.status === 'in-progress' ? 'selected' : ''}>対応中</option>
-                            <option value="completed" ${inquiry.status === 'completed' ? 'selected' : ''}>完了</option>
-                            <option value="cancelled" ${inquiry.status === 'cancelled' ? 'selected' : ''}>キャンセル</option>
-                        </select>
-                        <span class="inquiry-status ${statusClass}">${getStatusText(inquiry.status)}</span>
-                    </div>
-                </div>
-                <div class="inquiry-details">
-                    <p><strong>お問い合わせ種類：</strong>${getInquiryTypeText(inquiry.inquiryType)}</p>
-                    <p><strong>メッセージ：</strong>${inquiry.message || 'なし'}</p>
-                    ${displayAdditionalInfo(inquiry)}
-                    <p class="mt-3"><strong>受付日時：</strong>${new Date(inquiry.createdAt).toLocaleString()}</p>
-                </div>
-            `;
-            
-            inquiryList.appendChild(inquiryElement);
-        });
-    }
-
-    // ステータスの更新
-    async function updateStatus(selectElement) {
-        const inquiryId = selectElement.dataset.id;
-        const newStatus = selectElement.value;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お問い合わせ管理 - Valerosso Fukuoka</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* ===========================================
+           完全修正版 inquiries.ejs CSS
+           ========================================= */
         
-        try {
-            const response = await fetch(`/api/inquiries/${inquiryId}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ status: newStatus })
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+        }
+        
+        /* 1. 管理画面ヘッダー */
+        .admin-header {
+            background-color: #0611e3;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            position: relative;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 2. 管理画面タイトル */
+        .admin-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            flex: 1;
+            text-align: center;
+        }
+        
+        /* 3. ハンバーガーメニューボタン */
+        .admin-hamburger {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 22px;
+            cursor: pointer;
+            z-index: 1001;
+            background: none;
+            border: none;
+            padding: 0;
+            order: -1;
+        }
+        
+        .admin-hamburger span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: white;
+            border-radius: 1px;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        
+        /* アクティブ時のアニメーション */
+        .admin-hamburger.active span:nth-child(1) {
+            transform: translateY(9.5px) rotate(45deg);
+        }
+        
+        .admin-hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .admin-hamburger.active span:nth-child(3) {
+            transform: translateY(-9.5px) rotate(-45deg);
+        }
+        
+        /* 4. デスクトップナビゲーション */
+        .admin-nav-desktop {
+            display: none;
+        }
+        
+        .admin-nav-desktop ul {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            gap: 5px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .admin-nav-desktop li {
+            margin: 0;
+        }
+        
+        .admin-nav-desktop a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .admin-nav-desktop a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .admin-nav-desktop a.current {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        
+        /* 5. モバイルナビゲーション */
+        .admin-nav-mobile {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 280px;
+            height: 100vh;
+            background-color: #1a1a1a;
+            padding-top: 80px;
+            transition: right 0.5s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+        
+        .admin-nav-mobile.active {
+            right: 0;
+        }
+        
+        .admin-nav-mobile ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .admin-nav-mobile li {
+            border-bottom: 1px solid #333;
+        }
+        
+        .admin-nav-mobile a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 18px 25px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-nav-mobile a:hover {
+            background-color: #333;
+            color: #bdd810;
+        }
+        
+        .admin-nav-mobile a.current {
+            background-color: #0611e3;
+            font-weight: bold;
+        }
+        
+        /* ユーザー情報セクション */
+        .user-info {
+            padding: 20px 25px;
+            background-color: #0611e3;
+            color: white;
+            border-bottom: 2px solid #333;
+        }
+        
+        .user-info .username {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .user-info .status {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* ログアウトボタン */
+        .logout-link {
+            background-color: #dc3545 !important;
+        }
+        
+        .logout-link:hover {
+            background-color: #c82333 !important;
+        }
+        
+        /* 6. オーバーレイ */
+        .admin-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+        }
+        
+        .admin-overlay.active {
+            display: block;
+        }
+        
+        /* 7. メインコンテンツ */
+        .admin-content {
+            padding: 20px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .admin-content h1 {
+            color: #0611e3;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        /* 8. お問い合わせ一覧 */
+        .inquiry-list {
+            margin: 20px 0;
+        }
+        
+        .inquiry-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        
+        .inquiry-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .inquiry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .inquiry-status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        
+        .status-new { background-color: #e3f2fd; color: #1976d2; }
+        .status-in-progress { background-color: #fff3e0; color: #f57c00; }
+        .status-completed { background-color: #e8f5e9; color: #388e3c; }
+        .status-cancelled { background-color: #ffebee; color: #d32f2f; }
+        
+        .inquiry-details {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .status-select {
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+        }
+        
+        .player-info, .media-info {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 3px;
+        }
+        
+        .player-info h4, .media-info h4 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        /* 9. レスポンシブ対応 */
+        @media (min-width: 768px) {
+            .admin-hamburger {
+                display: none;
+            }
+            
+            .admin-nav-desktop {
+                display: block;
+            }
+            
+            .admin-nav-mobile {
+                display: none;
+            }
+            
+            .admin-overlay {
+                display: none !important;
+            }
+            
+            .admin-title {
+                text-align: left;
+                font-size: 1.5rem;
+            }
+            
+            .admin-content {
+                max-width: 1200px;
+                padding: 30px;
+                margin: 20px auto;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .admin-header {
+                padding: 20px 40px;
+            }
+            
+            .admin-title {
+                font-size: 1.8rem;
+            }
+            
+            .admin-nav-desktop a {
+                font-size: 1rem;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 管理画面ヘッダー -->
+    <header class="admin-header">
+        <!-- ハンバーガーメニューボタン（スマホのみ） -->
+        <button class="admin-hamburger" type="button" aria-label="メニューを開く">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- 管理画面タイトル -->
+        <div class="admin-title">ヴァレロッソ福岡 管理システム</div>
+
+        <!-- デスクトップナビゲーション（768px以上で表示） -->
+        <nav class="admin-nav-desktop">
+            <ul>
+                <li><a href="/admin/panel">ダッシュボード</a></li>
+                <li><a href="/admin/news">お知らせ管理</a></li>
+                <li><a href="/admin/news/create">新規作成</a></li>
+                <li><a href="/admin/inquiries" class="current">お問い合わせ管理</a></li>
+                <% if (locals.currentUser && currentUser.role === 'admin') { %>
+                <li><a href="/admin/users">ユーザー管理</a></li>
+                <% } %>
+                <li><a href="/" target="_blank">サイト確認</a></li>
+                <li><a href="/admin/logout" class="logout-link">ログアウト</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- オーバーレイ（スマホのみ） -->
+    <div class="admin-overlay"></div>
+
+    <!-- モバイルナビゲーション（スマホのみ） -->
+    <nav class="admin-nav-mobile">
+        <!-- ユーザー情報 -->
+        <div class="user-info">
+            <div class="username">
+                <%= locals.currentUser ? currentUser.username : 'admin' %>
+            </div>
+            <div class="status">ログイン中</div>
+        </div>
+
+        <ul>
+            <li><a href="/admin/panel">
+                    <span class="nav-icon">📊</span>ダッシュボード
+                </a></li>
+            <li><a href="/admin/news">
+                    <span class="nav-icon">📰</span>お知らせ管理
+                </a></li>
+            <li><a href="/admin/news/create">
+                    <span class="nav-icon">✏️</span>新規作成
+                </a></li>
+            <li><a href="/admin/inquiries" class="current">
+                    <span class="nav-icon">📝</span>お問い合わせ管理
+                </a></li>
+            <% if (locals.currentUser && currentUser.role === 'admin') { %>
+            <li><a href="/admin/users">
+                    <span class="nav-icon">👥</span>ユーザー管理
+                </a></li>
+            <% } %>
+            <li><a href="/" target="_blank">
+                    <span class="nav-icon">🌐</span>サイト確認
+                </a></li>
+            <li><a href="/admin/logout" class="logout-link">
+                    <span class="nav-icon">🚪</span>ログアウト
+                </a></li>
+        </ul>
+    </nav>
+
+    <!-- メインコンテンツエリア -->
+    <main class="admin-content">
+        <h1>お問い合わせ管理</h1>
+
+        <!-- お問い合わせ一覧 -->
+        <div class="inquiry-list" id="inquiryList">
+            <!-- お問い合わせ一覧がここに動的に表示されます -->
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.admin-hamburger');
+            const mobileNav = document.querySelector('.admin-nav-mobile');
+            const overlay = document.querySelector('.admin-overlay');
+            
+            function toggleMenu() {
+                hamburger.classList.toggle('active');
+                mobileNav.classList.toggle('active');
+                overlay.classList.toggle('active');
+                
+                // アクセシビリティ
+                const isOpen = hamburger.classList.contains('active');
+                hamburger.setAttribute('aria-label', isOpen ? 'メニューを閉じる' : 'メニューを開く');
+            }
+            
+            function closeMenu() {
+                hamburger.classList.remove('active');
+                mobileNav.classList.remove('active');
+                overlay.classList.remove('active');
+                hamburger.setAttribute('aria-label', 'メニューを開く');
+            }
+            
+            // ハンバーガーボタンのクリック
+            hamburger?.addEventListener('click', toggleMenu);
+            
+            // オーバーレイのクリック
+            overlay?.addEventListener('click', closeMenu);
+            
+            // ESCキーでメニューを閉じる
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeMenu();
+                }
             });
+        });
+
+        // お問い合わせ一覧の取得と表示
+        async function fetchInquiries() {
+            try {
+                const response = await fetch('/admin/api/inquiries', {
+                    headers: {
+                        'X-CSRF-Token': '<%= csrfToken %>'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('お問い合わせ一覧の取得に失敗しました。');
+                }
+                const inquiries = await response.json();
+                displayInquiries(inquiries);
+            } catch (error) {
+                console.error('Error fetching inquiries:', error);
+                alert('お問い合わせ一覧の取得に失敗しました。');
+            }
+        }
+
+        // お問い合わせ一覧の表示
+        function displayInquiries(inquiries) {
+            const inquiryList = document.getElementById('inquiryList');
+            inquiryList.innerHTML = '';
+
+            inquiries.forEach(inquiry => {
+                const inquiryElement = document.createElement('div');
+                inquiryElement.className = 'inquiry-item';
+                
+                // ステータスに応じたクラス名を設定
+                const statusClass = `status-${inquiry.status}`;
+                
+                inquiryElement.innerHTML = `
+                    <div class="inquiry-header">
+                        <div>
+                            <strong>${inquiry.name}</strong>
+                            <span class="ms-3">${inquiry.email}</span>
+                            <span class="ms-3">${inquiry.phone}</span>
+                        </div>
+                        <div>
+                            <select class="status-select" data-id="${inquiry.id}" onchange="updateStatus(this)">
+                                <option value="new" ${inquiry.status === 'new' ? 'selected' : ''}>新規</option>
+                                <option value="in-progress" ${inquiry.status === 'in-progress' ? 'selected' : ''}>対応中</option>
+                                <option value="completed" ${inquiry.status === 'completed' ? 'selected' : ''}>完了</option>
+                                <option value="cancelled" ${inquiry.status === 'cancelled' ? 'selected' : ''}>キャンセル</option>
+                            </select>
+                            <span class="inquiry-status ${statusClass}">${getStatusText(inquiry.status)}</span>
+                        </div>
+                    </div>
+                    <div class="inquiry-details">
+                        <p><strong>お問い合わせ種類：</strong>${getInquiryTypeText(inquiry.inquiryType)}</p>
+                        <p><strong>メッセージ：</strong>${inquiry.message || 'なし'}</p>
+                        ${displayAdditionalInfo(inquiry)}
+                        <p class="mt-3"><strong>受付日時：</strong>${new Date(inquiry.created_at).toLocaleString()}</p>
+                    </div>
+                `;
+                
+                inquiryList.appendChild(inquiryElement);
+            });
+        }
+
+        // ステータスの更新
+        async function updateStatus(selectElement) {
+            const inquiryId = selectElement.dataset.id;
+            const newStatus = selectElement.value;
             
-            if (!response.ok) {
-                throw new Error('ステータスの更新に失敗しました。');
+            try {
+                const response = await fetch(`/admin/api/inquiries/${inquiryId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '<%= csrfToken %>'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('ステータスの更新に失敗しました。');
+                }
+                
+                // 一覧を更新
+                fetchInquiries();
+            } catch (error) {
+                console.error('Error updating status:', error);
+                alert('ステータスの更新に失敗しました。');
+                // エラー時は一覧を再取得して表示を更新
+                fetchInquiries();
+            }
+        }
+
+        // ステータスの表示テキストを取得
+        function getStatusText(status) {
+            const statusMap = {
+                'new': '新規',
+                'in-progress': '対応中',
+                'completed': '完了',
+                'cancelled': 'キャンセル'
+            };
+            return statusMap[status] || status;
+        }
+
+        // お問い合わせ種類の表示テキストを取得
+        function getInquiryTypeText(type) {
+            const typeMap = {
+                'one-day-trial': '体験練習',
+                'join': '入部希望',
+                'media': '取材',
+                'other': 'その他'
+            };
+            return typeMap[type] || type;
+        }
+
+        // 追加情報の表示
+        function displayAdditionalInfo(inquiry) {
+            let html = '';
+            
+            if (inquiry.playerInfo) {
+                html += `
+                    <div class="player-info">
+                        <h4>選手情報</h4>
+                        <p><strong>学年：</strong>${inquiry.playerInfo.grade}</p>
+                        <p><strong>経験年数：</strong>${inquiry.playerInfo.experience}</p>
+                        <p><strong>ポジション：</strong>${inquiry.playerInfo.position || '未定'}</p>
+                        <p><strong>現在/以前の所属チーム：</strong>${inquiry.playerInfo.currentTeam || 'なし'}</p>
+                        <p><strong>希望日：</strong>${new Date(inquiry.playerInfo.preferredDate).toLocaleDateString()}</p>
+                    </div>
+                `;
             }
             
-            // 一覧を更新
-            fetchInquiries();
-        } catch (error) {
-            console.error('Error updating status:', error);
-            alert('ステータスの更新に失敗しました。');
-            // エラー時は一覧を再取得して表示を更新
-            fetchInquiries();
+            if (inquiry.mediaInfo) {
+                html += `
+                    <div class="media-info">
+                        <h4>取材情報</h4>
+                        <p><strong>媒体名：</strong>${inquiry.mediaInfo.mediaName}</p>
+                        <p><strong>媒体種類：</strong>${inquiry.mediaInfo.mediaType}</p>
+                        <p><strong>希望取材日：</strong>${inquiry.mediaInfo.preferredDate ? new Date(inquiry.mediaInfo.preferredDate).toLocaleDateString() : '未定'}</p>
+                    </div>
+                `;
+            }
+            
+            return html;
         }
-    }
 
-    // ステータスの表示テキストを取得
-    function getStatusText(status) {
-        const statusMap = {
-            'new': '新規',
-            'in-progress': '対応中',
-            'completed': '完了',
-            'cancelled': 'キャンセル'
-        };
-        return statusMap[status] || status;
-    }
+        // ページ読み込み時に一覧を取得
+        document.addEventListener('DOMContentLoaded', fetchInquiries);
+    </script>
+</body>
 
-    // お問い合わせ種類の表示テキストを取得
-    function getInquiryTypeText(type) {
-        const typeMap = {
-            'one-day-trial': '体験練習',
-            'join': '入部希望',
-            'media': '取材',
-            'other': 'その他'
-        };
-        return typeMap[type] || type;
-    }
-
-    // 追加情報の表示
-    function displayAdditionalInfo(inquiry) {
-        let html = '';
-        
-        if (inquiry.playerInfo) {
-            html += `
-                <div class="player-info">
-                    <h4>選手情報</h4>
-                    <p><strong>学年：</strong>${inquiry.playerInfo.grade}</p>
-                    <p><strong>経験年数：</strong>${inquiry.playerInfo.experience}</p>
-                    <p><strong>ポジション：</strong>${inquiry.playerInfo.position || '未定'}</p>
-                    <p><strong>現在/以前の所属チーム：</strong>${inquiry.playerInfo.currentTeam || 'なし'}</p>
-                    <p><strong>希望日：</strong>${new Date(inquiry.playerInfo.preferredDate).toLocaleDateString()}</p>
-                </div>
-            `;
-        }
-        
-        if (inquiry.mediaInfo) {
-            html += `
-                <div class="media-info">
-                    <h4>取材情報</h4>
-                    <p><strong>媒体名：</strong>${inquiry.mediaInfo.mediaName}</p>
-                    <p><strong>媒体種類：</strong>${inquiry.mediaInfo.mediaType}</p>
-                    <p><strong>希望取材日：</strong>${inquiry.mediaInfo.preferredDate ? new Date(inquiry.mediaInfo.preferredDate).toLocaleDateString() : '未定'}</p>
-                </div>
-            `;
-        }
-        
-        return html;
-    }
-
-    // ページ読み込み時に一覧を取得
-    document.addEventListener('DOMContentLoaded', fetchInquiries);
-</script>
-
-<%- include('../partials/admin-footer') %> 
+</html> 
