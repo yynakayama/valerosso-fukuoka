@@ -31,6 +31,10 @@ fs
     db[model.name] = model;
   });
 
+// Inquiryモデルのインポートと初期化
+const InquiryModel = require('./Inquiry');
+const Inquiry = InquiryModel(sequelize);
+
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
@@ -40,4 +44,10 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-module.exports = db;
+module.exports = {
+  sequelize,
+  Sequelize,
+  User: db.User,
+  News: db.News,
+  Inquiry
+};

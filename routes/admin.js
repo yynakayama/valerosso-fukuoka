@@ -406,4 +406,12 @@ router.get('/logout', (req, res) => {
   });
 });
 
+// お問い合わせ管理ページ
+router.get('/inquiries', requireAuth, requireAdmin, (req, res) => {
+  res.render('admin/inquiries', {
+    title: 'お問い合わせ管理',
+    user: req.user
+  });
+});
+
 module.exports = router;

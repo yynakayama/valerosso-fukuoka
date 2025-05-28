@@ -418,6 +418,7 @@
                 <li><a href="/admin/panel" class="current">ダッシュボード</a></li>
                 <li><a href="/admin/news">お知らせ管理</a></li>
                 <li><a href="/admin/news/create">新規作成</a></li>
+                <li><a href="/admin/inquiries">お問い合わせ管理</a></li>
                 <% if (locals.currentUser && currentUser.role === 'admin') { %>
                 <li><a href="/admin/users">ユーザー管理</a></li>
                 <% } %>
@@ -450,6 +451,9 @@
             <li><a href="/admin/news/create">
                     <span class="nav-icon">✏️</span>新規作成
                 </a></li>
+            <li><a href="/admin/inquiries">
+                    <span class="nav-icon">📝</span>お問い合わせ管理
+                </a></li>
             <% if (locals.currentUser && currentUser.role === 'admin') { %>
             <li><a href="/admin/users">
                     <span class="nav-icon">👥</span>ユーザー管理
@@ -479,6 +483,7 @@
                 <h2>クイックリンク</h2>
                 <p><a href="/admin/news/create" class="btn-admin">新規お知らせ作成</a></p>
                 <p><a href="/admin/news" class="btn-admin">お知らせ一覧</a></p>
+                <p><a href="/admin/inquiries" class="btn-admin">お問い合わせ管理</a></p>
             </div>
         </div>
 

@@ -1,0 +1,218 @@
+<%- include('../partials/admin-header') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- サイドバー -->
+        <%- include('../partials/admin-sidebar') %>
+
+        <!-- メインコンテンツ -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">お問い合わせ管理</h1>
+            </div>
+
+            <!-- お問い合わせ一覧 -->
+            <div class="inquiry-list" id="inquiryList">
+                <!-- お問い合わせ一覧がここに動的に表示されます -->
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- スタイル -->
+<style>
+    .inquiry-list {
+        margin: 20px 0;
+    }
+    .inquiry-item {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .inquiry-item:hover {
+        background-color: #f8f9fa;
+    }
+    .inquiry-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .inquiry-status {
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-size: 0.9em;
+    }
+    .status-new { background-color: #e3f2fd; color: #1976d2; }
+    .status-in-progress { background-color: #fff3e0; color: #f57c00; }
+    .status-completed { background-color: #e8f5e9; color: #388e3c; }
+    .status-cancelled { background-color: #ffebee; color: #d32f2f; }
+    .inquiry-details {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+    }
+    .status-select {
+        padding: 5px;
+        border-radius: 3px;
+        border: 1px solid #ddd;
+        margin-right: 10px;
+    }
+    .player-info, .media-info {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 3px;
+    }
+    .player-info h4, .media-info h4 {
+        margin-bottom: 10px;
+        color: #495057;
+    }
+</style>
+
+<!-- スクリプト -->
+<script>
+    // お問い合わせ一覧の取得と表示
+    async function fetchInquiries() {
+        try {
+            const response = await fetch('/api/inquiries');
+            if (!response.ok) {
+                throw new Error('お問い合わせ一覧の取得に失敗しました。');
+            }
+            const inquiries = await response.json();
+            displayInquiries(inquiries);
+        } catch (error) {
+            console.error('Error fetching inquiries:', error);
+            alert('お問い合わせ一覧の取得に失敗しました。');
+        }
+    }
+
+    // お問い合わせ一覧の表示
+    function displayInquiries(inquiries) {
+        const inquiryList = document.getElementById('inquiryList');
+        inquiryList.innerHTML = '';
+
+        inquiries.forEach(inquiry => {
+            const inquiryElement = document.createElement('div');
+            inquiryElement.className = 'inquiry-item';
+            
+            // ステータスに応じたクラス名を設定
+            const statusClass = `status-${inquiry.status}`;
+            
+            inquiryElement.innerHTML = `
+                <div class="inquiry-header">
+                    <div>
+                        <strong>${inquiry.name}</strong>
+                        <span class="ms-3">${inquiry.email}</span>
+                        <span class="ms-3">${inquiry.phone}</span>
+                    </div>
+                    <div>
+                        <select class="status-select" data-id="${inquiry._id}" onchange="updateStatus(this)">
+                            <option value="new" ${inquiry.status === 'new' ? 'selected' : ''}>新規</option>
+                            <option value="in-progress" ${inquiry.status === 'in-progress' ? 'selected' : ''}>対応中</option>
+                            <option value="completed" ${inquiry.status === 'completed' ? 'selected' : ''}>完了</option>
+                            <option value="cancelled" ${inquiry.status === 'cancelled' ? 'selected' : ''}>キャンセル</option>
+                        </select>
+                        <span class="inquiry-status ${statusClass}">${getStatusText(inquiry.status)}</span>
+                    </div>
+                </div>
+                <div class="inquiry-details">
+                    <p><strong>お問い合わせ種類：</strong>${getInquiryTypeText(inquiry.inquiryType)}</p>
+                    <p><strong>メッセージ：</strong>${inquiry.message || 'なし'}</p>
+                    ${displayAdditionalInfo(inquiry)}
+                    <p class="mt-3"><strong>受付日時：</strong>${new Date(inquiry.createdAt).toLocaleString()}</p>
+                </div>
+            `;
+            
+            inquiryList.appendChild(inquiryElement);
+        });
+    }
+
+    // ステータスの更新
+    async function updateStatus(selectElement) {
+        const inquiryId = selectElement.dataset.id;
+        const newStatus = selectElement.value;
+        
+        try {
+            const response = await fetch(`/api/inquiries/${inquiryId}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+            
+            if (!response.ok) {
+                throw new Error('ステータスの更新に失敗しました。');
+            }
+            
+            // 一覧を更新
+            fetchInquiries();
+        } catch (error) {
+            console.error('Error updating status:', error);
+            alert('ステータスの更新に失敗しました。');
+            // エラー時は一覧を再取得して表示を更新
+            fetchInquiries();
+        }
+    }
+
+    // ステータスの表示テキストを取得
+    function getStatusText(status) {
+        const statusMap = {
+            'new': '新規',
+            'in-progress': '対応中',
+            'completed': '完了',
+            'cancelled': 'キャンセル'
+        };
+        return statusMap[status] || status;
+    }
+
+    // お問い合わせ種類の表示テキストを取得
+    function getInquiryTypeText(type) {
+        const typeMap = {
+            'one-day-trial': '体験練習',
+            'join': '入部希望',
+            'media': '取材',
+            'other': 'その他'
+        };
+        return typeMap[type] || type;
+    }
+
+    // 追加情報の表示
+    function displayAdditionalInfo(inquiry) {
+        let html = '';
+        
+        if (inquiry.playerInfo) {
+            html += `
+                <div class="player-info">
+                    <h4>選手情報</h4>
+                    <p><strong>学年：</strong>${inquiry.playerInfo.grade}</p>
+                    <p><strong>経験年数：</strong>${inquiry.playerInfo.experience}</p>
+                    <p><strong>ポジション：</strong>${inquiry.playerInfo.position || '未定'}</p>
+                    <p><strong>現在/以前の所属チーム：</strong>${inquiry.playerInfo.currentTeam || 'なし'}</p>
+                    <p><strong>希望日：</strong>${new Date(inquiry.playerInfo.preferredDate).toLocaleDateString()}</p>
+                </div>
+            `;
+        }
+        
+        if (inquiry.mediaInfo) {
+            html += `
+                <div class="media-info">
+                    <h4>取材情報</h4>
+                    <p><strong>媒体名：</strong>${inquiry.mediaInfo.mediaName}</p>
+                    <p><strong>媒体種類：</strong>${inquiry.mediaInfo.mediaType}</p>
+                    <p><strong>希望取材日：</strong>${inquiry.mediaInfo.preferredDate ? new Date(inquiry.mediaInfo.preferredDate).toLocaleDateString() : '未定'}</p>
+                </div>
+            `;
+        }
+        
+        return html;
+    }
+
+    // ページ読み込み時に一覧を取得
+    document.addEventListener('DOMContentLoaded', fetchInquiries);
+</script>
+
+<%- include('../partials/admin-footer') %> 
