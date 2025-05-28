@@ -310,6 +310,86 @@ router.get('/users', requireAuth, requireAdmin, csrfProtection, async (req, res)
   }
 });
 
+// ユーザー新規作成フォーム
+router.get('/users/create', requireAuth, requireAdmin, csrfProtection, (req, res) => {
+  res.render('admin/user-form', {
+    user: null,
+    formAction: '/admin/users/create',
+    formTitle: '新規ユーザー作成',
+    csrfToken: req.csrfToken()
+  });
+});
+
+// ユーザー新規作成処理
+router.post('/users/create', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    const { username, full_name, password, role } = req.body;
+    if (!username || !password || !role) {
+      return res.render('admin/user-form', {
+        user: null,
+        formAction: '/admin/users/create',
+        formTitle: '新規ユーザー作成',
+        error: '全ての必須項目を入力してください',
+        csrfToken: req.csrfToken()
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.create({
+      username: username.trim(),
+      full_name: full_name ? full_name.trim() : null,
+      password: hashedPassword,
+      role
+    });
+    res.redirect('/admin/users');
+  } catch (error) {
+    res.render('admin/user-form', {
+      user: null,
+      formAction: '/admin/users/create',
+      formTitle: '新規ユーザー作成',
+      error: 'ユーザー作成中にエラーが発生しました',
+      csrfToken: req.csrfToken()
+    });
+  }
+});
+
+// ユーザー編集フォーム
+router.get('/users/edit/:id', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (!user) return res.status(404).send('ユーザーが見つかりません');
+  res.render('admin/user-form', {
+    user,
+    formAction: `/admin/users/edit/${user.id}`,
+    formTitle: 'ユーザー編集',
+    csrfToken: req.csrfToken()
+  });
+});
+
+// ユーザー編集処理
+router.post('/users/edit/:id', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    const { username, full_name, password, role } = req.body;
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(404).send('ユーザーが見つかりません');
+    user.username = username.trim();
+    user.full_name = full_name ? full_name.trim() : null;
+    user.role = role;
+    if (password) {
+      user.password = await bcrypt.hash(password, 10);
+    }
+    await user.save();
+    res.redirect('/admin/users');
+  } catch (error) {
+    const user = await User.findByPk(req.params.id);
+    res.render('admin/user-form', {
+      user,
+      formAction: `/admin/users/edit/${req.params.id}`,
+      formTitle: 'ユーザー編集',
+      error: 'ユーザー編集中にエラーが発生しました',
+      csrfToken: req.csrfToken()
+    });
+  }
+});
+
 // ログアウト処理
 router.get('/logout', (req, res) => {
   const userId = req.session.userId;
