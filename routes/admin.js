@@ -5,7 +5,8 @@ const csrf = require('csurf');     // CSRF保護ライブラリ
 const router = express.Router();
 
 // データベースモデルのインポート
-const { User, News } = require('../models');
+const db = require('../models');
+const { User, News, Inquiry } = db;
 
 // ミドルウェアのインポート
 const { requireAuth, requireNoAuth, requireAdmin } = require('../middleware/auth');
@@ -310,6 +311,86 @@ router.get('/users', requireAuth, requireAdmin, csrfProtection, async (req, res)
   }
 });
 
+// ユーザー新規作成フォーム
+router.get('/users/create', requireAuth, requireAdmin, csrfProtection, (req, res) => {
+  res.render('admin/user-form', {
+    user: null,
+    formAction: '/admin/users/create',
+    formTitle: '新規ユーザー作成',
+    csrfToken: req.csrfToken()
+  });
+});
+
+// ユーザー新規作成処理
+router.post('/users/create', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    const { username, full_name, password, role } = req.body;
+    if (!username || !password || !role) {
+      return res.render('admin/user-form', {
+        user: null,
+        formAction: '/admin/users/create',
+        formTitle: '新規ユーザー作成',
+        error: '全ての必須項目を入力してください',
+        csrfToken: req.csrfToken()
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.create({
+      username: username.trim(),
+      full_name: full_name ? full_name.trim() : null,
+      password: hashedPassword,
+      role
+    });
+    res.redirect('/admin/users');
+  } catch (error) {
+    res.render('admin/user-form', {
+      user: null,
+      formAction: '/admin/users/create',
+      formTitle: '新規ユーザー作成',
+      error: 'ユーザー作成中にエラーが発生しました',
+      csrfToken: req.csrfToken()
+    });
+  }
+});
+
+// ユーザー編集フォーム
+router.get('/users/edit/:id', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (!user) return res.status(404).send('ユーザーが見つかりません');
+  res.render('admin/user-form', {
+    user,
+    formAction: `/admin/users/edit/${user.id}`,
+    formTitle: 'ユーザー編集',
+    csrfToken: req.csrfToken()
+  });
+});
+
+// ユーザー編集処理
+router.post('/users/edit/:id', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    const { username, full_name, password, role } = req.body;
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(404).send('ユーザーが見つかりません');
+    user.username = username.trim();
+    user.full_name = full_name ? full_name.trim() : null;
+    user.role = role;
+    if (password) {
+      user.password = await bcrypt.hash(password, 10);
+    }
+    await user.save();
+    res.redirect('/admin/users');
+  } catch (error) {
+    const user = await User.findByPk(req.params.id);
+    res.render('admin/user-form', {
+      user,
+      formAction: `/admin/users/edit/${req.params.id}`,
+      formTitle: 'ユーザー編集',
+      error: 'ユーザー編集中にエラーが発生しました',
+      csrfToken: req.csrfToken()
+    });
+  }
+});
+
 // ログアウト処理
 router.get('/logout', (req, res) => {
   const userId = req.session.userId;
@@ -324,6 +405,72 @@ router.get('/logout', (req, res) => {
     console.log(`User ${userId} logged out successfully`);
     res.redirect('/admin/login');
   });
+});
+
+// お問い合わせ管理ページ
+router.get('/inquiries', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    res.render('admin/inquiries', {
+      title: 'お問い合わせ管理',
+      currentUser: req.user,
+      csrfToken: req.csrfToken()
+    });
+  } catch (error) {
+    console.error('Inquiries page error:', error);
+    res.status(500).send('お問い合わせ管理ページの読み込み中にエラーが発生しました');
+  }
+});
+
+// お問い合わせデータ取得API
+router.get('/api/inquiries', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const inquiries = await db.Inquiry.findAll({
+      order: [['created_At', 'DESC']]
+    });
+    res.json(inquiries);
+  } catch (error) {
+    console.error('Error fetching inquiries:', error);
+    res.status(500).json({ error: 'お問い合わせ一覧の取得に失敗しました。' });
+  }
+});
+
+// お問い合わせステータス更新API
+router.patch('/api/inquiries/:id/status', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const inquiry = await Inquiry.findByPk(id);
+    if (!inquiry) {
+      return res.status(404).json({ error: 'お問い合わせが見つかりません' });
+    }
+
+    await inquiry.update({ status });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating inquiry status:', error);
+    res.status(500).json({ error: 'ステータスの更新に失敗しました' });
+  }
+});
+
+// お問い合わせ削除API
+router.delete('/api/inquiries/:id', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const inquiry = await Inquiry.findByPk(id);
+    
+    if (!inquiry) {
+      console.error(`Inquiry not found: ID ${id}`);
+      return res.status(404).json({ error: 'お問い合わせが見つかりません' });
+    }
+
+    await inquiry.destroy();
+    console.log(`Inquiry deleted successfully: ID ${id}`);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting inquiry:', error);
+    res.status(500).json({ error: 'お問い合わせの削除に失敗しました' });
+  }
 });
 
 module.exports = router;

@@ -51,20 +51,62 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // フォーム送信時のイベントリスナー
-    contactForm.addEventListener('submit', function(event) {
+    contactForm.addEventListener('submit', async function(event) {
         event.preventDefault(); // デフォルトの送信動作をキャンセル
         
         // バリデーションを実行
         if (validateForm()) {
-            // 成功時の処理（ここではアラートを表示）
-            alert('お問い合わせありがとうございます。担当者より折り返しご連絡いたします。');
-            
-            // フォームをリセット
-            contactForm.reset();
-            
-            // 条件付きフィールドを非表示に
-            playerInfoFields.classList.add('hidden');
-            mediaInfoFields.classList.add('hidden');
+            try {
+                // フォームデータの収集
+                const formData = {
+                    name: document.getElementById('name').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    inquiryType: inquiryTypeSelect.value,
+                    message: document.getElementById('message').value.trim()
+                };
+
+                // お問い合わせ種類に応じて追加情報を設定
+                if (formData.inquiryType === 'one-day-trial' || formData.inquiryType === 'join') {
+                    formData.grade = document.getElementById('grade').value;
+                    formData.experience = document.getElementById('experience').value;
+                    formData.position = document.getElementById('position').value;
+                    formData.currentTeam = document.getElementById('current-team').value;
+                    formData.preferredPlayerDate = document.getElementById('preferred-player-date').value;
+                } else if (formData.inquiryType === 'media') {
+                    formData.mediaName = document.getElementById('media-name').value;
+                    formData.mediaType = document.getElementById('media-type').value;
+                    formData.preferredDate = document.getElementById('preferred-date').value;
+                }
+
+                // APIにデータを送信
+                const response = await fetch('/api/inquiries', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // 成功時の処理
+                    alert('お問い合わせありがとうございます。担当者より折り返しご連絡いたします。');
+                    
+                    // フォームをリセット
+                    contactForm.reset();
+                    
+                    // 条件付きフィールドを非表示に
+                    playerInfoFields.classList.add('hidden');
+                    mediaInfoFields.classList.add('hidden');
+                } else {
+                    throw new Error(result.message || '送信に失敗しました。');
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('申し訳ありません。送信に失敗しました。しばらく経ってから再度お試しください。');
+            }
         }
     });
     
@@ -102,8 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const name = document.getElementById('name').value.trim();
         const email = document.getElementById('email').value.trim();
         const phone = document.getElementById('phone').value.trim();
-        // メッセージ欄は任意なのでバリデーションから除外
-        // const message = document.getElementById('message').value.trim();
         const inquiryType = inquiryTypeSelect.value;
         
         // 基本的な空チェック（メッセージは除外）

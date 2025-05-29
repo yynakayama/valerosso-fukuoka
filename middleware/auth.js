@@ -210,6 +210,53 @@ const requireAdminAPI = async (req, res, next) => {
   }
 };
 
+// ログイン済みユーザーのみアクセス可能
+const isAuthenticated = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    return next();
+  }
+  res.status(401).json({
+    success: false,
+    message: '認証が必要です'
+  });
+};
+
+// 管理者のみアクセス可能
+const isAdmin = async (req, res, next) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.status(401).json({
+        success: false,
+        message: '認証が必要です'
+      });
+    }
+
+    const user = await User.findByPk(req.session.userId);
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: '管理者権限が必要です'
+      });
+    }
+
+    next();
+  } catch (error) {
+    console.error('Admin check error:', error);
+    res.status(500).json({
+      success: false,
+      message: '認証チェック中にエラーが発生しました'
+    });
+  }
+};
+
+// 未ログインユーザーのみアクセス可能（ログインページなど）
+const isNotAuthenticated = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    return res.redirect('/admin/panel');
+  }
+  next();
+};
+
 module.exports = {
   requireAuth,        // 認証が必要なページ用
   requireNoAuth,      // 未認証状態が必要なページ用
@@ -217,5 +264,8 @@ module.exports = {
   requireEditor,      // 編集者権限が必要なページ用
   setUserInfo,        // ユーザー情報をテンプレートに設定
   requireAuthAPI,     // API用認証チェック
-  requireAdminAPI     // API用管理者権限チェック
+  requireAdminAPI,    // API用管理者権限チェック
+  isAuthenticated,
+  isAdmin,
+  isNotAuthenticated
 };

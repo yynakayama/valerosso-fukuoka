@@ -1,4 +1,4 @@
-// config/session.js - セッション管理の設定
+// config/session.js - セッション管理の設定（完全修正版）
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 
@@ -35,6 +35,14 @@ const sessionStoreOptions = {
 // セッションストアの作成
 const sessionStore = new MySQLStore(sessionStoreOptions);
 
+// クッキー設定の決定
+const cookieSettings = {
+  secure: process.env.NODE_ENV === 'production',   // 本番環境ではHTTPS必須
+  httpOnly: true,                                   // JavaScriptからのアクセスを防止（XSS対策）
+  maxAge: 24 * 60 * 60 * 1000,                    // クッキーの有効期限（24時間）
+  sameSite: 'strict'                               // CSRF攻撃対策
+};
+
 // セッション設定オブジェクト
 const sessionConfig = session({
   key: 'valerosso.session',                           // セッションキーの名前
@@ -43,12 +51,7 @@ const sessionConfig = session({
   resave: false,                                      // セッションが変更されていなくても保存しない
   saveUninitialized: false,                           // 初期化されていないセッションは保存しない
   rolling: true,                                      // アクセスするたびにセッション期限をリセット
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',   // 本番環境ではHTTPS必須
-    httpOnly: true,                                   // JavaScriptからのアクセスを防止（XSS対策）
-    maxAge: 24 * 60 * 60 * 1000,                    // クッキーの有効期限（24時間）
-    sameSite: 'strict'                               // CSRF攻撃対策
-  },
+  cookie: cookieSettings,                             // クッキー設定を適用
   name: 'vso.sid'                                     // セッションクッキーの名前
 });
 
@@ -63,8 +66,6 @@ sessionStore.on('error', (error) => {
 
 // 開発環境でのセッション詳細ログ
 if (process.env.NODE_ENV === 'development') {
-  sessionConfig.cookie.secure = false; // 開発環境ではHTTPでも動作
-  
   // セッション作成時のログ
   const originalGenerate = session.Session.prototype.generate;
   session.Session.prototype.generate = function() {
@@ -72,6 +73,9 @@ if (process.env.NODE_ENV === 'development') {
     console.log('新しいセッションが作成されました:', this.id);
     return result;
   };
+  
+  console.log('開発モードでセッション設定を初期化しました');
+  console.log('Cookie secure:', cookieSettings.secure);
 }
 
 module.exports = sessionConfig;

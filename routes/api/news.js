@@ -1,20 +1,9 @@
-// routes/api.js - API関連のルート定義
 const express = require('express');
-const router = express.Router(); // Expressのルーター機能を使用
-
-// データベースモデルのインポート
-const { User, News } = require('../models');
-
-// テスト用APIエンドポイント - サーバーが正常に動作しているか確認するため
-router.get('/test', (req, res) => {
-  res.json({ 
-    message: 'APIが正常に動作しています',
-    timestamp: new Date().toISOString()
-  });
-});
+const router = express.Router();
+const { User, News } = require('../../models');
 
 // ニュース一覧を取得するAPIエンドポイント
-router.get('/news', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     // クエリパラメータから制限数を取得（デフォルト：無制限）
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
@@ -26,12 +15,12 @@ router.get('/news', async (req, res) => {
         'id', 
         'title', 
         'content', 
-        'instagram_embed_code', // インスタグラム埋め込みコード
+        'instagram_embed_code',
         'created_at'
       ], 
       include: [{
         model: User,
-        as: 'author', // アソシエーション名
+        as: 'author',
         attributes: ['username', 'full_name']
       }]
     };
@@ -54,7 +43,7 @@ router.get('/news', async (req, res) => {
 });
 
 // 特定のニュース記事を取得するAPIエンドポイント
-router.get('/news/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const newsId = parseInt(req.params.id);
     
@@ -69,7 +58,7 @@ router.get('/news/:id', async (req, res) => {
         'id', 
         'title', 
         'content', 
-        'instagram_embed_code', // インスタグラム埋め込みコード
+        'instagram_embed_code',
         'created_at'
       ], 
       include: [{
@@ -94,7 +83,7 @@ router.get('/news/:id', async (req, res) => {
 });
 
 // 新規ニュース投稿APIエンドポイント（管理画面用）
-router.post('/news', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { title, content, instagram_embed_code } = req.body;
     
@@ -126,7 +115,7 @@ router.post('/news', async (req, res) => {
 });
 
 // ニュース記事を更新するAPIエンドポイント
-router.put('/news/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const newsId = parseInt(req.params.id);
     const { title, content, instagram_embed_code } = req.body;
@@ -165,7 +154,7 @@ router.put('/news/:id', async (req, res) => {
 });
 
 // ニュース記事を削除するAPIエンドポイント
-router.delete('/news/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const newsId = parseInt(req.params.id);
     
@@ -195,4 +184,4 @@ router.delete('/news/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = router; 
