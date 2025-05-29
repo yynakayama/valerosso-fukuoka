@@ -329,6 +329,75 @@
                 padding: 10px 15px;
             }
         }
+        
+        /* 対応完了ボタン */
+        .complete-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .complete-btn:hover {
+            background-color: #218838;
+        }
+        
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .modal-btn.confirm {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .modal-btn.cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .modal-btn:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 
@@ -411,6 +480,18 @@
         </div>
     </main>
 
+    <!-- モーダル -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3>確認</h3>
+            <p>このお問い合わせを完了として処理しますか？</p>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeModal()">キャンセル</button>
+                <button class="modal-btn confirm" onclick="confirmComplete()">完了</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const hamburger = document.querySelector('.admin-hamburger');
@@ -487,13 +568,7 @@
                             <span class="ms-3">${inquiry.phone}</span>
                         </div>
                         <div>
-                            <select class="status-select" data-id="${inquiry.id}" onchange="updateStatus(this)">
-                                <option value="new" ${inquiry.status === 'new' ? 'selected' : ''}>新規</option>
-                                <option value="in-progress" ${inquiry.status === 'in-progress' ? 'selected' : ''}>対応中</option>
-                                <option value="completed" ${inquiry.status === 'completed' ? 'selected' : ''}>完了</option>
-                                <option value="cancelled" ${inquiry.status === 'cancelled' ? 'selected' : ''}>キャンセル</option>
-                            </select>
-                            <span class="inquiry-status ${statusClass}">${getStatusText(inquiry.status)}</span>
+                            <button class="complete-btn" onclick="completeInquiry(${inquiry.id})">対応完了</button>
                         </div>
                     </div>
                     <div class="inquiry-details">
@@ -506,46 +581,6 @@
                 
                 inquiryList.appendChild(inquiryElement);
             });
-        }
-
-        // ステータスの更新
-        async function updateStatus(selectElement) {
-            const inquiryId = selectElement.dataset.id;
-            const newStatus = selectElement.value;
-            
-            try {
-                const response = await fetch(`/admin/api/inquiries/${inquiryId}/status`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': '<%= csrfToken %>'
-                    },
-                    body: JSON.stringify({ status: newStatus })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('ステータスの更新に失敗しました。');
-                }
-                
-                // 一覧を更新
-                fetchInquiries();
-            } catch (error) {
-                console.error('Error updating status:', error);
-                alert('ステータスの更新に失敗しました。');
-                // エラー時は一覧を再取得して表示を更新
-                fetchInquiries();
-            }
-        }
-
-        // ステータスの表示テキストを取得
-        function getStatusText(status) {
-            const statusMap = {
-                'new': '新規',
-                'in-progress': '対応中',
-                'completed': '完了',
-                'cancelled': 'キャンセル'
-            };
-            return statusMap[status] || status;
         }
 
         // お問い合わせ種類の表示テキストを取得
@@ -588,6 +623,52 @@
             }
             
             return html;
+        }
+
+        // 対応完了ボタンのクリック
+        function completeInquiry(inquiryId) {
+            // モーダルを表示
+            const modal = document.getElementById('confirmModal');
+            modal.style.display = 'block';
+            
+            // 完了ボタンのクリックイベントを設定
+            window.confirmComplete = async function() {
+                try {
+                    const response = await fetch(`/admin/api/inquiries/${inquiryId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-Token': '<%= csrfToken %>'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('お問い合わせの完了処理に失敗しました。');
+                    }
+                    
+                    // モーダルを閉じる
+                    closeModal();
+                    
+                    // 一覧を更新
+                    fetchInquiries();
+                } catch (error) {
+                    console.error('Error completing inquiry:', error);
+                    alert('お問い合わせの完了処理に失敗しました。');
+                }
+            };
+        }
+        
+        // モーダルを閉じる
+        function closeModal() {
+            const modal = document.getElementById('confirmModal');
+            modal.style.display = 'none';
+        }
+        
+        // モーダルの外側をクリックしたら閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirmModal');
+            if (event.target === modal) {
+                closeModal();
+            }
         }
 
         // ページ読み込み時に一覧を取得

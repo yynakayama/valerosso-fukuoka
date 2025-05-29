@@ -424,13 +424,13 @@ router.get('/inquiries', requireAuth, requireAdmin, csrfProtection, async (req, 
 // お問い合わせデータ取得API
 router.get('/api/inquiries', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const inquiries = await Inquiry.findAll({
-      order: [['created_at', 'DESC']]
+    const inquiries = await db.Inquiry.findAll({
+      order: [['created_At', 'DESC']]
     });
     res.json(inquiries);
   } catch (error) {
     console.error('Error fetching inquiries:', error);
-    res.status(500).json({ error: 'お問い合わせデータの取得に失敗しました' });
+    res.status(500).json({ error: 'お問い合わせ一覧の取得に失敗しました。' });
   }
 });
 
@@ -450,6 +450,26 @@ router.patch('/api/inquiries/:id/status', requireAuth, requireAdmin, async (req,
   } catch (error) {
     console.error('Error updating inquiry status:', error);
     res.status(500).json({ error: 'ステータスの更新に失敗しました' });
+  }
+});
+
+// お問い合わせ削除API
+router.delete('/api/inquiries/:id', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const inquiry = await Inquiry.findByPk(id);
+    
+    if (!inquiry) {
+      console.error(`Inquiry not found: ID ${id}`);
+      return res.status(404).json({ error: 'お問い合わせが見つかりません' });
+    }
+
+    await inquiry.destroy();
+    console.log(`Inquiry deleted successfully: ID ${id}`);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting inquiry:', error);
+    res.status(500).json({ error: 'お問い合わせの削除に失敗しました' });
   }
 });
 

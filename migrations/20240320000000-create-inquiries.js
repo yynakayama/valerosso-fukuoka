@@ -20,7 +20,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      inquiryType: {
+      inquiry_type: {
         type: Sequelize.ENUM('one-day-trial', 'join', 'media', 'other'),
         allowNull: false
       },
@@ -28,11 +28,11 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true
       },
-      playerInfo: {
+      player_info: {
         type: Sequelize.JSON,
         allowNull: true
       },
-      mediaInfo: {
+      media_info: {
         type: Sequelize.JSON,
         allowNull: true
       },

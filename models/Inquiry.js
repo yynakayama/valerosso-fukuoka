@@ -42,8 +42,7 @@ module.exports = (sequelize) => {
   }, {
     tableName: 'inquiries',
     timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    underscored: true
   });
 
   return Inquiry;
