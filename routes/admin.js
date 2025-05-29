@@ -425,9 +425,26 @@ router.get('/inquiries', requireAuth, requireAdmin, csrfProtection, async (req, 
 router.get('/api/inquiries', requireAuth, requireAdmin, async (req, res) => {
   try {
     const inquiries = await db.Inquiry.findAll({
-      order: [['created_At', 'DESC']]
+      order: [['created_at', 'DESC']],
+      raw: true // 生のデータを取得
     });
-    res.json(inquiries);
+    
+    // 日付をISO文字列に変換
+    const formattedInquiries = inquiries.map(inquiry => ({
+      id: inquiry.id,
+      name: inquiry.name,
+      email: inquiry.email,
+      phone: inquiry.phone,
+      inquiry_type: inquiry.inquiry_type,
+      message: inquiry.message,
+      player_info: inquiry.player_info,
+      media_info: inquiry.media_info,
+      status: inquiry.status,
+      created_at: inquiry.created_at ? inquiry.created_at.toISOString() : null,
+      updated_at: inquiry.updated_at ? inquiry.updated_at.toISOString() : null
+    }));
+    
+    res.json(formattedInquiries);
   } catch (error) {
     console.error('Error fetching inquiries:', error);
     res.status(500).json({ error: 'お問い合わせ一覧の取得に失敗しました。' });

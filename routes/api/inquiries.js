@@ -6,17 +6,20 @@ const { isAuthenticated, isAdmin } = require('../../middleware/auth');
 // お問い合わせの新規作成
 router.post('/', async (req, res) => {
   try {
+    const now = new Date();
     const inquiryData = {
       name: req.body.name,
       email: req.body.email,
       phone: req.body.phone,
-      inquiryType: req.body.inquiryType,
-      message: req.body.message
+      inquiry_type: req.body.inquiryType,
+      message: req.body.message,
+      created_at: now,
+      updated_at: now
     };
 
     // お問い合わせ種類に応じて追加情報を設定
     if (req.body.inquiryType === 'one-day-trial' || req.body.inquiryType === 'join') {
-      inquiryData.playerInfo = {
+      inquiryData.player_info = {
         grade: req.body.grade,
         experience: req.body.experience,
         position: req.body.position,
@@ -24,14 +27,16 @@ router.post('/', async (req, res) => {
         preferredDate: req.body.preferredPlayerDate
       };
     } else if (req.body.inquiryType === 'media') {
-      inquiryData.mediaInfo = {
+      inquiryData.media_info = {
         mediaName: req.body.mediaName,
         mediaType: req.body.mediaType,
         preferredDate: req.body.preferredDate
       };
     }
 
+    console.log('Creating inquiry with data:', inquiryData);
     const inquiry = await Inquiry.create(inquiryData);
+    console.log('Created inquiry:', inquiry.toJSON());
 
     res.status(201).json({
       success: true,

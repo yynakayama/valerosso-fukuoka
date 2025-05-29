@@ -31,6 +31,8 @@ services:
       - MYSQL_DATABASE=valerosso
       - MYSQL_USER=valerosso_user
       - MYSQL_PASSWORD=valerosso_password
+      - TZ=Asia/Tokyo
+    command: --default-time-zone='+09:00'
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:

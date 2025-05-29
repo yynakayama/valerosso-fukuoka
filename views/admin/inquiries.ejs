@@ -420,8 +420,8 @@
                 <li><a href="/admin/panel">ダッシュボード</a></li>
                 <li><a href="/admin/news">お知らせ管理</a></li>
                 <li><a href="/admin/news/create">新規作成</a></li>
-                <li><a href="/admin/inquiries" class="current">お問い合わせ管理</a></li>
                 <% if (locals.currentUser && currentUser.role === 'admin') { %>
+                <li><a href="/admin/inquiries" class="current">お問い合わせ管理</a></li>
                 <li><a href="/admin/users">ユーザー管理</a></li>
                 <% } %>
                 <li><a href="/" target="_blank">サイト確認</a></li>
@@ -453,10 +453,10 @@
             <li><a href="/admin/news/create">
                     <span class="nav-icon">✏️</span>新規作成
                 </a></li>
+            <% if (locals.currentUser && currentUser.role === 'admin') { %>
             <li><a href="/admin/inquiries" class="current">
                     <span class="nav-icon">📝</span>お問い合わせ管理
                 </a></li>
-            <% if (locals.currentUser && currentUser.role === 'admin') { %>
             <li><a href="/admin/users">
                     <span class="nav-icon">👥</span>ユーザー管理
                 </a></li>
@@ -554,6 +554,12 @@
             inquiryList.innerHTML = '';
 
             inquiries.forEach(inquiry => {
+                console.log('Frontend processing inquiry:', inquiry);
+                console.log('Created at value:', inquiry.created_at);
+                const date = new Date(inquiry.created_at);
+                console.log('Date object:', date);
+                console.log('Formatted date:', date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+                
                 const inquiryElement = document.createElement('div');
                 inquiryElement.className = 'inquiry-item';
                 
@@ -572,10 +578,10 @@
                         </div>
                     </div>
                     <div class="inquiry-details">
-                        <p><strong>お問い合わせ種類：</strong>${getInquiryTypeText(inquiry.inquiryType)}</p>
+                        <p><strong>お問い合わせ種類：</strong>${getInquiryTypeText(inquiry.inquiry_type)}</p>
                         <p><strong>メッセージ：</strong>${inquiry.message || 'なし'}</p>
                         ${displayAdditionalInfo(inquiry)}
-                        <p class="mt-3"><strong>受付日時：</strong>${new Date(inquiry.created_at).toLocaleString()}</p>
+                        <p class="mt-3"><strong>受付日時：</strong>${inquiry.created_at ? new Date(inquiry.created_at).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }) : '日付不明'}</p>
                     </div>
                 `;
                 
@@ -598,26 +604,26 @@
         function displayAdditionalInfo(inquiry) {
             let html = '';
             
-            if (inquiry.playerInfo) {
+            if (inquiry.player_info) {
                 html += `
                     <div class="player-info">
                         <h4>選手情報</h4>
-                        <p><strong>学年：</strong>${inquiry.playerInfo.grade}</p>
-                        <p><strong>経験年数：</strong>${inquiry.playerInfo.experience}</p>
-                        <p><strong>ポジション：</strong>${inquiry.playerInfo.position || '未定'}</p>
-                        <p><strong>現在/以前の所属チーム：</strong>${inquiry.playerInfo.currentTeam || 'なし'}</p>
-                        <p><strong>希望日：</strong>${new Date(inquiry.playerInfo.preferredDate).toLocaleDateString()}</p>
+                        <p><strong>学年：</strong>${inquiry.player_info.grade}</p>
+                        <p><strong>経験年数：</strong>${inquiry.player_info.experience}</p>
+                        <p><strong>ポジション：</strong>${inquiry.player_info.position || '未定'}</p>
+                        <p><strong>現在/以前の所属チーム：</strong>${inquiry.player_info.currentTeam || 'なし'}</p>
+                        <p><strong>希望日：</strong>${new Date(inquiry.player_info.preferredDate).toLocaleDateString()}</p>
                     </div>
                 `;
             }
             
-            if (inquiry.mediaInfo) {
+            if (inquiry.media_info) {
                 html += `
                     <div class="media-info">
                         <h4>取材情報</h4>
-                        <p><strong>媒体名：</strong>${inquiry.mediaInfo.mediaName}</p>
-                        <p><strong>媒体種類：</strong>${inquiry.mediaInfo.mediaType}</p>
-                        <p><strong>希望取材日：</strong>${inquiry.mediaInfo.preferredDate ? new Date(inquiry.mediaInfo.preferredDate).toLocaleDateString() : '未定'}</p>
+                        <p><strong>媒体名：</strong>${inquiry.media_info.mediaName}</p>
+                        <p><strong>媒体種類：</strong>${inquiry.media_info.mediaType}</p>
+                        <p><strong>希望取材日：</strong>${inquiry.media_info.preferredDate ? new Date(inquiry.media_info.preferredDate).toLocaleDateString() : '未定'}</p>
                     </div>
                 `;
             }
