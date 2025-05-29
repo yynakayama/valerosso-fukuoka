@@ -19,30 +19,45 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    inquiryType: {
+    inquiry_type: {
       type: DataTypes.ENUM('one-day-trial', 'join', 'media', 'other'),
-      allowNull: false
+      allowNull: false,
+      field: 'inquiry_type'
     },
     message: {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    playerInfo: {
+    player_info: {
       type: DataTypes.JSON,
-      allowNull: true
+      allowNull: true,
+      field: 'player_info'
     },
-    mediaInfo: {
+    media_info: {
       type: DataTypes.JSON,
-      allowNull: true
+      allowNull: true,
+      field: 'media_info'
     },
     status: {
       type: DataTypes.ENUM('new', 'in-progress', 'completed', 'cancelled'),
       defaultValue: 'new'
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   }, {
     tableName: 'inquiries',
     timestamps: true,
-    underscored: true
+    underscored: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   });
 
   return Inquiry;

@@ -15,6 +15,7 @@ module.exports = {
       acquire: 30000,
       idle: 10000
     },
+    timezone: '+09:00',
     logging: console.log
   },
   test: {
