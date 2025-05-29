@@ -98,6 +98,7 @@
                 <li><a href="/admin/news">お知らせ管理</a></li>
                 <li><a href="/admin/news/create">新規作成</a></li>
                 <% if (locals.currentUser && currentUser.role === 'admin') { %>
+                <li><a href="/admin/inquiries">お問い合わせ管理</a></li>
                 <li><a href="/admin/users" class="current">ユーザー管理</a></li>
                 <% } %>
                 <li><a href="/" target="_blank">サイト確認</a></li>
@@ -130,6 +131,9 @@
                     <span class="nav-icon">✏️</span>新規作成
                 </a></li>
             <% if (locals.currentUser && currentUser.role === 'admin') { %>
+            <li><a href="/admin/inquiries">
+                    <span class="nav-icon">📝</span>お問い合わせ管理
+                </a></li>
             <li><a href="/admin/users" class="current">
                     <span class="nav-icon">👥</span>ユーザー管理
                 </a></li>
