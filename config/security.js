@@ -16,14 +16,15 @@ const securityHeaders = (req, res, next) => {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
   
-  // Content Security Policy（基本版）
+  // Content Security Policy（修正版）
   const csp = [
     "default-src 'self'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "script-src 'self' 'unsafe-inline' https://www.instagram.com https://platform.instagram.com",
     "frame-src 'self' https://www.instagram.com",
-    "img-src 'self' data: https: https://scontent.cdninstagram.com https://scontent-*.cdninstagram.com",
+    // 修正：ワイルドカードの位置を正しく設定
+    "img-src 'self' data: https: https://scontent.cdninstagram.com https://*.cdninstagram.com",
     "connect-src 'self' https://www.instagram.com https://graph.instagram.com"
   ].join('; ');
   

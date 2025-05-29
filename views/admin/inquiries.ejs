@@ -398,6 +398,34 @@
         .modal-btn:hover {
             opacity: 0.9;
         }
+
+        /* お問い合わせ一覧のスタイルを追加 */
+        .inquiry-contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .contact-details {
+            display: flex;
+            gap: 15px;
+            color: #666;
+        }
+
+        .contact-email, .contact-phone {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 767px) {
+            .contact-details {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
     </style>
 </head>
 
@@ -568,10 +596,12 @@
                 
                 inquiryElement.innerHTML = `
                     <div class="inquiry-header">
-                        <div>
-                            <strong>${inquiry.name}</strong>
-                            <span class="ms-3">${inquiry.email}</span>
-                            <span class="ms-3">${inquiry.phone}</span>
+                        <div class="inquiry-contact-info">
+                            <div class="contact-name">${inquiry.name}</div>
+                            <div class="contact-details">
+                                <span class="contact-email">${inquiry.email}</span>
+                                <span class="contact-phone">${inquiry.phone}</span>
+                            </div>
                         </div>
                         <div>
                             <button class="complete-btn" onclick="completeInquiry(${inquiry.id})">対応完了</button>
