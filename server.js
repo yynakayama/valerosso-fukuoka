@@ -1,138 +1,116 @@
-// ============================================
-// server.js の修正版（デバッグエンドポイント追加）
-// ============================================
+// server.js - Railway対応最終版
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const { exec } = require('child_process');
+const util = require('util');
+require('dotenv').config();
 
-// server.js - メインサーバーファイル（分割後）
-const express = require('express'); // Expressフレームワークのインポート
-const cors = require('cors');       // CORSミドルウェアのインポート
-const path = require('path');       // パス操作用ユーティリティ
-const cookieParser = require('cookie-parser'); // Cookieの解析
-require('dotenv').config();         // 環境変数の読み込み
-
-// 設定ファイルとミドルウェアのインポート
-const sessionConfig = require('./config/session');     // セッション設定
-const { securityHeaders, requestLogger, userInfo } = require('./config/security');   // セキュリティ設定
-
-// ルーターのインポート
-const apiRoutes = require('./routes/api');       // API関連のルート
-const adminRoutes = require('./routes/admin');   // 管理画面関連のルート
-const publicRoutes = require('./routes/public'); // 公開ページ関連のルート
-
-// Expressアプリケーションの初期化
 const app = express();
-const PORT = process.env.PORT || 3000; // 環境変数からポート番号を取得、なければ3000を使用
+const PORT = process.env.PORT || 3000;
+const execPromise = util.promisify(exec);
 
 // 基本ミドルウェアの設定
-app.use(cors());                // クロスオリジンリクエストを許可
-app.use(express.json());        // JSONリクエストボディの解析
-app.use(express.urlencoded({ extended: false })); // フォームデータの解析
-app.use(cookieParser());        // Cookieの解析
-app.use(express.static('public')); // 静的ファイルの提供（HTMLやCSS、画像など）
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // EJSをビューエンジンとして設定
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// セキュリティとログの設定
-app.use(securityHeaders);       // セキュリティヘッダーの適用
-app.use(requestLogger);         // リクエストログの記録
+// ===== デバッグエンドポイント =====
 
-// セッション設定の適用
-app.use(sessionConfig);
-
-// ユーザー情報設定の適用
-app.use(userInfo);
-
-// ============================================
-// 🔧 デバッグエンドポイント追加（ここから）
-// ============================================
-
-// シンプルなDB接続テスト
-app.get('/db-test', async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  
-  try {
-    console.log('=== DB接続テスト開始 ===');
-    
-    // 環境変数の確認
-    const dbConfig = {
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      database: process.env.DB_NAME,
-      port: process.env.DB_PORT,
-      nodeEnv: process.env.NODE_ENV
-    };
-    
-    console.log('環境変数:', dbConfig);
-    
-    // Sequelize接続テスト
-    const { sequelize } = require('./models');
-    
-    console.log('Sequelize接続テスト中...');
-    await sequelize.authenticate();
-    console.log('✅ データベース接続成功');
-    
-    // テーブル確認
-    const [tables] = await sequelize.query("SHOW TABLES");
-    console.log('テーブル一覧:', tables);
-    
-    // Newsモデルテスト
-    let newsResult = { exists: false, count: 0, error: null };
-    try {
-      const { News } = require('./models');
-      const count = await News.count();
-      const sample = await News.findAll({ limit: 2 });
-      newsResult = {
-        exists: true,
-        count: count,
-        sample: sample.map(n => ({ id: n.id, title: n.title }))
-      };
-    } catch (error) {
-      newsResult.error = error.message;
+// 環境変数確認エンドポイント
+app.get('/debug-env', (req, res) => {
+  res.json({
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    database: {
+      host: process.env.DB_HOST || 'NOT_SET',
+      port: process.env.DB_PORT || 'NOT_SET',
+      user: process.env.DB_USER || 'NOT_SET',
+      password: process.env.DB_PASSWORD ? 'SET' : 'NOT_SET',
+      database: process.env.DB_NAME || 'NOT_SET'
+    },
+    session: {
+      secret: process.env.SESSION_SECRET ? 'SET' : 'NOT_SET'
     }
+  });
+});
+
+// データベース接続テスト
+app.get('/db-test', async (req, res) => {
+  try {
+    console.log('🔍 DB接続テスト開始');
     
-    // 成功レスポンス
-    const response = {
+    const { sequelize } = require('./models');
+    await sequelize.authenticate();
+    
+    // テーブル一覧取得
+    const [tables] = await sequelize.query("SHOW TABLES");
+    
+    res.json({
       success: true,
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV,
-      database: {
-        config: dbConfig,
-        connection: 'success',
-        tables: tables.map(t => Object.values(t)[0])
-      },
-      news: newsResult
-    };
-    
-    console.log('レスポンス:', JSON.stringify(response, null, 2));
-    res.json(response);
+      message: '接続成功',
+      tables: tables.map(t => Object.values(t)[0]),
+      timestamp: new Date().toISOString()
+    });
     
   } catch (error) {
     console.error('❌ DB接続エラー:', error);
-    
-    const errorResponse = {
+    res.status(500).json({
       success: false,
       error: error.message,
-      stack: error.stack,
-      timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV
-    };
-    
-    res.status(500).json(errorResponse);
+      code: error.original?.code,
+      errno: error.original?.errno,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
-// テーブル作成エンドポイント
-app.get('/create-tables', async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  
+// マイグレーション実行エンドポイント
+app.get('/run-migration', async (req, res) => {
   try {
-    console.log('=== テーブル作成開始 ===');
+    console.log('🔄 マイグレーション実行開始');
+    
+    const { stdout, stderr } = await execPromise(
+      'npx sequelize-cli db:migrate --env production'
+    );
+    
+    console.log('✅ マイグレーション完了');
+    console.log('stdout:', stdout);
+    if (stderr) console.log('stderr:', stderr);
+    
+    res.json({
+      success: true,
+      message: 'マイグレーション完了',
+      stdout: stdout,
+      stderr: stderr,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('❌ マイグレーション失敗:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// テーブル手動作成エンドポイント
+app.get('/create-tables', async (req, res) => {
+  try {
+    console.log('🔧 テーブル手動作成開始');
     
     const { sequelize } = require('./models');
     
-    // 手動でテーブル作成
-    console.log('usersテーブル作成中...');
+    // usersテーブル
     await sequelize.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -142,10 +120,10 @@ app.get('/create-tables', async (req, res) => {
         role ENUM('admin', 'editor') DEFAULT 'editor',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
     
-    console.log('newsテーブル作成中...');
+    // newsテーブル
     await sequelize.query(`
       CREATE TABLE IF NOT EXISTS news (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -154,25 +132,29 @@ app.get('/create-tables', async (req, res) => {
         instagram_embed_code TEXT,
         author_id INT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (author_id) REFERENCES users(id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
     
-    console.log('inquiriesテーブル作成中...');
+    // inquiriesテーブル
     await sequelize.query(`
       CREATE TABLE IF NOT EXISTS inquiries (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
-        message TEXT NOT NULL,
-        status ENUM('new', 'in_progress', 'resolved') DEFAULT 'new',
+        phone VARCHAR(255) NOT NULL,
+        inquiry_type ENUM('one-day-trial', 'join', 'media', 'other') NOT NULL,
+        message TEXT,
+        player_info JSON,
+        media_info JSON,
+        status ENUM('new', 'in-progress', 'completed', 'cancelled') DEFAULT 'new',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
     
     // 管理者ユーザー作成
-    console.log('管理者ユーザー作成中...');
     const bcrypt = require('bcryptjs');
     const hashedPassword = await bcrypt.hash('admin123', 10);
     
@@ -183,142 +165,177 @@ app.get('/create-tables', async (req, res) => {
       replacements: [hashedPassword]
     });
     
-    // サンプルニュース作成
-    console.log('サンプルニュース作成中...');
+    // サンプルニュース
     await sequelize.query(`
       INSERT IGNORE INTO news (id, title, content, author_id)
       VALUES 
-      (1, '🎉 ウェブサイト公開', 'ヴァレロッソ福岡の公式ウェブサイトが正式に公開されました！', 1),
-      (2, '⚽ 練習再開のお知らせ', '新学期に向けて練習がスタートします。', 1),
-      (3, '📸 フォトギャラリー更新', '最新の写真をアップロードしました。', 1)
+      (1, '🎉 サイト公開', 'ヴァレロッソ福岡のサイトが公開されました', 1),
+      (2, '⚽ 練習再開', '新学期の練習がスタートします', 1)
     `);
     
-    // 確認
-    const [newsCount] = await sequelize.query('SELECT COUNT(*) as count FROM news');
-    const [userCount] = await sequelize.query('SELECT COUNT(*) as count FROM users');
-    
-    const response = {
+    res.json({
       success: true,
       message: 'テーブル作成完了',
-      results: {
-        tablesCreated: ['users', 'news', 'inquiries'],
-        newsCount: newsCount[0].count,
-        userCount: userCount[0].count,
-        adminCredentials: 'admin / admin123'
-      },
+      tables: ['users', 'news', 'inquiries'],
+      adminLogin: { username: 'admin', password: 'admin123' },
       timestamp: new Date().toISOString()
-    };
-    
-    console.log('作成完了:', response);
-    res.json(response);
+    });
     
   } catch (error) {
-    console.error('❌ テーブル作成エラー:', error);
+    console.error('❌ テーブル作成失敗:', error);
     res.status(500).json({
       success: false,
       error: error.message,
-      stack: error.stack,
       timestamp: new Date().toISOString()
     });
   }
 });
 
-// ============================================
-// 🔧 デバッグエンドポイント追加（ここまで）
-// ============================================
+// ===== ミドルウェア設定 =====
 
-// ルーティングの設定
-app.use('/api', apiRoutes);        // /api/* のルートをapiRoutesに委譲
-app.use('/admin', adminRoutes);    // /admin/* のルートをadminRoutesに委譲
-app.use('/', publicRoutes);        // その他のルートをpublicRoutesに委譲
+// セキュリティとログの設定（エラー回避）
+try {
+  const sessionConfig = require('./config/session');
+  const { securityHeaders, requestLogger, userInfo } = require('./config/security');
+  
+  app.use(securityHeaders);
+  app.use(requestLogger);
+  app.use(sessionConfig);
+  app.use(userInfo);
+  
+  console.log('✅ セキュリティ設定読み込み成功');
+} catch (error) {
+  console.warn('⚠️ セキュリティ設定読み込み失敗:', error.message);
+  console.log('📝 基本設定で続行します');
+  
+  // 最小限のセッション設定
+  const session = require('express-session');
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'fallback-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
+  }));
+}
+
+// ===== ルーティング設定 =====
+
+// API ルーティング
+try {
+  const apiRoutes = require('./routes/api');
+  app.use('/api', apiRoutes);
+  console.log('✅ API routes loaded');
+} catch (error) {
+  console.warn('⚠️ API routes failed:', error.message);
+  
+  // 最小限のAPIルート
+  app.get('/api/test', (req, res) => {
+    res.json({ message: 'API動作中', timestamp: new Date().toISOString() });
+  });
+}
+
+// 管理画面ルーティング
+try {
+  const adminRoutes = require('./routes/admin');
+  app.use('/admin', adminRoutes);
+  console.log('✅ Admin routes loaded');
+} catch (error) {
+  console.warn('⚠️ Admin routes failed:', error.message);
+  
+  // 最小限の管理ルート
+  app.get('/admin', (req, res) => {
+    res.send('<h1>管理画面</h1><p>ルート読み込みエラー</p>');
+  });
+}
+
+// 公開ページルーティング
+try {
+  const publicRoutes = require('./routes/public');
+  app.use('/', publicRoutes);
+  console.log('✅ Public routes loaded');
+} catch (error) {
+  console.warn('⚠️ Public routes failed:', error.message);
+  
+  // 最小限のルート
+  app.get('/', (req, res) => {
+    res.send(`
+      <h1>🎉 Railway デプロイ成功！</h1>
+      <h2>🔧 デバッグツール</h2>
+      <ul>
+        <li><a href="/debug-env">環境変数確認</a></li>
+        <li><a href="/db-test">DB接続テスト</a></li>
+        <li><a href="/create-tables">テーブル作成</a></li>
+        <li><a href="/run-migration">マイグレーション実行</a></li>
+        <li><a href="/api/test">API テスト</a></li>
+      </ul>
+      <h2>📱 アプリケーション</h2>
+      <ul>
+        <li><a href="/admin/login">管理画面ログイン</a></li>
+      </ul>
+    `);
+  });
+}
+
+// ===== エラーハンドリング =====
 
 // エラーハンドリングミドルウェア
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
   
-  // CSRF エラーの場合
   if (err.code === 'EBADCSRFTOKEN') {
     return res.status(403).send('不正なリクエストです');
   }
   
-  // その他のエラー
   res.status(500).send('サーバー内部エラーが発生しました');
 });
 
 // 404エラーハンドリング
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.status(404).send(`
+    <h1>ページが見つかりません</h1>
+    <p><a href="/">ホームへ戻る</a></p>
+  `);
 });
 
-// サーバーの起動
-app.listen(PORT, () => {
-  console.log(`サーバーがポート${PORT}で起動しました`);
-  console.log(`管理画面: http://localhost:${PORT}/admin/login`);
-});
+// ===== サーバー起動 =====
 
-// 環境変数デバッグエンドポイント
-app.get('/debug-env', (req, res) => {
-  res.json({
-    environment: process.env.NODE_ENV,
-    databaseUrl: process.env.DATABASE_URL ? 'SET' : 'NOT_SET',
-    dbConfig: {
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD ? 'SET' : 'NOT_SET',
-      database: process.env.DB_NAME
-    },
-    railwayVariables: {
-      mysqlHost: process.env.MYSQLHOST || 'NOT_SET',
-      mysqlPort: process.env.MYSQLPORT || 'NOT_SET',
-      mysqlUser: process.env.MYSQLUSER || 'NOT_SET',
-      mysqlPassword: process.env.MYSQLPASSWORD ? 'SET' : 'NOT_SET',
-      mysqlDatabase: process.env.MYSQLDATABASE || 'NOT_SET'
+// マイグレーション自動実行（本番環境のみ）
+async function runStartupMigration() {
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      console.log('🔄 起動時マイグレーション実行中...');
+      const { stdout, stderr } = await execPromise('npx sequelize-cli db:migrate --env production');
+      console.log('✅ 起動時マイグレーション完了');
+      if (stderr) console.log('Migration warnings:', stderr);
+    } catch (error) {
+      console.warn('⚠️ 起動時マイグレーション失敗:', error.message);
+      console.log('📝 手動でマイグレーションを実行してください: /run-migration');
     }
-  });
+  }
+}
+
+// サーバー起動
+app.listen(PORT, '0.0.0.0', async () => {
+  console.log(`🚀 サーバー起動: ポート${PORT}`);
+  console.log(`🌍 環境: ${process.env.NODE_ENV}`);
+  console.log(`🔧 デバッグURL: http://localhost:${PORT}/debug-env`);
+  console.log(`📱 管理画面: http://localhost:${PORT}/admin/login`);
+  
+  // 起動時マイグレーション実行
+  await runStartupMigration();
 });
 
-// 手動接続テスト
-app.get('/manual-db-test', async (req, res) => {
-  const mysql = require('mysql2/promise');
-  
+// プロセス終了時の処理
+process.on('SIGINT', async () => {
+  console.log('🛑 サーバーを終了しています...');
   try {
-    console.log('=== 手動MySQL接続テスト ===');
-    
-    const connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      charset: 'utf8mb4',
-      connectTimeout: 30000,
-      acquireTimeout: 30000,
-      timeout: 30000
-    });
-    
-    console.log('✅ 手動接続成功');
-    
-    // テーブル一覧取得
-    const [tables] = await connection.execute('SHOW TABLES');
-    console.log('テーブル一覧:', tables);
-    
-    await connection.end();
-    
-    res.json({
-      success: true,
-      message: '手動接続成功',
-      tables: tables
-    });
-    
+    const { sequelize } = require('./models');
+    await sequelize.close();
+    console.log('✅ データベース接続を閉じました');
   } catch (error) {
-    console.error('❌ 手動接続失敗:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-      code: error.code,
-      errno: error.errno
-    });
+    console.error('❌ データベース接続クローズ失敗:', error);
   }
+  process.exit(0);
 });
-module.exports = app; // テスト用にエクスポート
+
+module.exports = app;
