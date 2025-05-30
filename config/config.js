@@ -27,45 +27,57 @@ module.exports = {
     logging: false
   },
   production: {
-    // 🔥 Railway用の完全修正版
-    username: process.env.DB_USER,
+    // 🔥 Railway用の最終修正版
+    
+    // Option 1: DATABASE_URLを優先使用
+    use_env_variable: 'DATABASE_URL',
+    
+    // Option 2: フォールバック設定（DATABASE_URLがない場合）
+    username: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
+    database: process.env.DB_NAME || 'railway',
+    host: process.env.DB_HOST || 'mysql.railway.internal',
     port: parseInt(process.env.DB_PORT) || 3306,
     dialect: 'mysql',
     
-    // Railway MySQL用の詳細設定
+    // Railway MySQL用の最適化設定
     dialectOptions: {
       charset: 'utf8mb4',
       collate: 'utf8mb4_unicode_ci',
       supportBigNumbers: true,
       bigNumberStrings: true,
-      // 接続タイムアウト設定
-      connectTimeout: 60000,
-      acquireTimeout: 60000,
-      timeout: 60000,
-      // Railway用のSSL設定（必要に応じて）
-      ssl: false
+      dateStrings: true,
+      typeCast: true,
+      // 接続タイムアウト
+      connectTimeout: 30000,
+      acquireTimeout: 30000,
+      timeout: 30000,
+      // SSL設定（Railwayでは通常false）
+      ssl: false,
+      // 再接続設定
+      reconnect: true,
+      idleTimeout: 300000
     },
     
-    // コネクションプール設定（Railway用に最適化）
+    // 接続プール設定
     pool: {
-      max: 5,           // 最大接続数
+      max: 10,          // 最大接続数
       min: 0,           // 最小接続数
-      acquire: 30000,   // 接続取得タイムアウト
-      idle: 10000,      // アイドルタイムアウト
-      evict: 1000,      // 接続の定期チェック間隔
-      handleDisconnects: true,  // 切断の自動処理
-      retry: {
-        max: 5          // リトライ回数
+      acquire: 30000,   // 接続取得タイムアウト（30秒）
+      idle: 10000,      // アイドルタイムアウト（10秒）
+      evict: 5000,      // 接続チェック間隔（5秒）
+      handleDisconnects: true,  // 自動再接続
+      validate: (connection) => {
+        return connection && connection.state !== 'disconnected';
       }
     },
     
     timezone: '+09:00',
-    logging: process.env.NODE_ENV === 'production' ? false : console.log,
     
-    // Railway用の追加設定
+    // ログ設定（デバッグ時のみ有効）
+    logging: process.env.DB_LOGGING === 'true' ? console.log : false,
+    
+    // テーブル定義設定
     define: {
       charset: 'utf8mb4',
       collate: 'utf8mb4_unicode_ci',
@@ -74,19 +86,13 @@ module.exports = {
       freezeTableName: false
     },
     
-    // 重要: Railway用のクエリオプション
-    query: {
-      raw: false
-    },
-    
-    // Railway接続の安定化設定
+    // Railway用のリトライ設定
     retry: {
       match: [
         /ETIMEDOUT/,
         /EHOSTUNREACH/,
         /ECONNRESET/,
         /ECONNREFUSED/,
-        /ETIMEDOUT/,
         /ESOCKETTIMEDOUT/,
         /EHOSTUNREACH/,
         /EPIPE/,
@@ -98,7 +104,7 @@ module.exports = {
         /SequelizeInvalidConnectionError/,
         /SequelizeConnectionTimedOutError/
       ],
-      max: 5
+      max: 3  // 最大3回リトライ
     }
   }
 };

@@ -256,4 +256,69 @@ app.listen(PORT, () => {
   console.log(`管理画面: http://localhost:${PORT}/admin/login`);
 });
 
+// 環境変数デバッグエンドポイント
+app.get('/debug-env', (req, res) => {
+  res.json({
+    environment: process.env.NODE_ENV,
+    databaseUrl: process.env.DATABASE_URL ? 'SET' : 'NOT_SET',
+    dbConfig: {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD ? 'SET' : 'NOT_SET',
+      database: process.env.DB_NAME
+    },
+    railwayVariables: {
+      mysqlHost: process.env.MYSQLHOST || 'NOT_SET',
+      mysqlPort: process.env.MYSQLPORT || 'NOT_SET',
+      mysqlUser: process.env.MYSQLUSER || 'NOT_SET',
+      mysqlPassword: process.env.MYSQLPASSWORD ? 'SET' : 'NOT_SET',
+      mysqlDatabase: process.env.MYSQLDATABASE || 'NOT_SET'
+    }
+  });
+});
+
+// 手動接続テスト
+app.get('/manual-db-test', async (req, res) => {
+  const mysql = require('mysql2/promise');
+  
+  try {
+    console.log('=== 手動MySQL接続テスト ===');
+    
+    const connection = await mysql.createConnection({
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT),
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      charset: 'utf8mb4',
+      connectTimeout: 30000,
+      acquireTimeout: 30000,
+      timeout: 30000
+    });
+    
+    console.log('✅ 手動接続成功');
+    
+    // テーブル一覧取得
+    const [tables] = await connection.execute('SHOW TABLES');
+    console.log('テーブル一覧:', tables);
+    
+    await connection.end();
+    
+    res.json({
+      success: true,
+      message: '手動接続成功',
+      tables: tables
+    });
+    
+  } catch (error) {
+    console.error('❌ 手動接続失敗:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      code: error.code,
+      errno: error.errno
+    });
+  }
+});
 module.exports = app; // テスト用にエクスポート
