@@ -1,5 +1,9 @@
-// config/config.js - Railway対応修正版
+// config/config.js - DATABASE_URL版（Railway対応）
 require('dotenv').config();
+
+console.log('🔧 Config loading...');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT_SET');
 
 module.exports = {
   development: {
@@ -30,29 +34,18 @@ module.exports = {
   },
   
   production: {
-    // Railway MySQL接続設定（個別指定方式）
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    // DATABASE_URL を使用（Railwayが自動提供）
+    use_env_variable: 'DATABASE_URL',
     dialect: 'mysql',
-    
-    // Railway MySQL必須設定
     dialectOptions: {
       ssl: {
         require: true,
         rejectUnauthorized: false
       },
-      // 接続タイムアウト設定
       connectTimeout: 60000,
       acquireTimeout: 60000,
-      timeout: 60000,
-      // 文字化け防止
-      charset: 'utf8mb4'
+      timeout: 60000
     },
-    
-    // 接続プール設定
     pool: {
       max: 10,
       min: 0,
@@ -60,13 +53,7 @@ module.exports = {
       idle: 10000,
       handleDisconnects: true
     },
-    
     timezone: '+09:00',
-    logging: false,
-    
-    // マイグレーション用設定
-    migrationStorageTableName: 'SequelizeMeta',
-    seederStorage: 'sequelize',
-    seederStorageTableName: 'SequelizeData'
+    logging: false
   }
 };
