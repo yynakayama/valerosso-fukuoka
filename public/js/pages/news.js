@@ -12,8 +12,11 @@ async function loadNewsList() {
         // 読み込み中表示を見つける
         const loadingElement = document.querySelector('.loading');
         
+        // APIのベースURLを環境に応じて設定
+        const baseUrl = window.location.hostname === 'localhost' ? '' : '/api';
+        
         // APIエンドポイントからお知らせデータを取得
-        const response = await fetch('/api/news');
+        const response = await fetch(`${baseUrl}/api/news`);
         
         // レスポンスが正常でない場合はエラーを投げる
         if (!response.ok) {
