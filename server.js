@@ -77,4 +77,248 @@ app.listen(PORT, '0.0.0.0', () => {
   }
 });
 
+// ============================================
+// server.js に追加する緊急修正版デバッグエンドポイント
+// ============================================
+
+// 重要: app.use('/', publicRoutes); の前に追加してください
+
+// シンプルなDB接続テスト
+app.get('/db-test', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  
+  try {
+    console.log('=== DB接続テスト開始 ===');
+    
+    // 環境変数の確認
+    const dbConfig = {
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT,
+      nodeEnv: process.env.NODE_ENV
+    };
+    
+    console.log('環境変数:', dbConfig);
+    
+    // Sequelize接続テスト
+    const { sequelize } = require('./models');
+    
+    console.log('Sequelize接続テスト中...');
+    await sequelize.authenticate();
+    console.log('✅ データベース接続成功');
+    
+    // テーブル確認
+    const [tables] = await sequelize.query("SHOW TABLES");
+    console.log('テーブル一覧:', tables);
+    
+    // Newsモデルテスト
+    let newsResult = { exists: false, count: 0, error: null };
+    try {
+      const { News } = require('./models');
+      const count = await News.count();
+      const sample = await News.findAll({ limit: 2 });
+      newsResult = {
+        exists: true,
+        count: count,
+        sample: sample.map(n => ({ id: n.id, title: n.title }))
+      };
+    } catch (error) {
+      newsResult.error = error.message;
+    }
+    
+    // 成功レスポンス
+    const response = {
+      success: true,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      database: {
+        config: dbConfig,
+        connection: 'success',
+        tables: tables.map(t => Object.values(t)[0])
+      },
+      news: newsResult
+    };
+    
+    console.log('レスポンス:', JSON.stringify(response, null, 2));
+    res.json(response);
+    
+  } catch (error) {
+    console.error('❌ DB接続エラー:', error);
+    
+    const errorResponse = {
+      success: false,
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV
+    };
+    
+    res.status(500).json(errorResponse);
+  }
+});
+
+// テーブル作成エンドポイント
+app.get('/create-tables', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  
+  try {
+    console.log('=== テーブル作成開始 ===');
+    
+    const { sequelize } = require('./models');
+    
+    // 手動でテーブル作成
+    console.log('usersテーブル作成中...');
+    await sequelize.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        full_name VARCHAR(255),
+        role ENUM('admin', 'editor') DEFAULT 'editor',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+    
+    console.log('newsテーブル作成中...');
+    await sequelize.query(`
+      CREATE TABLE IF NOT EXISTS news (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        content TEXT,
+        instagram_embed_code TEXT,
+        author_id INT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+    
+    console.log('inquiriesテーブル作成中...');
+    await sequelize.query(`
+      CREATE TABLE IF NOT EXISTS inquiries (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        status ENUM('new', 'in_progress', 'resolved') DEFAULT 'new',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+    
+    // 管理者ユーザー作成
+    console.log('管理者ユーザー作成中...');
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    
+    await sequelize.query(`
+      INSERT IGNORE INTO users (username, password, full_name, role)
+      VALUES ('admin', ?, 'システム管理者', 'admin')
+    `, {
+      replacements: [hashedPassword]
+    });
+    
+    // サンプルニュース作成
+    console.log('サンプルニュース作成中...');
+    await sequelize.query(`
+      INSERT IGNORE INTO news (id, title, content, author_id)
+      VALUES 
+      (1, '🎉 ウェブサイト公開', 'ヴァレロッソ福岡の公式ウェブサイトが正式に公開されました！', 1),
+      (2, '⚽ 練習再開のお知らせ', '新学期に向けて練習がスタートします。', 1),
+      (3, '📸 フォトギャラリー更新', '最新の写真をアップロードしました。', 1)
+    `);
+    
+    // 確認
+    const [newsCount] = await sequelize.query('SELECT COUNT(*) as count FROM news');
+    const [userCount] = await sequelize.query('SELECT COUNT(*) as count FROM users');
+    
+    const response = {
+      success: true,
+      message: 'テーブル作成完了',
+      results: {
+        tablesCreated: ['users', 'news', 'inquiries'],
+        newsCount: newsCount[0].count,
+        userCount: userCount[0].count,
+        adminCredentials: 'admin / admin123'
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('作成完了:', response);
+    res.json(response);
+    
+  } catch (error) {
+    console.error('❌ テーブル作成エラー:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// API動作テスト
+app.get('/test-api', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  
+  try {
+    console.log('=== API テスト開始 ===');
+    
+    const { News } = require('./models');
+    
+    // ニュース取得テスト
+    const news = await News.findAll({
+      attributes: ['id', 'title', 'content', 'created_at'],
+      order: [['created_at', 'DESC']],
+      limit: 5
+    });
+    
+    console.log('取得したニュース:', news.length, '件');
+    
+    res.json({
+      success: true,
+      message: 'API動作正常',
+      data: {
+        newsCount: news.length,
+        news: news
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('❌ API テストエラー:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// ============================================
+// 使用手順
+// ============================================
+
+/*
+1. 上記コードをserver.jsに追加
+2. Railwayにデプロイ
+3. 以下の順番でテスト:
+
+Step 1: DB接続テスト
+https://valerosso-fukuoka-production.up.railway.app/db-test
+
+Step 2: テーブル作成（必要に応じて）
+https://valerosso-fukuoka-production.up.railway.app/create-tables
+
+Step 3: API動作確認
+https://valerosso-fukuoka-production.up.railway.app/test-api
+
+Step 4: ホームページ確認
+https://valerosso-fukuoka-production.up.railway.app/
+
+期待される結果: お知らせセクションにニュースが表示される
+*/
+
 module.exports = app; // テスト用にエクスポート
