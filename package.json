@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "build": "npx sequelize-cli db:migrate",
     "dev": "nodemon server.js",
+    "migrate": "npx sequelize-cli db:migrate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -16,6 +18,10 @@
   ],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "dependencies": {
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
@@ -33,10 +39,10 @@
     "mysql2": "^3.14.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9",
-    "sequelize-cli": "^6.6.3"
+    "nodemon": "^3.1.9"
   }
 }

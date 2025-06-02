@@ -1,4 +1,4 @@
-// server.js - メインサーバーファイル（分割後）
+// server.js - メインサーバーファイル（Railway対応版）
 const express = require('express'); // Expressフレームワークのインポート
 const cors = require('cors');       // CORSミドルウェアのインポート
 const path = require('path');       // パス操作用ユーティリティ
@@ -39,6 +39,15 @@ app.use(sessionConfig);
 // ユーザー情報設定の適用
 app.use(userInfo);
 
+// ヘルスチェックエンドポイント（Railway用）
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 // ルーティングの設定
 app.use('/api', apiRoutes);        // /api/* のルートをapiRoutesに委譲
 app.use('/admin', adminRoutes);    // /admin/* のルートをadminRoutesに委譲
@@ -62,10 +71,24 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// グレースフルシャットダウン※2対応
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  process.exit(0);
+});
+
 // サーバーの起動
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`サーバーがポート${PORT}で起動しました`);
-  console.log(`管理画面: http://localhost:${PORT}/admin/login`);
+  console.log(`環境: ${process.env.NODE_ENV || 'development'}`);
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`管理画面: http://localhost:${PORT}/admin/login`);
+  }
 });
 
 module.exports = app; // テスト用にエクスポート

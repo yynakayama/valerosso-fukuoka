@@ -28,12 +28,25 @@ module.exports = {
     logging: false
   },
   production: {
-    username: process.env.PROD_DB_USER || 'valerosso_user',
-    password: process.env.PROD_DB_PASSWORD || 'valerosso_password',
-    database: process.env.PROD_DB_NAME || 'valerosso',
-    host: process.env.PROD_DB_HOST || 'localhost',
-    port: process.env.PROD_DB_PORT || 3307,
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    host: process.env.DATABASE_HOST,
+    port: process.env.DATABASE_PORT || 3306,
     dialect: 'mysql',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    pool: {
+      max: 10,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    },
+    timezone: '+09:00',
     logging: false
   }
 };
