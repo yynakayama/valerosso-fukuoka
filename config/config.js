@@ -28,11 +28,12 @@ module.exports = {
     logging: false
   },
   production: {
-    username: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-    database: process.env.DATABASE_NAME,
-    host: process.env.DATABASE_HOST,
-    port: process.env.DATABASE_PORT || 3306,
+    // Railway の自動生成変数を直接使用
+    username: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    host: process.env.MYSQLHOST,
+    port: process.env.MYSQLPORT || 3306,
     dialect: 'mysql',
     dialectOptions: {
       ssl: {
