@@ -1,4 +1,4 @@
-// server.js - メインサーバーファイル（修正版）
+// server.js - メインサーバーファイル（詳細デバッグ版）
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -23,10 +23,9 @@ const runMigrations = async () => {
     console.log('🔄 本番環境でマイグレーションを実行中...');
     
     try {
-      // タイムアウト付きでマイグレーション実行
       console.log('🚀 マイグレーションを実行中...');
       const { stdout, stderr } = await execAsync('npx sequelize-cli db:migrate', {
-        timeout: 30000 // 30秒でタイムアウト
+        timeout: 30000
       });
       
       if (stdout) console.log('📝 マイグレーション出力:', stdout);
@@ -39,7 +38,6 @@ const runMigrations = async () => {
     } catch (error) {
       console.error('❌ マイグレーション実行中にエラーが発生しました:', error.message);
       
-      // タイムアウトエラーの場合は警告として扱う
       if (error.code === 'ETIMEDOUT') {
         console.log('⚠️ マイグレーションがタイムアウトしましたが、サーバーは起動を続行します');
       } else {
@@ -91,51 +89,138 @@ const startServer = async () => {
       process.exit(1);
     }
     
-    // 2. サーバー起動（マイグレーションは並行実行）
+    // 2. サーバー起動
     console.log('🚀 Expressサーバーを起動中...');
     
-    // 設定ファイルとミドルウェアのインポート
-    const sessionConfig = require('./config/session');
-    const { securityHeaders, requestLogger, userInfo } = require('./config/security');
+    // 設定ファイルとミドルウェアのインポート（エラーハンドリング付き）
+    console.log('📦 設定ファイルを読み込み中...');
+    let sessionConfig, securityMiddleware;
     
-    // ルーターのインポート
-    const apiRoutes = require('./routes/api');
-    const adminRoutes = require('./routes/admin');
-    const publicRoutes = require('./routes/public');
+    try {
+      sessionConfig = require('./config/session');
+      console.log('✅ セッション設定読み込み成功');
+    } catch (error) {
+      console.error('❌ セッション設定読み込み失敗:', error.message);
+      process.exit(1);
+    }
+    
+    try {
+      securityMiddleware = require('./config/security');
+      console.log('✅ セキュリティ設定読み込み成功');
+    } catch (error) {
+      console.error('❌ セキュリティ設定読み込み失敗:', error.message);
+      process.exit(1);
+    }
+    
+    // ルーターのインポート（エラーハンドリング付き）
+    console.log('🛣️ ルーターファイルを読み込み中...');
+    let apiRoutes, adminRoutes, publicRoutes;
+    
+    try {
+      apiRoutes = require('./routes/api');
+      console.log('✅ API ルーター読み込み成功');
+    } catch (error) {
+      console.error('❌ API ルーター読み込み失敗:', error.message);
+      console.error('詳細:', error);
+      process.exit(1);
+    }
+    
+    try {
+      adminRoutes = require('./routes/admin');
+      console.log('✅ 管理画面ルーター読み込み成功');
+    } catch (error) {
+      console.error('❌ 管理画面ルーター読み込み失敗:', error.message);
+      console.error('詳細:', error);
+      process.exit(1);
+    }
+    
+    try {
+      publicRoutes = require('./routes/public');
+      console.log('✅ 公開ページルーター読み込み成功');
+    } catch (error) {
+      console.error('❌ 公開ページルーター読み込み失敗:', error.message);
+      console.error('詳細:', error);
+      process.exit(1);
+    }
     
     // Expressアプリケーションの初期化
     const app = express();
     const PORT = process.env.PORT || 3000;
+    console.log('🏗️ Express アプリケーション初期化完了');
     
     // 基本ミドルウェアの設定
+    console.log('⚙️ ミドルウェアを設定中...');
     app.use(cors());
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
     app.use(cookieParser());
     app.use(express.static('public'));
+    console.log('✅ 基本ミドルウェア設定完了');
     
     // EJSをビューエンジンとして設定
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));
+    console.log('✅ ビューエンジン設定完了');
     
     // セキュリティとログの設定
+    console.log('🔒 セキュリティミドルウェアを設定中...');
+    const { securityHeaders, requestLogger, userInfo } = securityMiddleware;
     app.use(securityHeaders);
     app.use(requestLogger);
+    console.log('✅ セキュリティミドルウェア設定完了');
     
     // セッション設定の適用
+    console.log('🍪 セッション設定を適用中...');
     app.use(sessionConfig);
+    console.log('✅ セッション設定適用完了');
     
     // ユーザー情報設定の適用
+    console.log('👤 ユーザー情報ミドルウェアを設定中...');
     app.use(userInfo);
+    console.log('✅ ユーザー情報ミドルウェア設定完了');
     
-    // ルーティングの設定（/health エンドポイントを削除）
-    app.use('/api', apiRoutes);
-    app.use('/admin', adminRoutes);
-    app.use('/', publicRoutes); // public routes に /health が含まれている
+    // テスト用エンドポイント（デバッグ用）
+    app.get('/debug', (req, res) => {
+      res.json({
+        message: 'デバッグエンドポイント動作中',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV,
+        routes_loaded: {
+          api: !!apiRoutes,
+          admin: !!adminRoutes,
+          public: !!publicRoutes
+        }
+      });
+    });
+    console.log('🔧 デバッグエンドポイント設定完了');
+    
+    // ルーティングの設定
+    console.log('🛣️ ルーティングを設定中...');
+    
+    try {
+      app.use('/api', apiRoutes);
+      console.log('✅ API ルーティング設定完了');
+    } catch (error) {
+      console.error('❌ API ルーティング設定失敗:', error.message);
+    }
+    
+    try {
+      app.use('/admin', adminRoutes);
+      console.log('✅ 管理画面ルーティング設定完了');
+    } catch (error) {
+      console.error('❌ 管理画面ルーティング設定失敗:', error.message);
+    }
+    
+    try {
+      app.use('/', publicRoutes);
+      console.log('✅ 公開ページルーティング設定完了');
+    } catch (error) {
+      console.error('❌ 公開ページルーティング設定失敗:', error.message);
+    }
     
     // エラーハンドリングミドルウェア
     app.use((err, req, res, next) => {
-      console.error('Server error:', err);
+      console.error('🚨 サーバーエラー:', err);
       
       if (err.code === 'EBADCSRFTOKEN') {
         return res.status(403).send('不正なリクエストです');
@@ -146,7 +231,8 @@ const startServer = async () => {
     
     // 404エラーハンドリング
     app.use((req, res) => {
-      res.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
+      console.log('🔍 404エラー:', req.method, req.originalUrl);
+      res.status(404).send(`ページが見つかりません: ${req.originalUrl}`);
     });
     
     // グレースフルシャットダウン対応
@@ -165,6 +251,7 @@ const startServer = async () => {
       console.log('🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉');
       console.log(`🚀 ヴァレロッソ福岡サーバーがポート${PORT}で起動しました！`);
       console.log(`🌍 環境: ${process.env.NODE_ENV || 'development'}`);
+      console.log('🔧 デバッグURL: /debug');
       console.log('📱 管理画面: /admin/login');
       console.log('🏠 メインサイト: /');
       console.log('🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉');
