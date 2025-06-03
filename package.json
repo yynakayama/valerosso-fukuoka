@@ -4,10 +4,12 @@
   "description": "福岡を拠点に活動するサッカークラブのウェブサイト",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "npx sequelize-cli db:migrate",
+    "start": "npm run migrate && node server.js",
+    "start:dev": "node server.js",
+    "build": "echo 'Build completed'",
     "dev": "nodemon server.js",
     "migrate": "npx sequelize-cli db:migrate",
+    "migrate:status": "npx sequelize-cli db:migrate:status",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
