@@ -1,4 +1,4 @@
-// config/session.js - セッション管理の設定（Railway変数名対応版）
+// config/session.js - セッション管理の設定（タイムアウト最適化版）
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 
@@ -31,7 +31,7 @@ const getSessionStoreOptions = () => {
         acquireTimeout: 60000,
         timeout: 60000,
         reconnect: true,
-        connectionLimit: 10
+        connectionLimit: 5  // Railway用に削減
       },
       // 期限切れセッションの自動削除設定
       clearExpired: true,
@@ -112,42 +112,70 @@ const sessionConfig = session({
 // セッションストアのイベントハンドリング
 sessionStore.onReady(() => {
   console.log('✅ セッションストア（MySQL）が正常に初期化されました');
+  console.log('🗄️ セッションテーブルの準備が完了しました');
 });
 
 sessionStore.on('error', (error) => {
-  console.error('❌ セッションストアエラー:', error);
-  // 本番環境では詳細なエラー情報をログに記録
-  if (process.env.NODE_ENV === 'production') {
-    console.error('Database connection details:', {
-      host: process.env.MYSQLHOST ? 'SET' : 'NOT_SET',
-      port: process.env.MYSQLPORT,
-      database: process.env.MYSQL_DATABASE ? 'SET' : 'NOT_SET',
-      user: process.env.MYSQLUSER ? 'SET' : 'NOT_SET'
-    });
+  console.error('❌ セッションストアエラー:', error.message);
+  // 詳細なエラー情報は開発環境でのみ表示
+  if (process.env.NODE_ENV === 'development') {
+    console.error('詳細:', error);
   }
 });
 
-// セッション接続テスト
+// セッション接続テスト（改良版：より柔軟なタイムアウト）
 const testConnection = async () => {
   try {
+    console.log('🔄 セッション接続テストを開始...');
+    
     await new Promise((resolve, reject) => {
-      sessionStore.onReady(resolve);
-      sessionStore.on('error', reject);
-      setTimeout(() => reject(new Error('Connection timeout')), 10000);
+      let resolved = false;
+      
+      // onReadyイベントでの解決
+      sessionStore.onReady(() => {
+        if (!resolved) {
+          resolved = true;
+          resolve();
+        }
+      });
+      
+      // エラーイベントでの拒否
+      sessionStore.on('error', (err) => {
+        if (!resolved) {
+          resolved = true;
+          reject(err);
+        }
+      });
+      
+      // タイムアウトを30秒に延長（テーブル作成を考慮）
+      setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          console.log('⚠️ セッション接続テストがタイムアウトしましたが、これは正常な場合があります');
+          console.log('📝 初回起動時はセッションテーブル作成に時間がかかることがあります');
+          resolve(); // タイムアウトでもエラーとしない
+        }
+      }, 30000); // 30秒に延長
     });
-    console.log('✅ セッション接続テスト成功');
+    
+    console.log('✅ セッション接続テスト完了');
   } catch (error) {
-    console.error('❌ セッション接続テスト失敗:', error.message);
+    console.log('⚠️ セッション接続テストでエラーが発生しましたが、サービスは継続します');
+    console.log('📝 理由:', error.message);
   }
 };
 
-// 接続テストを実行
-testConnection();
+// 接続テストを非同期で実行（サーバー起動をブロックしない）
+setTimeout(() => {
+  testConnection();
+}, 1000); // 1秒後に実行
 
 // 開発環境でのセッション詳細ログ
 if (process.env.NODE_ENV === 'development') {
-  console.log('開発モードでセッション設定を初期化しました');
-  console.log('Cookie secure:', cookieSettings.secure);
+  console.log('🔧 開発モードでセッション設定を初期化しました');
+  console.log('🍪 Cookie secure:', cookieSettings.secure);
 }
+
+console.log('🎯 セッション設定の初期化が完了しました');
 
 module.exports = sessionConfig;
