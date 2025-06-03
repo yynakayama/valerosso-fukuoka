@@ -490,4 +490,36 @@ router.delete('/api/inquiries/:id', requireAuth, requireAdmin, async (req, res) 
   }
 });
 
+// routes/admin.js の最後に以下のルートを追加
+
+// ユーザー削除処理
+router.post('/users/delete/:id', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    
+    // パラメータの検証
+    if (isNaN(userId) || userId <= 0) {
+      return res.status(400).send('無効なユーザーIDです');
+    }
+    
+    // 削除対象のユーザーを取得
+    const userToDelete = await User.findByPk(userId);
+    
+    if (!userToDelete) {
+      return res.status(404).send('削除するユーザーが見つかりません');
+    }
+    
+    // ユーザーを削除
+    await userToDelete.destroy();
+    
+    console.log(`User deleted: ID ${userId}, Username: ${userToDelete.username}`);
+    
+    // ユーザー一覧にリダイレクト
+    res.redirect('/admin/users');
+  } catch (error) {
+    console.error('User deletion error:', error);
+    res.status(500).send('ユーザーの削除中にエラーが発生しました');
+  }
+});
+
 module.exports = router;
