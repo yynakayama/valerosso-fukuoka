@@ -1,20 +1,26 @@
-// config/session.js - 環境変数統一修正版
+// config/session.js - Railway環境変数統一版
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 
-// 環境に応じたMySQL接続設定（環境変数を統一）
+// 環境に応じたMySQL接続設定（Railway変数に統一）
 const getSessionStoreOptions = () => {
-  // 🔧 修正：config.js と同じ環境変数を使用
-  const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT) || 3306,
-    user: process.env.DB_USER || 'valerosso_user',
-    password: process.env.DB_PASSWORD || 'valerosso_password',
-    database: process.env.DB_NAME || 'valerosso'
-  };
-
   if (process.env.NODE_ENV === 'production') {
-    // Railway本番環境用設定
+    // Railway本番環境：Railway自動生成変数を使用
+    const dbConfig = {
+      host: process.env.MYSQLHOST,
+      port: parseInt(process.env.MYSQLPORT) || 3306,
+      user: process.env.MYSQLUSER,
+      password: process.env.MYSQLPASSWORD,
+      database: process.env.MYSQL_DATABASE
+    };
+
+    console.log('📊 Railway本番環境 セッションストア接続設定:', {
+      host: dbConfig.host,
+      port: dbConfig.port,
+      database: dbConfig.database,
+      user: dbConfig.user ? 'SET' : 'NOT_SET'
+    });
+
     return {
       ...dbConfig,
       // Railway MySQL用SSL設定
@@ -46,7 +52,22 @@ const getSessionStoreOptions = () => {
       endConnectionOnClose: true
     };
   } else {
-    // 開発環境用設定
+    // 開発環境：従来の DB_* 変数を使用
+    const dbConfig = {
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT) || 3307,
+      user: process.env.DB_USER || 'valerosso_user',
+      password: process.env.DB_PASSWORD || 'valerosso_password',
+      database: process.env.DB_NAME || 'valerosso'
+    };
+
+    console.log('📊 開発環境 セッションストア接続設定:', {
+      host: dbConfig.host,
+      port: dbConfig.port,
+      database: dbConfig.database,
+      user: dbConfig.user ? 'SET' : 'NOT_SET'
+    });
+
     return {
       ...dbConfig,
       schema: {
@@ -75,40 +96,32 @@ const getSessionStoreOptions = () => {
 let sessionStore;
 try {
   const sessionStoreOptions = getSessionStoreOptions();
-  
-  console.log('📊 セッションストア接続設定:', {
-    host: sessionStoreOptions.host,
-    port: sessionStoreOptions.port,
-    database: sessionStoreOptions.database,
-    user: sessionStoreOptions.user ? 'SET' : 'NOT_SET'
-  });
-  
   sessionStore = new MySQLStore(sessionStoreOptions);
 } catch (error) {
   console.error('❌ セッションストア初期化エラー:', error);
   process.exit(1);
 }
 
-// 🔧 修正：Railway環境用のCookie設定
+// Railway環境用のCookie設定
 const cookieSettings = {
   secure: process.env.NODE_ENV === 'production',
   httpOnly: true,
   maxAge: 24 * 60 * 60 * 1000,
-  sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax', // 🔧 strict → lax に変更
-  domain: undefined // 🔧 追加：自動設定を許可
+  sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
+  domain: undefined
 };
 
-// 🔧 修正：セッション設定
+// セッション設定
 const sessionConfig = session({
   key: 'valerosso.session',
   secret: process.env.SESSION_SECRET || 'valerosso-fukuoka-secret-key-2025',
   store: sessionStore,
-  resave: true, // 🔧 修正：Railway環境では true に変更
+  resave: true,
   saveUninitialized: false,
   rolling: true,
   cookie: cookieSettings,
   name: 'vso.sid',
-  proxy: process.env.NODE_ENV === 'production' // 🔧 追加：プロキシ対応
+  proxy: process.env.NODE_ENV === 'production'
 });
 
 // セッションストアのイベントハンドリング

@@ -1,4 +1,4 @@
-// config/config.js
+// config/config.js - Railway環境変数統一版
 require('dotenv').config();
 
 module.exports = {
@@ -28,12 +28,12 @@ module.exports = {
     logging: false
   },
   production: {
-    // Railway の自動生成変数を直接使用
+    // Railway の自動生成変数を使用（session.js と統一）
     username: process.env.MYSQLUSER,
     password: process.env.MYSQLPASSWORD,
     database: process.env.MYSQL_DATABASE,
     host: process.env.MYSQLHOST,
-    port: process.env.MYSQLPORT || 3306,
+    port: parseInt(process.env.MYSQLPORT) || 3306,
     dialect: 'mysql',
     dialectOptions: {
       ssl: {
