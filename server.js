@@ -1,4 +1,4 @@
-// server.js - メインサーバーファイル（マイグレーション統合版）
+// server.js - メインサーバーファイル（修正版）
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -17,20 +17,17 @@ console.log('MYSQLHOST:', process.env.MYSQLHOST ? 'SET' : 'NOT_SET');
 console.log('MYSQL_DATABASE:', process.env.MYSQL_DATABASE ? 'SET' : 'NOT_SET');
 console.log('SESSION_SECRET:', process.env.SESSION_SECRET ? 'SET' : 'NOT_SET');
 
-// マイグレーション実行関数
+// マイグレーション実行関数（タイムアウト付き）
 const runMigrations = async () => {
   if (process.env.NODE_ENV === 'production') {
     console.log('🔄 本番環境でマイグレーションを実行中...');
     
     try {
-      // まずマイグレーション状態を確認
-      console.log('📊 マイグレーション状態を確認中...');
-      const { stdout: statusOutput } = await execAsync('npx sequelize-cli db:migrate:status');
-      console.log('現在の状態:', statusOutput);
-      
-      // マイグレーション実行
+      // タイムアウト付きでマイグレーション実行
       console.log('🚀 マイグレーションを実行中...');
-      const { stdout, stderr } = await execAsync('npx sequelize-cli db:migrate');
+      const { stdout, stderr } = await execAsync('npx sequelize-cli db:migrate', {
+        timeout: 30000 // 30秒でタイムアウト
+      });
       
       if (stdout) console.log('📝 マイグレーション出力:', stdout);
       if (stderr && !stderr.includes('Nothing to migrate')) {
@@ -39,17 +36,17 @@ const runMigrations = async () => {
       
       console.log('✅ マイグレーションが正常に完了しました');
       
-      // 完了後の状態確認
-      const { stdout: finalStatus } = await execAsync('npx sequelize-cli db:migrate:status');
-      console.log('📊 マイグレーション完了後の状態:', finalStatus);
-      
     } catch (error) {
       console.error('❌ マイグレーション実行中にエラーが発生しました:', error.message);
-      console.error('詳細:', error.stdout || error.stderr);
       
-      // エラーでもサーバーは起動を続行（手動修正の機会を与える）
-      console.log('⚠️ マイグレーションに失敗しましたが、サーバーは起動を続行します');
-      console.log('📝 手動でマイグレーションを実行してください: npm run migrate');
+      // タイムアウトエラーの場合は警告として扱う
+      if (error.code === 'ETIMEDOUT') {
+        console.log('⚠️ マイグレーションがタイムアウトしましたが、サーバーは起動を続行します');
+      } else {
+        console.error('詳細:', error.stdout || error.stderr);
+      }
+      
+      console.log('📝 必要に応じて手動でマイグレーションを実行してください: npm run migrate');
     }
   } else {
     console.log('🔧 開発環境ではマイグレーションをスキップします');
@@ -94,10 +91,7 @@ const startServer = async () => {
       process.exit(1);
     }
     
-    // 2. マイグレーション実行
-    await runMigrations();
-    
-    // 3. サーバー起動
+    // 2. サーバー起動（マイグレーションは並行実行）
     console.log('🚀 Expressサーバーを起動中...');
     
     // 設定ファイルとミドルウェアのインポート
@@ -134,23 +128,10 @@ const startServer = async () => {
     // ユーザー情報設定の適用
     app.use(userInfo);
     
-    // ヘルスチェックエンドポイント（詳細情報付き）
-    app.get('/health', (req, res) => {
-      res.status(200).json({ 
-        status: 'OK',
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development',
-        database: {
-          host: process.env.MYSQLHOST ? 'configured' : 'not_configured',
-          port: process.env.MYSQLPORT || 'default'
-        }
-      });
-    });
-    
-    // ルーティングの設定
+    // ルーティングの設定（/health エンドポイントを削除）
     app.use('/api', apiRoutes);
     app.use('/admin', adminRoutes);
-    app.use('/', publicRoutes);
+    app.use('/', publicRoutes); // public routes に /health が含まれている
     
     // エラーハンドリングミドルウェア
     app.use((err, req, res, next) => {
@@ -187,6 +168,11 @@ const startServer = async () => {
       console.log('📱 管理画面: /admin/login');
       console.log('🏠 メインサイト: /');
       console.log('🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉');
+      
+      // サーバー起動後にマイグレーションを実行（ノンブロッキング）
+      runMigrations().catch(error => {
+        console.error('Background migration error:', error);
+      });
     });
     
   } catch (error) {
