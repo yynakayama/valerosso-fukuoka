@@ -1,18 +1,23 @@
-// config/session.js - セッション管理の設定（タイムアウト最適化版）
+// config/session.js - 環境変数統一修正版
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 
-// 環境に応じたMySQL接続設定
+// 環境に応じたMySQL接続設定（環境変数を統一）
 const getSessionStoreOptions = () => {
+  // 🔧 修正：config.js と同じ環境変数を使用
+  const dbConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || 'valerosso_user',
+    password: process.env.DB_PASSWORD || 'valerosso_password',
+    database: process.env.DB_NAME || 'valerosso'
+  };
+
   if (process.env.NODE_ENV === 'production') {
-    // Railway本番環境用設定（自動生成変数を使用）
+    // Railway本番環境用設定
     return {
-      host: process.env.MYSQLHOST,
-      port: process.env.MYSQLPORT || 3306,
-      user: process.env.MYSQLUSER,
-      password: process.env.MYSQLPASSWORD,
-      database: process.env.MYSQL_DATABASE,
-      // SSL接続を強制（Railway MySQLで必須）
+      ...dbConfig,
+      // Railway MySQL用SSL設定
       ssl: {
         require: true,
         rejectUnauthorized: false
@@ -26,12 +31,12 @@ const getSessionStoreOptions = () => {
           data: 'data'
         }
       },
-      // 接続プールの設定（本番環境用に最適化）
+      // 接続プールの設定（Railway用に最適化）
       pool: {
         acquireTimeout: 60000,
         timeout: 60000,
         reconnect: true,
-        connectionLimit: 5  // Railway用に削減
+        connectionLimit: 5
       },
       // 期限切れセッションの自動削除設定
       clearExpired: true,
@@ -41,13 +46,9 @@ const getSessionStoreOptions = () => {
       endConnectionOnClose: true
     };
   } else {
-    // 開発環境用設定（Docker用）
+    // 開発環境用設定
     return {
-      host: process.env.DB_HOST || 'localhost',
-      port: process.env.DB_PORT || 3307,
-      user: process.env.DB_USER || 'valerosso_user',
-      password: process.env.DB_PASSWORD || 'valerosso_password',
-      database: process.env.DB_NAME || 'valerosso',
+      ...dbConfig,
       schema: {
         tableName: 'sessions',
         columnNames: {
@@ -70,12 +71,11 @@ const getSessionStoreOptions = () => {
   }
 };
 
-// セッションストアの作成（エラーハンドリング強化）
+// セッションストアの作成
 let sessionStore;
 try {
   const sessionStoreOptions = getSessionStoreOptions();
   
-  // 接続情報のデバッグ出力（パスワードは隠す）
   console.log('📊 セッションストア接続設定:', {
     host: sessionStoreOptions.host,
     port: sessionStoreOptions.port,
@@ -89,24 +89,26 @@ try {
   process.exit(1);
 }
 
-// クッキー設定の決定
+// 🔧 修正：Railway環境用のCookie設定
 const cookieSettings = {
   secure: process.env.NODE_ENV === 'production',
   httpOnly: true,
-  maxAge: 24 * 60 * 60 * 1000,    // 24時間
-  sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
+  maxAge: 24 * 60 * 60 * 1000,
+  sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax', // 🔧 strict → lax に変更
+  domain: undefined // 🔧 追加：自動設定を許可
 };
 
-// セッション設定オブジェクト
+// 🔧 修正：セッション設定
 const sessionConfig = session({
   key: 'valerosso.session',
   secret: process.env.SESSION_SECRET || 'valerosso-fukuoka-secret-key-2025',
   store: sessionStore,
-  resave: false,
+  resave: true, // 🔧 修正：Railway環境では true に変更
   saveUninitialized: false,
   rolling: true,
   cookie: cookieSettings,
-  name: 'vso.sid'
+  name: 'vso.sid',
+  proxy: process.env.NODE_ENV === 'production' // 🔧 追加：プロキシ対応
 });
 
 // セッションストアのイベントハンドリング
@@ -117,13 +119,12 @@ sessionStore.onReady(() => {
 
 sessionStore.on('error', (error) => {
   console.error('❌ セッションストアエラー:', error.message);
-  // 詳細なエラー情報は開発環境でのみ表示
   if (process.env.NODE_ENV === 'development') {
     console.error('詳細:', error);
   }
 });
 
-// セッション接続テスト（改良版：より柔軟なタイムアウト）
+// セッション接続テスト
 const testConnection = async () => {
   try {
     console.log('🔄 セッション接続テストを開始...');
@@ -131,7 +132,6 @@ const testConnection = async () => {
     await new Promise((resolve, reject) => {
       let resolved = false;
       
-      // onReadyイベントでの解決
       sessionStore.onReady(() => {
         if (!resolved) {
           resolved = true;
@@ -139,7 +139,6 @@ const testConnection = async () => {
         }
       });
       
-      // エラーイベントでの拒否
       sessionStore.on('error', (err) => {
         if (!resolved) {
           resolved = true;
@@ -147,15 +146,13 @@ const testConnection = async () => {
         }
       });
       
-      // タイムアウトを30秒に延長（テーブル作成を考慮）
       setTimeout(() => {
         if (!resolved) {
           resolved = true;
           console.log('⚠️ セッション接続テストがタイムアウトしましたが、これは正常な場合があります');
-          console.log('📝 初回起動時はセッションテーブル作成に時間がかかることがあります');
-          resolve(); // タイムアウトでもエラーとしない
+          resolve();
         }
-      }, 30000); // 30秒に延長
+      }, 30000);
     });
     
     console.log('✅ セッション接続テスト完了');
@@ -165,15 +162,14 @@ const testConnection = async () => {
   }
 };
 
-// 接続テストを非同期で実行（サーバー起動をブロックしない）
 setTimeout(() => {
   testConnection();
-}, 1000); // 1秒後に実行
+}, 1000);
 
-// 開発環境でのセッション詳細ログ
 if (process.env.NODE_ENV === 'development') {
   console.log('🔧 開発モードでセッション設定を初期化しました');
   console.log('🍪 Cookie secure:', cookieSettings.secure);
+  console.log('🍪 Cookie sameSite:', cookieSettings.sameSite);
 }
 
 console.log('🎯 セッション設定の初期化が完了しました');
