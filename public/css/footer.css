@@ -1,4 +1,4 @@
-/* footer.css - フッター用のスタイル */
+/* footer.css - フッター用のスタイル（Instagram対応版） */
 
 /* フッターの基本スタイル */
 footer {
@@ -9,7 +9,47 @@ footer {
     margin-top: 40px; /* 上部に余白を設定 */
 }
 
-/* フッター内のリンクスタイル */
+/* ソーシャルメディアリンクコンテナ */
+.social-links {
+    margin-bottom: 15px; /* コピーライトとの間隔 */
+}
+
+/* Instagramリンクのスタイル */
+.instagram-link {
+    display: inline-flex; /* アイコンとテキストを横並び表示 */
+    align-items: center; /* 垂直方向中央揃え */
+    color: #fff; /* 基本の文字色 */
+    text-decoration: none; /* 下線を非表示 */
+    font-size: 16px; /* フォントサイズ */
+    font-weight: 500; /* 少し太めのフォント */
+    transition: all 0.3s ease; /* アニメーション効果 */
+    padding: 8px 12px; /* 内側の余白 */
+    border-radius: 6px; /* 角を丸く */
+    background-color: rgba(255, 255, 255, 0.1); /* 薄い背景色 */
+}
+
+/* Instagramアイコンのスタイル */
+.instagram-icon {
+    width: 24px; /* アイコンの幅 */
+    height: 24px; /* アイコンの高さ */
+    margin-right: 8px; /* テキストとの間隔 */
+    transition: transform 0.3s ease; /* アニメーション効果 */
+}
+
+/* Instagramリンクのホバー効果 */
+.instagram-link:hover {
+    color: #E4405F; /* Instagramのブランドカラー */
+    background-color: rgba(228, 64, 95, 0.1); /* 薄いピンクの背景 */
+    transform: translateY(-2px); /* 少し上に移動 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 影を追加 */
+}
+
+/* ホバー時のアイコンアニメーション */
+.instagram-link:hover .instagram-icon {
+    transform: scale(1.1); /* アイコンを少し大きく */
+}
+
+/* フッター内のリンクスタイル（既存） */
 footer a {
     color: #fff; /* リンクの色を白に設定 */
     text-decoration: none; /* 下線を非表示 */
@@ -20,9 +60,39 @@ footer a:hover {
     color: #0611e3; /* ホバー時の色を青に変更 */
 }
 
+/* Instagram以外のリンクは既存のホバー色を維持 */
+footer a:not(.instagram-link):hover {
+    color: #0611e3;
+}
+
 /* レスポンシブ対応 */
 @media (min-width: 768px) {
     footer {
         padding: 30px; /* タブレット以上では余白を広げる */
+    }
+    
+    .instagram-link {
+        font-size: 18px; /* デスクトップでは少し大きく */
+        padding: 10px 16px;
+    }
+    
+    .instagram-icon {
+        width: 28px;
+        height: 28px;
+        margin-right: 10px;
+    }
+}
+
+/* スマートフォン向け調整 */
+@media (max-width: 480px) {
+    .instagram-link {
+        font-size: 14px; /* スマートフォンでは少し小さく */
+        padding: 6px 10px;
+    }
+    
+    .instagram-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 6px;
     }
 }
