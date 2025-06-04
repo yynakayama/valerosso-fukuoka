@@ -3,7 +3,7 @@
 /* ヒーローセクションのスタイル */
 .hero-section {
     position: relative;
-    background-image: url('../img/soccer-field.jpg'); /* 背景画像 */
+    background-image: url('../../img/soccer-field.jpg'); /* 背景画像 */
     background-size: cover;
     background-position: center;
     padding: 100px 20px;
