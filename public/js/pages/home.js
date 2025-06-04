@@ -67,7 +67,6 @@ function createNewsPreview(news) {
         if (isValidInstagramEmbed(news.instagram_embed_code)) {
             instagramPreview = `
                 <div class="instagram-preview">
-                    <p class="instagram-note">📷 Instagram投稿あり</p>
                     <div class="instagram-embed-preview" data-instagram-post="true">
                         <div class="instagram-wrapper">
                             ${news.instagram_embed_code}
