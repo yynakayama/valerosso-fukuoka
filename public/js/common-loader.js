@@ -93,22 +93,36 @@ class CommonLoader {
         const overlay = document.querySelector('.overlay');
         
         if (hamburger && navMenu && overlay) {
+            // 既存のイベントリスナーを削除（重複回避）
+            hamburger.replaceWith(hamburger.cloneNode(true));
+            overlay.replaceWith(overlay.cloneNode(true));
+            
+            // 再取得
+            const newHamburger = document.querySelector('.hamburger');
+            const newOverlay = document.querySelector('.overlay');
+            
             // イベントリスナーを追加
-            hamburger.addEventListener('click', () => this.toggleMenu(hamburger, navMenu, overlay));
-            overlay.addEventListener('click', () => this.closeMenu(hamburger, navMenu, overlay));
+            newHamburger.addEventListener('click', () => this.toggleMenu(newHamburger, navMenu, newOverlay));
+            newOverlay.addEventListener('click', () => this.closeMenu(newHamburger, navMenu, newOverlay));
             
             // ナビゲーションリンククリック時にメニューを閉じる
             const navLinks = navMenu.querySelectorAll('a');
             navLinks.forEach(link => {
-                link.addEventListener('click', () => this.closeMenu(hamburger, navMenu, overlay));
+                link.addEventListener('click', () => this.closeMenu(newHamburger, navMenu, newOverlay));
             });
             
             // ウィンドウリサイズ時の処理を追加
             window.addEventListener('resize', () => {
                 // デスクトップサイズ（768px以上）になったらメニューを閉じる
                 if (window.innerWidth >= 768) {
-                    this.closeMenu(hamburger, navMenu, overlay);
+                    this.closeMenu(newHamburger, navMenu, newOverlay);
                 }
+            });
+        } else {
+            console.warn('ハンバーガーメニューの要素が見つかりません:', {
+                hamburger: !!hamburger,
+                navMenu: !!navMenu, 
+                overlay: !!overlay
             });
         }
     }
