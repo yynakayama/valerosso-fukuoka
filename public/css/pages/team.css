@@ -102,16 +102,9 @@
     text-align: center;
 }
 
-.philosophy-point img {
-    width: 100px; /* アイコンサイズ */
-    height: 100px;
-    margin-bottom: 15px;
-    object-fit: contain; /* 画像が潰れないように */
-}
-
 .philosophy-point h3 {
     color: #0611e3; /* ポイントの見出し色 */
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     font-size: 1.3rem;
 }
 
