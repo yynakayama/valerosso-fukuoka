@@ -61,12 +61,13 @@ a {
   padding: 10px 20px; /* ボタンの内側余白 */
   border-radius: 5px; /* 角を丸くする */
   font-weight: bold;  /* 太字にする */
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 /* 共通のボタンホバー時 */
 .btn-primary:hover {
-  background-color: #bdd810;
+  background-color: #0410b0;
   color: white;
+  transform: translateY(-2px);
 }
 
 a:hover {
