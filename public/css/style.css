@@ -6,33 +6,38 @@
 
 /* 全体のフォント設定 */
 body {
-  font-family: 'Arial', sans-serif; /* フォントをArialに設定、無ければsans-serif */
+  font-family: 'Zen Kaku Gothic New', sans-serif; /* 本文用フォント */
   line-height: 1.6; /* 行間を設定 */
   color: #333; /* 基本的な文字色 */
 }
 
-/* メインコンテンツエリアのスタイル */
-.content {
-  padding: 20px; /* 内側に20pxの余白を設定 */
-  max-width: 1200px; /* 最大幅を設定 */
-  margin: 0 auto; /* 中央に配置 */
+/* 見出しのスタイル */
+h1, h2, h3 {
+  font-family: 'Zen Kaku Gothic New', sans-serif; /* 見出し用フォント */
+  letter-spacing: 0.1em; /* 文字間隔を広げてスポーティに */
+  text-transform: uppercase; /* 大文字に変換してスポーティに */
 }
 
-/* 見出しのスタイル */
 h1 {
-  font-size: 2rem; /* フォントサイズを設定 */
+  font-size: 2.2rem; /* フォントサイズを設定 */
   margin-bottom: 1rem; /* 下部に余白を設定 */
   color: #0611e3; /* サッカークラブの青色に変更 */
+  font-weight: 900; /* 最太 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* 立体感を出す */
 }
 
 h2 {
-  font-size: 1.5rem; /* フォントサイズを設定 */
+  font-size: 1.6rem; /* フォントサイズを設定 */
   margin-bottom: 0.8rem; /* 下部に余白を設定 */
+  font-weight: 700; /* 太字 */
+  color: #333; /* 濃いグレー */
 }
 
 h3 {
-  font-size: 1.2rem; /* フォントサイズを設定 */
+  font-size: 1.3rem; /* フォントサイズを設定 */
   margin-bottom: 0.6rem; /* 下部に余白を設定 */
+  font-weight: 500; /* 中太 */
+  color: #444; /* やや濃いグレー */
 }
 
 /* 段落のスタイル */
