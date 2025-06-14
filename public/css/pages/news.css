@@ -4,7 +4,7 @@
 .instagram-embed {
     margin: 20px 0; /* 上下に余白を設定 */
     padding: 15px; /* 内側に余白を設定 */
-    background-color: #f9f9f9; /* 背景色を薄いグレーに */
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     border-radius: 8px; /* 角を丸くする */
     border: 1px solid #e0e0e0; /* 薄いグレーのボーダー */
     text-align: center; /* 中央揃え */
@@ -20,7 +20,7 @@
 
 /* インスタグラム埋め込み内のblockquote要素 */
 .instagram-embed blockquote {
-    background: white; /* 背景色を白に */
+    background: #f0f0f0; /* 背景色を少し濃いグレーに */
     border: 1px solid #ddd; /* ボーダーを追加 */
     border-radius: 8px; /* 角を丸く */
     box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* 影を追加 */
@@ -76,7 +76,7 @@
 .instagram-preview {
     margin: 15px 0; /* 上下に余白 */
     padding: 10px; /* 内側に余白 */
-    background-color: #fafafa; /* 背景色 */
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     border-left: 4px solid #E4405F; /* インスタグラムブランドカラーの左ボーダー */
     border-radius: 4px; /* 角を少し丸く */
 }
@@ -112,7 +112,7 @@
     align-items: center; /* 縦方向中央揃え */
     justify-content: center; /* 横方向中央揃え */
     padding: 40px; /* 内側に余白 */
-    background-color: #f8f9fa; /* 背景色 */
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     border-radius: 8px; /* 角を丸く */
     margin: 15px 0; /* 上下に余白 */
 }
@@ -131,7 +131,7 @@
 
 /* ニュースカードのスタイル */
 .news-card {
-    background: white; /* 背景色を白に */
+    background: #f0f0f0; /* 背景色を少し濃いグレーに */
     border: 1px solid #ddd; /* 薄いグレーのボーダー */
     border-radius: 8px; /* 角を丸く */
     margin-bottom: 30px; /* 下部に余白 */
@@ -264,8 +264,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
-    background-color: #f8f9fa;
+    padding: 40px;
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     border-radius: 8px;
     margin: 15px 0;
     border: 1px dashed #dee2e6;

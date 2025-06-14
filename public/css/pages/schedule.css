@@ -4,7 +4,7 @@
 .page-header {
     text-align: center; /* ヘッダー内のテキストを中央揃え */
     padding: 40px 20px; /* 上下40px、左右20pxの余白を設定 */
-    background-color: #f5f5f5; /* 背景色を薄いグレーに設定 */
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     margin-bottom: 30px; /* 下部に30pxの余白を追加 */
 }
 
@@ -40,7 +40,7 @@
 
 /* 練習場所・注意事項などの情報スタイル */
 .schedule-info {
-    background-color: #f5f5f5; /* 背景色を薄いグレーに設定 */
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     padding: 15px; /* 内側余白を15pxに設定 */
     border-radius: 5px; /* 角を丸くする */
     margin-bottom: 20px; /* 下部に20pxの余白を追加 */
@@ -74,7 +74,7 @@
 /* 奇数行の背景色を変えて読みやすく */
 .schedule-table tr:nth-child(odd),
 .tournament-table tr:nth-child(odd) {
-    background-color: #f9f9f9; /* 奇数行の背景色を薄いグレーに設定 */
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
 }
 
 /* テーブル行のホバー効果 */

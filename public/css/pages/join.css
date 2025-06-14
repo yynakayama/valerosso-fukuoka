@@ -22,7 +22,7 @@
 
 /* 各情報項目 */
 .info-item {
-    background-color: #fff;
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;

@@ -90,7 +90,7 @@ a:hover {
     margin-bottom: 30px;
     text-align: center; /* タイトルを中央揃え */  
     padding: 40px 15px; /* 上下のパディングを少し増やして調整 */
-    background-color: #f8f8f8; /* 背景色 */
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     border-bottom: 1px solid #eee;
 }
 

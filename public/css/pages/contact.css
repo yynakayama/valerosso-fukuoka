@@ -16,7 +16,7 @@
 
 /* フォーム全体のスタイル */
 .contact-form {
-    background-color: #f9f9f9; /* 背景色を薄いグレーに設定 */
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     padding: 25px; /* 内側の余白 */
     border-radius: 8px; /* 角を丸くする */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 影を追加 */
@@ -136,7 +136,7 @@
 
 /* 各連絡方法のスタイル */
 .contact-method {
-    background-color: #f9f9f9; /* 背景色 */
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     padding: 20px; /* 内側の余白 */
     border-radius: 8px; /* 角を丸くする */
     min-width: 200px; /* 最小幅 */

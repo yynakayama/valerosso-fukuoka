@@ -135,7 +135,7 @@
 
 /* コーチセクションのスタイル */
 .coach-section {
-    background-color: #f5f5f5;
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     padding: 40px 20px;
     margin-bottom: 50px;
 }
@@ -235,7 +235,7 @@
 }
 
 .contact-content {
-    background-color: #f5f5f5;
+    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
