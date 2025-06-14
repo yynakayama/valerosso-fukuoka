@@ -62,7 +62,7 @@
 .news-section h2 {
     text-align: center;
     margin-bottom: 30px;
-    color: #0611e3; /* サッカークラブの青色に変更 */
+    color: #0c0675; /* 紺色に変更 */
 }
 
 /* ニュースコンテナのスタイル - フレックスボックスレイアウト */
@@ -143,7 +143,7 @@
 .coach-section h2 {
     text-align: center;
     margin-bottom: 30px;
-    color: #0611e3;
+    color: #0c0675;
 }
 
 .coach-philosophy {
@@ -172,7 +172,7 @@
 }
 
 .philosophy-point h3 {
-    color: #0611e3;
+    color: #0c0675;
     margin-top: 0;
     margin-bottom: 10px;
 }
@@ -230,7 +230,7 @@
 }
 
 .contact-section h2 {
-    color: #0611e3;
+    color: #05095a;
     margin-bottom: 20px;
 }
 

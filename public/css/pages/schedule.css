@@ -10,7 +10,7 @@
 
 .page-header h1 {
     margin-bottom: 10px; /* 見出しの下に10pxの余白を追加 */
-    color: #0611e3; /* テキスト色を青に設定 */
+    color: #0c0675; /* テキスト色を紺色に設定 */
 }
 
 .page-header p {
@@ -32,10 +32,10 @@
 .schedule-section h2,
 .tournament-section h2,
 .notice-section h2 {
-    color: #0611e3; /* タイトルのテキスト色を青に設定 */
+    color: #0c0675; /* タイトルのテキスト色を紺色に設定 */
     margin-bottom: 20px; /* タイトル下部に20pxの余白を追加 */
     padding-bottom: 10px; /* タイトル下部に10pxの内側余白を追加 */
-    border-bottom: 2px solid #1d10d8; /* タイトル下部に緑のボーダーを追加 */
+    border-bottom: 2px solid #0c0675; /* タイトル下部のボーダーを紺色に変更 */
 }
 
 /* 練習場所・注意事項などの情報スタイル */
@@ -58,7 +58,7 @@
 /* テーブルヘッダー */
 .schedule-table th,
 .tournament-table th {
-    background-color: #0611e3; /* ヘッダーの背景色を青に設定 */
+    background-color: #0c0675; /* ヘッダーの背景色を紺色に設定 */
     color: white; /* ヘッダーのテキスト色を白に設定 */
     padding: 12px; /* 内側余白を12pxに設定 */
     text-align: left; /* テキストを左揃えに設定 */
@@ -86,7 +86,7 @@
 /* チーム区分のスタイル */
 .schedule-container h3 {
     margin: 25px 0 15px; /* 上部に25px、下部に15pxの余白を追加 */
-    color: #333; /* テキスト色を濃いグレーに設定 */
+    color: #0c0675; /* テキスト色を紺色に設定 */
     font-size: 1.3rem; /* フォントサイズを1.3remに設定 */
 }
 
@@ -105,7 +105,7 @@
 
 .notice-container li:before {
     content: "•"; /* リストマーカーとして「•」を使用 */
-    color: #0611e3; /* マーカーの色を青に設定 */
+    color: #0c0675; /* マーカーの色を紺色に設定 */
     font-size: 20px; /* マーカーのフォントサイズを20pxに設定 */
     position: absolute; /* マーカーの位置を絶対的に設定 */
     left: 5px; /* 左側に5pxの位置を設定 */

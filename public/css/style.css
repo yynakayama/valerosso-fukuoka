@@ -21,7 +21,7 @@ h1, h2, h3 {
 h1 {
   font-size: 2.2rem; /* フォントサイズを設定 */
   margin-bottom: 1rem; /* 下部に余白を設定 */
-  color: #0611e3; /* サッカークラブの青色に変更 */
+  color: #bae306; 
   font-weight: 900; /* 最太 */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* 立体感を出す */
 }
@@ -30,7 +30,7 @@ h2 {
   font-size: 1.6rem; /* フォントサイズを設定 */
   margin-bottom: 0.8rem; /* 下部に余白を設定 */
   font-weight: 700; /* 太字 */
-  color: #333; /* 濃いグレー */
+  color: #0c0675; /* 紺色に変更 */
 }
 
 h3 {
@@ -47,7 +47,7 @@ p {
 
 /* リンクのスタイル */
 a {
-  color: #0611e3; /* リンクの色を青に変更 */
+  color: #0c0675; /* リンクの色を紺色に変更 */
   text-decoration: none; /* 下線を非表示 */
   transition: color 0.3s ease; /* 色の変化をアニメーション */
 }
@@ -55,7 +55,7 @@ a {
 /* 共通のボタンスタイル */
 .btn-primary {
   display: inline-block; /* インラインブロック要素にする */
-  background-color: #0611e3;
+  background-color: #0c0675;
   color: white; /* 文字色 */
   margin-top: 20px; /* 上部の余白 */
   padding: 10px 20px; /* ボタンの内側余白 */
@@ -65,13 +65,13 @@ a {
 }
 /* 共通のボタンホバー時 */
 .btn-primary:hover {
-  background-color: #0410b0;
+  background-color: #0a0559;
   color: white;
   transform: translateY(-2px);
 }
 
 a:hover {
-  color: #0410b0; /* ホバー時の色を少し暗めの青に変更 */
+  color: #0a0559; /* ホバー時の色を少し暗めの紺色に変更 */
 }
 
 #background-video {
@@ -96,7 +96,7 @@ a:hover {
 
 .page-title-section h1 {
     font-size: 2.2em; /* 少し大きく */
-    color: #0611e3; /* クラブカラーに統一 */
+    color: #0c0675; /* クラブカラーに統一 */
     margin-bottom: 10px; /* タイトルと説明文の間隔 */
 }
 
@@ -137,7 +137,7 @@ footer {
    管理画面（admin）共通スタイル
    ============================= */
 .admin-header {
-  background-color: #0611e3;
+  background-color: #0c0675;
   color: white;
   display: flex;
   justify-content: space-between;
@@ -253,7 +253,7 @@ footer {
   color: #bdd810;
 }
 .admin-nav-mobile a.current {
-  background-color: #0611e3;
+  background-color: #0c0675;
   font-weight: bold;
 }
 .user-info {
@@ -296,13 +296,13 @@ footer {
   margin: 0 auto;
 }
 .admin-content h1 {
-  color: #0611e3;
+  color: #0c0675;
   margin-bottom: 20px;
   font-size: 1.8rem;
 }
 .btn-admin {
   display: inline-block;
-  background-color: #0611e3;
+  background-color: #0c0675;
   color: white;
   padding: 10px 16px;
   border-radius: 4px;
@@ -390,7 +390,7 @@ footer {
 
 /* 管理画面ヘッダー用の .user-info だけ青背景にしたい場合 */
 .admin-header .user-info {
-  background-color: #0611e3;
+  background-color: #0c0675;
   color: white;
   border-bottom: 2px solid #333;
   padding: 20px 25px;

@@ -152,7 +152,7 @@
 }
 
 .news-title {
-    color: #0611e3; /* クラブカラー */
+    color: #0c0675; /* 紺色に設定 */
     margin-bottom: 10px; /* 下部に余白 */
     font-size: 1.4em; /* フォントサイズを大きく */
     line-height: 1.4; /* 行間を設定 */
@@ -279,7 +279,7 @@
 
 /* 再読み込みボタンのスタイル */
 .retry-button {
-    background-color: #0611e3;
+    background-color: #0c0675; /* 紺色に設定 */
     color: white;
     border: none;
     padding: 8px 16px;
@@ -291,7 +291,7 @@
 }
 
 .retry-button:hover {
-    background-color: #0510c7;
+    background-color: #0a0559; /* 濃い紺色に設定 */
 }
 
 /* Instagram処理完了後のアニメーション */

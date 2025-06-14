@@ -10,7 +10,7 @@
 
 .page-title-section h1 {
     font-size: 2rem; /* 見出しのフォントサイズ */
-    color: #0611e3; /* クラブカラー */
+    color: #0c0675; /* クラブカラー */
 }
 
 /* クラブ概要セクション */
@@ -20,7 +20,7 @@
 }
 
 .club-overview-section h2 {
-    color: #0611e3; /* 見出しの色 (home.css参考) */
+    color: #0c0675; /* 見出しの色 */
     margin-bottom: 20px;
     text-align: center;
     font-size: 1.6rem;
@@ -58,11 +58,11 @@
 }
 
 .club-overview-section td a {
-    color: #0611e3;
+    color: #0c0675;
     text-decoration: underline;
 }
 .club-overview-section td a:hover {
-    color: #0410b0;
+    color: #0a0559;
 }
 
 
@@ -75,7 +75,7 @@
 }
 
 .philosophy-section h2 {
-    color: #0611e3; /* 見出しの色 */
+    color: #0c0675; /* 見出しの色 */
     margin-bottom: 20px;
     font-size: 1.6rem;
 }
@@ -103,7 +103,7 @@
 }
 
 .philosophy-point h3 {
-    color: #0611e3; /* ポイントの見出し色 */
+    color: #0c0675; /* ポイントの見出し色 */
     margin-bottom: 15px;
     font-size: 1.3rem;
 }
@@ -125,7 +125,7 @@
 }
 
 .staff-section h2 {
-    color: #0611e3; /* 見出しの色 */
+    color: #0c0675; /* 見出しの色 */
     margin-bottom: 30px;
     
     text-align: center;

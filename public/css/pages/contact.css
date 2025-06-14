@@ -60,9 +60,9 @@
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    border-color: #0611e3; /* 境界線の色を青に変更 */
+    border-color: #0c0675; /* 境界線の色を紺色に変更 */
     outline: none; /* 外側の線を非表示 */
-    box-shadow: 0 0 0 2px rgba(6, 17, 227, 0.2); /* 青い影を追加 */
+    box-shadow: 0 0 0 2px rgba(12, 6, 117, 0.2); /* 紺色の影を追加 */
 }
 
 /* 条件付きフィールド（動的に表示/非表示される部分）のスタイル */
@@ -71,7 +71,7 @@
     padding: 20px; /* 内側の余白 */
     border-radius: 4px; /* 角を丸くする */
     margin-bottom: 25px; /* 下部の余白 */
-    border-left: 4px solid #0611e3; /* 左側に青いアクセント */
+    border-left: 4px solid #0c0675; /* 左側に紺色のアクセント */
 }
 
 /* 非表示の条件付きフィールド */
@@ -83,7 +83,7 @@
 .conditional-fields h3 {
     margin-top: 0; /* 上部の余白をリセット */
     margin-bottom: 15px; /* 下部の余白 */
-    color: #0611e3; /* 文字色を青に設定 */
+    color: #0c0675; /* 文字色を紺色に設定 */
     font-size: 1.1rem; /* フォントサイズ */
 }
 
@@ -103,7 +103,7 @@
 /* プライバシーポリシーのリンク */
 .privacy-link {
     text-decoration: underline; /* 下線を表示 */
-    color: #0611e3; /* 文字色を青に設定 */
+    color: #0c0675; /* 文字色を紺色に設定 */
 }
 
 /* 送信ボタンコンテナ */
@@ -145,7 +145,7 @@
 
 /* 連絡方法の見出し */
 .contact-method h3 {
-    color: #0611e3; /* 文字色を青に設定 */
+    color: #0c0675; /* 文字色を紺色に設定 */
     margin-bottom: 8px; /* 下部の余白 */
 }
 

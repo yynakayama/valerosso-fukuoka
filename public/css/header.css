@@ -1,6 +1,6 @@
 /* ヘッダーのCSS */
 header {
-    background-color: aliceblue; /* ヘッダーの背景色 */
+    background: #0a14a7;
     display: flex;
     justify-content: center; /* 中央揃えに変更 */
     align-items: center;
@@ -17,7 +17,24 @@ header {
     align-items: center;
     font-size: 1.5rem;
     font-weight: bold;
-    color: #0611e3;
+    color: #f9f9fa;
+}
+
+/* ページタイトルのスタイル */
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 1.5rem 0;
+}
+
+/* トップページのタイトル */
+body.top-page h1 {
+    color: #d3f70b;
+}
+
+/* トップページ以外のページタイトル */
+body:not(.top-page) h1 {
+    color: #0c0675;
 }
 
 /* ロゴのスタイル (既存のものを流用) */
@@ -49,7 +66,7 @@ header {
     display: block; /* ブロック要素として表示 */
     height: 3px; /* 線の高さ（太さ）を3pxに設定 */
     width: 100%; /* 線の幅を親要素いっぱいに設定 */
-    background-color:  #0611e3; /* 線の色を青色に設定 */
+    background-color: #0c0675; /* 線の色を紺色に設定 */
     transition: all 0.3s ease; /* すべてのプロパティに0.3秒のトランジションを設定 */
 }
 
@@ -100,19 +117,19 @@ header {
 
 /* メニュー内のリンクのスタイル */
 .nav-menu a {
-    color: white; /* 文字色を白に設定 */
+    color: #f7f7fa; /* 文字色を青に設定 */
     text-decoration: none; /* 下線を非表示 */
     font-size: 1.2rem; /* フォントサイズを1.2rem（19.2px相当）に設定 */
     display: block; /* ブロック要素として表示（クリック領域を広げる） */
 }
 
 .nav-menu a:hover {
-    color: #0611e3; /* ホバー時の色を青に変更 */
+    color: #0c0675; /* ホバー時の色を紺色に変更 */
 }
 
 /* 現在のページを示すスタイル */
 .nav-menu a.current {
-    color: #0611e3; /* 現在のページのリンクを青に変更 */
+    color: #0c0675; /* 現在のページのリンクを紺色に変更 */
     font-weight: bold; /* 太字に設定 */
 }
 
