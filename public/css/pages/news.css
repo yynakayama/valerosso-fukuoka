@@ -2,74 +2,161 @@
 
 /* インスタグラム埋め込みコンテナ */
 .instagram-embed {
-    margin: 20px 0; /* 上下に余白を設定 */
-    padding: 15px; /* 内側に余白を設定 */
-    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
-    border-radius: 8px; /* 角を丸くする */
-    border: 1px solid #e0e0e0; /* 薄いグレーのボーダー */
-    text-align: center; /* 中央揃え */
-    position: relative; /* 相対位置指定 */
+    margin: 0;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 /* インスタグラム埋め込みラッパー */
 .instagram-wrapper {
-    max-width: 540px; /* インスタグラム投稿の最大幅 */
-    margin: 0 auto; /* 中央揃え */
-    width: 100%; /* 幅を100%に */
+    max-width: 100%;
+    margin: 0 auto;
 }
 
 /* インスタグラム埋め込み内のblockquote要素 */
 .instagram-embed blockquote {
-    background: #f0f0f0; /* 背景色を少し濃いグレーに */
-    border: 1px solid #ddd; /* ボーダーを追加 */
-    border-radius: 8px; /* 角を丸く */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* 影を追加 */
-    margin: 0 auto !important; /* 中央揃え（重要） */
-    max-width: 540px; /* 最大幅を制限 */
-    min-width: 326px; /* 最小幅を設定 */
-    padding: 0; /* パディングをリセット */
-    width: calc(100% - 2px); /* 幅を計算 */
+    margin: 0;
+    max-width: 100%;
+    width: 100%;
 }
 
 /* インスタグラム埋め込み内のiframe要素 */
 .instagram-embed iframe {
-    max-width: 100% !important; /* 最大幅を100%に制限（重要） */
-    width: 100% !important; /* 幅を100%に（重要） */
-    height: auto; /* 高さを自動調整 */
-    border: none; /* ボーダーを非表示 */
-    border-radius: 8px; /* 角を丸く */
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* サイドバイサイドレイアウト用のスタイル */
+.instagram-embed.side-by-side {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.instagram-embed.side-by-side .instagram-wrapper {
+    flex: 0 0 540px; /* 固定幅 */
+    max-width: 540px;
+}
+
+.instagram-embed.side-by-side .instagram-caption {
+    flex: 1;
+    margin-top: 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+    .instagram-embed.side-by-side {
+        flex-direction: column;
+    }
+    
+    .instagram-embed.side-by-side .instagram-wrapper {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .instagram-embed.side-by-side .instagram-caption {
+        width: 100%;
+    }
 }
 
 /* インスタグラムキャプション */
 .instagram-caption {
-    margin: 10px 0 0 0; /* 上部のみ余白 */
-    font-size: 0.9em; /* フォントサイズを少し小さく */
-    color: #E4405F; /* インスタグラムブランドカラー */
-    font-weight: bold; /* 太字 */
-    font-style: italic; /* 斜体 */
+    margin: 10px 0 0 0;
+    font-size: 0.9em;
+    color: #E4405F;
+    font-weight: bold;
+    font-style: italic;
 }
 
 /* インスタグラム埋め込みエラー */
 .instagram-embed-error {
-    background-color: #fff3cd; /* 警告色の背景 */
-    border: 1px solid #ffeaa7; /* 警告色のボーダー */
-    border-radius: 4px; /* 角を丸く */
-    padding: 15px; /* 内側に余白 */
-    margin: 15px 0; /* 上下に余白 */
-    text-align: center; /* 中央揃え */
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 15px 0;
+    text-align: center;
 }
 
 .instagram-embed-error p {
-    margin: 0; /* 余白をリセット */
-    color: #856404; /* 警告色のテキスト */
-    font-weight: bold; /* 太字 */
+    margin: 0;
+    color: #856404;
+    font-weight: bold;
 }
 
 .error-detail {
-    font-size: 0.8em !important; /* フォントサイズを小さく（重要） */
-    font-weight: normal !important; /* 太字を解除（重要） */
-    margin-top: 5px !important; /* 上部に少し余白（重要） */
-    color: #6c757d !important; /* グレーの文字色（重要） */
+    font-size: 0.8em;
+    font-weight: normal;
+    margin-top: 5px;
+    color: #6c757d;
+}
+
+/* 読み込み中表示 */
+.instagram-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    margin: 15px 0;
+    border: 1px dashed #dee2e6;
+}
+
+.instagram-loading span {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* 再読み込みボタンのスタイル */
+.retry-button {
+    background-color: #0c0675;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+    background-color: #0a0559;
+}
+
+/* Instagram処理完了後のアニメーション */
+.instagram-embed.loaded {
+    animation: fadeInScale 0.5s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* スマートフォン対応 */
+@media (max-width: 480px) {
+    .instagram-embed {
+        margin: 0;
+    }
+    
+    .instagram-loading {
+        padding: 30px 15px;
+    }
 }
 
 /* プレビュー用のインスタグラム表示 */
@@ -104,29 +191,6 @@
 
 .instagram-embed-preview blockquote {
     margin: 0 auto !important; /* 中央揃え（重要） */
-}
-
-/* 読み込み中表示 */
-.instagram-loading {
-    display: flex; /* フレックスボックス */
-    align-items: center; /* 縦方向中央揃え */
-    justify-content: center; /* 横方向中央揃え */
-    padding: 40px; /* 内側に余白 */
-    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
-    border-radius: 8px; /* 角を丸く */
-    margin: 15px 0; /* 上下に余白 */
-}
-
-.instagram-loading::before {
-    content: "📷"; /* カメラの絵文字 */
-    margin-right: 10px; /* 右に余白 */
-    font-size: 1.2em; /* フォントサイズを大きく */
-}
-
-.instagram-loading::after {
-    content: "Instagram投稿を読み込み中..."; /* 読み込み中テキスト */
-    color: #6c757d; /* グレーの文字色 */
-    font-style: italic; /* 斜体 */
 }
 
 /* ニュースカードのスタイル */
@@ -185,31 +249,6 @@
     margin-bottom: 15px; /* 段落の下部に余白 */
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-    /* タブレット・スマートフォン用のスタイル */
-    
-    .instagram-embed {
-        margin: 15px 0; /* 余白を少し縮小 */
-        padding: 10px; /* 内側余白を縮小 */
-    }
-    
-    .instagram-embed-preview iframe {
-        transform: scale(0.9); /* スマホでは少し大きく表示 */
-    }
-    
-    .news-meta {
-        flex-direction: column; /* 縦方向に配置 */
-        align-items: flex-start; /* 左寄せ */
-        gap: 5px; /* 要素間に間隔 */
-    }
-    
-    .news-card {
-        margin-bottom: 20px; /* 下部余白を縮小 */
-        padding: 15px; /* 内側余白を縮小 */
-    }
-}
-
 /* エラーメッセージ用のスタイル */
 .error-message {
     text-align: center; /* 中央揃え */
@@ -231,96 +270,29 @@
 
 /* Instagram埋め込み強制スタイル（画像表示問題解決用） */
 .instagram-embed blockquote.instagram-media {
-    background: white !important;
-    border: 0 !important;
-    border-radius: 3px !important;
-    box-shadow: 0 0 1px 0 rgba(0,0,0,0.5), 0 1px 10px 0 rgba(0,0,0,0.15) !important;
-    margin: 1px auto !important;
-    max-width: 540px !important;
-    min-width: 326px !important;
-    padding: 0 !important;
-    width: calc(100% - 2px) !important;
+    background: white;
+    border: 0;
+    border-radius: 3px;
+    box-shadow: 0 0 1px 0 rgba(0,0,0,0.5), 0 1px 10px 0 rgba(0,0,0,0.15);
+    margin: 1px auto;
+    max-width: 540px;
+    min-width: 326px;
+    padding: 0;
+    width: calc(100% - 2px);
 }
 
 /* Instagram iframe要素の強制設定 */
 .instagram-embed iframe {
-    max-width: 100% !important;
-    width: 100% !important;
-    height: auto !important;
-    border: none !important;
-    border-radius: 3px !important;
-    min-height: 400px !important;
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    border: none;
+    border-radius: 3px;
 }
 
 /* Instagram画像要素の強制表示 */
 .instagram-embed img {
-    max-width: 100% !important;
-    height: auto !important;
-    display: block !important;
-}
-
-/* 読み込み中表示のスタイル改善 */
-.instagram-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    background-color: #f0f0f0; /* 背景色を少し濃いグレーに */
-    border-radius: 8px;
-    margin: 15px 0;
-    border: 1px dashed #dee2e6;
-}
-
-.instagram-loading span {
-    color: #6c757d;
-    font-style: italic;
-    font-size: 0.9em;
-}
-
-/* 再読み込みボタンのスタイル */
-.retry-button {
-    background-color: #0c0675; /* 紺色に設定 */
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-    margin-top: 10px;
-    transition: background-color 0.3s ease;
-}
-
-.retry-button:hover {
-    background-color: #0a0559; /* 濃い紺色に設定 */
-}
-
-/* Instagram処理完了後のアニメーション */
-.instagram-embed.loaded {
-    animation: fadeInScale 0.5s ease-out;
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* スマートフォン対応の改善 */
-@media (max-width: 480px) {
-    .instagram-embed blockquote.instagram-media {
-        min-width: 280px !important;
-    }
-    
-    .instagram-embed iframe {
-        min-height: 350px !important;
-    }
-    
-    .instagram-loading {
-        padding: 30px 15px;
-    }
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
