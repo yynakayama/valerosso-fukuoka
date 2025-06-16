@@ -314,8 +314,37 @@ footer {
   transition: background-color 0.3s ease;
 }
 .btn-admin:hover {
-  background-color: #ffe600;
+  background-color: #0a0d46;
   color: white;
+}
+.btn-cancel {
+  display: inline-block;
+  background-color: gray;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-edit {
+  background-color: #28a745;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+}
+
+.btn-edit:hover {
+  background-color: #218838;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
 }
 .nav-icon {
   margin-right: 8px;
