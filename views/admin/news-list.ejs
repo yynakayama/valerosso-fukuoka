@@ -269,10 +269,10 @@
                                     <% } %>
                                 </td>
                                 <td data-label="操作" class="action-buttons">
-                                    <a href="/admin/news/edit/<%= item.id %>" class="btn-admin">編集</a>
+                                    <a href="/admin/news/edit/<%= item.id %>" class="btn-admin btn-edit">編集</a>
                                     <form method="POST" action="/admin/news/delete/<%= item.id %>" style="display: inline;">
                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                        <button type="submit" class="btn-admin"
+                                        <button type="submit" class="btn-admin btn-delete"
                                             onclick="return confirm('本当に削除しますか？');">削除</button>
                                     </form>
                                 </td>
