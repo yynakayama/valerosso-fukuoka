@@ -158,12 +158,12 @@ router.post('/news/create', requireAuth, csrfProtection, async (req, res) => {
     const { title, content, instagram_embed_code } = req.body;
     
     // 入力値の検証
-    if (!title || !content) {
+    if (!title) {
       return res.render('admin/news-form', {
         news: null,
         formAction: '/admin/news/create',
         formTitle: 'お知らせ記事の新規作成',
-        error: 'タイトルと内容は必須です',
+        error: 'タイトルは必須です',
         csrfToken: req.csrfToken()
       });
     }
@@ -171,7 +171,7 @@ router.post('/news/create', requireAuth, csrfProtection, async (req, res) => {
     // データベースに新しいニュース記事を作成
     await News.create({
       title: title.trim(),
-      content: content.trim(),
+      content: content ? content.trim() : '',
       instagram_embed_code: instagram_embed_code ? instagram_embed_code.trim() : null,
       author_id: req.session.userId
     });
@@ -232,13 +232,13 @@ router.post('/news/edit/:id', requireAuth, csrfProtection, async (req, res) => {
     }
     
     // 入力値の検証
-    if (!title || !content) {
+    if (!title) {
       const news = await News.findByPk(newsId);
       return res.render('admin/news-form', {
         news,
         formAction: `/admin/news/edit/${newsId}`,
         formTitle: 'お知らせ記事の編集',
-        error: 'タイトルと内容は必須です',
+        error: 'タイトルは必須です',
         csrfToken: req.csrfToken()
       });
     }
@@ -246,7 +246,7 @@ router.post('/news/edit/:id', requireAuth, csrfProtection, async (req, res) => {
     // データベースの記事を更新
     const [updatedCount] = await News.update({
       title: title.trim(),
-      content: content.trim(),
+      content: content ? content.trim() : '',
       instagram_embed_code: instagram_embed_code ? instagram_embed_code.trim() : null
     }, {
       where: { id: newsId }

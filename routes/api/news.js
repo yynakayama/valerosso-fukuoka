@@ -88,14 +88,14 @@ router.post('/', async (req, res) => {
     const { title, content, instagram_embed_code } = req.body;
     
     // 入力値の検証
-    if (!title || !content) {
-      return res.status(400).json({ message: 'タイトルと内容は必須です' });
+    if (!title) {
+      return res.status(400).json({ message: 'タイトルは必須です' });
     }
     
     // データベースに新しいニュース記事を作成
     const newItem = await News.create({
       title: title.trim(),
-      content: content.trim(),
+      content: content ? content.trim() : '',
       instagram_embed_code: instagram_embed_code ? instagram_embed_code.trim() : null,
       author_id: req.session?.userId || 1 // ログイン中のユーザーIDまたはデフォルト
     });
@@ -126,14 +126,14 @@ router.put('/:id', async (req, res) => {
     }
     
     // 入力値の検証
-    if (!title || !content) {
-      return res.status(400).json({ message: 'タイトルと内容は必須です' });
+    if (!title) {
+      return res.status(400).json({ message: 'タイトルは必須です' });
     }
     
     // データベースの記事を更新
     const [updatedCount] = await News.update({
       title: title.trim(),
-      content: content.trim(),
+      content: content ? content.trim() : '',
       instagram_embed_code: instagram_embed_code ? instagram_embed_code.trim() : null
     }, {
       where: { id: newsId }
