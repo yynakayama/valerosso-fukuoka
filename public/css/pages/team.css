@@ -194,18 +194,24 @@
         padding: 25px;
     }
 
-    .staff-container {
-        flex-direction: row; /* 横並びにする */
-        flex-wrap: wrap; /* 折り返す */
-        justify-content: center; /* 中央揃え */
+    .staff-member {
+        display: flex;
+        align-items: flex-start; /* 上揃えに変更 */
+        gap: 25px; /* 画像とテキストの間隔 */
+        text-align: left; /* 全体を左揃えに */
+        max-width: 800px; /* カードの最大幅を制限 */
+        margin: 0 auto; /* 中央揃え */
     }
 
-    .staff-member {
-        flex-basis: calc(50% - 20px); /* 2カラムレイアウト (gap考慮) */
-        /* gapが30pxなので、(100% - 30px) / 2 でも良い */
-        /* flex-basis: calc((100% - 30px) / 2); */
-        text-align: center; /* 中央揃えに戻す場合 */
+    .staff-member img {
+        margin: 0; /* 自動マージンをリセット */
+        flex-shrink: 0; /* 画像が縮まないようにする */
     }
+
+    .staff-info {
+        flex: 1; /* 残りのスペースをすべて使う */
+    }
+
     .staff-member p {
          text-align: left; /* 説明文は左揃え維持 */
     }
@@ -224,12 +230,6 @@
     .philosophy-section h2,
     .staff-section h2 {
         font-size: 2rem;
-    }
-
-    .staff-member {
-         /* 3カラムレイアウトを試す場合 (gap考慮) */
-         /* flex-basis: calc(33.333% - 20px); */ /* gapが30pxなので (100% - 30px*2) / 3 */
-         flex-basis: calc((100% - 60px) / 3);
     }
 }
 
