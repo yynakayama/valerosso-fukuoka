@@ -54,6 +54,66 @@
     margin-bottom: 8px;
 }
 
+/* スケジュールテーブルのスタイル */
+.schedule-info {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+.schedule-container h4 {
+    font-size: 1.2em;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+.schedule-table th,
+.schedule-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.schedule-table th {
+    background-color: #0c0675;
+    color: white;
+    font-weight: bold;
+}
+
+.schedule-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* 注意事項リストのスタイル */
+.notice-container ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.notice-container li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+}
+
+.notice-container li:before {
+    content: "※";
+    position: absolute;
+    left: 0;
+    color: #0c0675;
+    font-weight: bold;
+}
+
 /* ボタン(.btn-primary)のスタイルは style.css から継承されるため、
    join.css での特別な指定は不要です。
    もし join.html 内のボタンに個別の調整が必要な場合は、以下に追加します。

@@ -233,4 +233,108 @@
     }
 }
 
+/* スケジュールセクションのスタイル */
+.schedule-section {
+    padding: 30px 20px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.schedule-section h2 {
+    color: #0c0675;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+}
+
+.schedule-info {
+    background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+.schedule-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.schedule-container h3 {
+    margin: 25px 0 15px;
+    color: #0c0675;
+    font-size: 1.3rem;
+    text-align: left;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: left;
+}
+
+.schedule-table th {
+    background-color: #0c0675;
+    color: white;
+    padding: 12px;
+}
+
+.schedule-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.schedule-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.schedule-table tbody tr:hover {
+    background-color: #f0f0f0;
+}
+
+/* 注意事項セクションのスタイル */
+.notice-section {
+    padding: 30px 20px;
+    margin-bottom: 40px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.notice-section h2 {
+    color: #0c0675;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    text-align: center;
+}
+
+.notice-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.notice-container ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.notice-container li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.notice-container li::before {
+    content: "※";
+    position: absolute;
+    left: 0;
+    color: #0c0675;
+    font-weight: bold;
+}
+
 
