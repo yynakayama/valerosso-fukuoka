@@ -266,7 +266,7 @@
     margin: 25px 0 15px;
     color: #0c0675;
     font-size: 1.3rem;
-    text-align: left;
+    text-align: center;
 }
 
 .schedule-table {
@@ -336,5 +336,3 @@
     color: #0c0675;
     font-weight: bold;
 }
-
-
