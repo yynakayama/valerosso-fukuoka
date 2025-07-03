@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.valerosso-fukuoka.club/sitemap.xml
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /api/
+
+# Allow important pages
+Allow: /team.html
+Allow: /news.html
+Allow: /gallery.html
+Allow: /join.html
+Allow: /contact.html
+
+# Crawl delay (optional)
+Crawl-delay: 1 
