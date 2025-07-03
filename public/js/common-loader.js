@@ -75,7 +75,13 @@ class CommonLoader {
         const navLinks = document.querySelectorAll('.nav-menu a');
         navLinks.forEach(link => {
             const href = link.getAttribute('href');
-            if (href === currentPage || href === `./${currentPage}`) {
+            // より柔軟なマッチング（ファイル名のみ、パス付き、相対パスなど）
+            if (href === currentPage || 
+                href === `./${currentPage}` || 
+                href === currentPage.replace('.html', '') ||
+                href === `./${currentPage.replace('.html', '')}` ||
+                (currentPage === 'index.html' && href === 'index.html') ||
+                (currentPage === 'index.html' && href === './index.html')) {
                 link.classList.add('current');
             }
         });

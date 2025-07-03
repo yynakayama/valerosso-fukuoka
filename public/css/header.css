@@ -18,6 +18,13 @@ header {
     font-size: 1.5rem;
     font-weight: bold;
     color: #f9f9fa;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.site-title:hover {
+    transform: translateY(-1px);
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* ページタイトルのスタイル */
@@ -154,6 +161,9 @@ body:not(.top-page) h1 {
 @media (min-width: 768px) {
     header { /* デスクトップ用にheaderの設定を追加 */
         justify-content: space-between; /* デスクトップでは左右配置に戻す */
+        background: linear-gradient(135deg, #0a14a7 0%, #1e3a8a 50%, #0a14a7 100%);
+        box-shadow: 0 2px 20px rgba(10, 20, 167, 0.3);
+        padding: 20px 40px;
     }
 
     .hamburger {
@@ -176,16 +186,64 @@ body:not(.top-page) h1 {
     
     .nav-menu ul {
         display: flex; /* リストを横並びにする */
+        align-items: center;
+        gap: 5px;
+        padding: 8px 20px;
     }
     
     .nav-menu li {
         border-bottom: none; /* 下線を非表示 */
-        padding: 0 15px; /* 左右の余白を設定 */
+        padding: 0;
+        position: relative;
     }
     
     .nav-menu a {
-        font-size: 1rem; /* フォントサイズを少し小さく */
-        padding: 0.5rem 0; /* 上下の余白を設定 */
+        font-size: 0.95rem; /* フォントサイズを少し小さく */
+        padding: 12px 18px; /* 上下の余白を設定 */
+        color: #f7f7fa;
+        text-decoration: none;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        display: block;
+    }
+    
+    .nav-menu a::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #d3f70b, #fbbf24);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+    
+    .nav-menu a:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(211, 247, 11, 0.3);
+    }
+    
+    .nav-menu a:hover::before {
+        width: 80%;
+    }
+    
+    .nav-menu a.current {
+        background: linear-gradient(135deg, rgba(211, 247, 11, 0.2), rgba(251, 191, 36, 0.2));
+        color: #d3f70b;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(211, 247, 11, 0.4);
+    }
+    
+    .nav-menu a.current::before {
+        width: 80%;
+        background: linear-gradient(90deg, #d3f70b, #fbbf24);
     }
 }
 
@@ -195,12 +253,14 @@ body:not(.top-page) h1 {
         font-size: 2rem; /* タイトルを大きくする */
     }
     
-    .nav-menu li {
-        padding: 0 20px; /* 項目間の余白を広げる */
+    .nav-menu ul {
+        padding: 10px 25px;
+        gap: 8px;
     }
     
     .nav-menu a {
-        font-size: 1.1rem; /* フォントサイズを少し大きく */
+        font-size: 1rem;
+        padding: 14px 22px;
     }
 }
 
