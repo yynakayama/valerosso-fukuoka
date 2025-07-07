@@ -9,16 +9,14 @@ document.addEventListener('DOMContentLoaded', function() {
 // 最新のお知らせをAPIから取得して表示する関数
 async function loadLatestNews() {
     try {
-        // APIエンドポイントから最新のお知らせデータを取得
-        const response = await fetch('/api/news');
-        
-        // レスポンスが正常でない場合はエラーを投げる
-        if (!response.ok) {
-            throw new Error('ニュースの取得に失敗しました');
-        }
-        
-        // JSONデータとして解析
-        const newsData = await response.json();
+        // 共通ユーティリティを使用してAPIからデータを取得
+        const newsData = await (window.commonUtils ? 
+            window.commonUtils.fetchData('/api/news') : 
+            fetch('/api/news').then(response => {
+                if (!response.ok) throw new Error('ニュースの取得に失敗しました');
+                return response.json();
+            })
+        );
         
         // お知らせコンテナ要素を取得
         const newsContainer = document.querySelector('.news-section .news-container');
@@ -38,22 +36,32 @@ async function loadLatestNews() {
         // 生成したHTMLをコンテナに挿入
         newsContainer.innerHTML = newsHTML;
         
-        // インスタグラム埋め込みの初期化を実行
-        initializeInstagramEmbeds();
+        // 共通Instagramマネージャーを使用して埋め込みを初期化
+        if (window.instagramManager) {
+            window.instagramManager.initializeEmbeds();
+        } else {
+            initializeInstagramEmbeds();
+        }
         
     } catch (error) {
         console.error('ニュース読み込みエラー:', error);
         
-        // エラー時の表示
-        const newsContainer = document.querySelector('.news-section .news-container');
-        newsContainer.innerHTML = '<p class="error-message">お知らせの読み込み中にエラーが発生しました。</p>';
+        // 共通ユーティリティを使用してエラー表示
+        if (window.commonUtils) {
+            window.commonUtils.showError('お知らせの読み込み中にエラーが発生しました。', '.news-section .news-container');
+        } else {
+            const newsContainer = document.querySelector('.news-section .news-container');
+            newsContainer.innerHTML = '<p class="error-message">お知らせの読み込み中にエラーが発生しました。</p>';
+        }
     }
 }
 
 // ホームページ用のニュースプレビューHTMLを生成する関数
 function createNewsPreview(news) {
-    // 日付をフォーマット（YYYY-MM-DD形式に変換）
-    const formattedDate = formatDate(news.created_at);
+    // 共通ユーティリティを使用して日付をフォーマット
+    const formattedDate = window.commonUtils ? 
+        window.commonUtils.formatDate(news.created_at) : 
+        formatDate(news.created_at);
     
     // 記事本文を短縮表示（150文字まで）
     const shortContent = news.content.length > 150 ? 
@@ -64,7 +72,9 @@ function createNewsPreview(news) {
     let instagramPreview = '';
     if (news.instagram_embed_code && news.instagram_embed_code.trim()) {
         // ホームページでは簡単なプレビューのみ表示
-        if (isValidInstagramEmbed(news.instagram_embed_code)) {
+        if (window.instagramManager ? 
+            window.instagramManager.constructor.isValidEmbed(news.instagram_embed_code) : 
+            isValidInstagramEmbed(news.instagram_embed_code)) {
             instagramPreview = `
                 <div class="instagram-preview">
                     <div class="instagram-embed-preview" data-instagram-post="true">
@@ -83,16 +93,21 @@ function createNewsPreview(news) {
         }
     }
     
+    // 共通ユーティリティを使用してHTMLエスケープ
+    const escapeFunction = window.commonUtils ? 
+        window.commonUtils.escapeHtml : 
+        escapeHtml;
+    
     // ニュースプレビューのHTMLを返す
     return `
         <div class="news-preview">
             <div class="news-preview-header">
-                <h3 class="news-preview-title">${escapeHtml(news.title)}</h3>
+                <h3 class="news-preview-title">${escapeFunction(news.title)}</h3>
                 <span class="news-preview-date">${formattedDate}</span>
             </div>
             
             <div class="news-preview-content">
-                <p>${escapeHtml(shortContent)}</p>
+                <p>${escapeFunction(shortContent)}</p>
                 ${instagramPreview}
             </div>
             
@@ -103,98 +118,61 @@ function createNewsPreview(news) {
     `;
 }
 
-// 日付をフォーマットする関数（YYYY-MM-DD形式に変換）
+// フォールバック用の関数（共通ユーティリティが読み込まれていない場合）
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    
-    // 日付が無効な場合の処理
-    if (isNaN(date.getTime())) {
-        return '日付不明';
+    if (window.commonUtils) {
+        return window.commonUtils.formatDate(dateString);
     }
-    
-    // YYYY-MM-DD形式でフォーマット
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '日付不明';
     return date.getFullYear() + '-' + 
            String(date.getMonth() + 1).padStart(2, '0') + '-' + 
            String(date.getDate()).padStart(2, '0');
 }
 
-// HTMLタグをエスケープする関数（XSS対策）
 function escapeHtml(text) {
+    if (window.commonUtils) {
+        return window.commonUtils.escapeHtml(text);
+    }
     if (!text) return '';
-    
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-// インスタグラム埋め込みコードが有効かチェックする関数
 function isValidInstagramEmbed(embedCode) {
-    // 基本的なバリデーション：instagram-mediaクラスが含まれているかチェック
+    if (window.instagramManager) {
+        return window.instagramManager.constructor.isValidEmbed(embedCode);
+    }
     return embedCode.includes('instagram-media') || 
            embedCode.includes('instagram.com/p/') ||
            embedCode.includes('instagram.com/reel/');
 }
 
-// インスタグラム埋め込みを初期化する関数（改良版）
+// フォールバック用のInstagram埋め込み初期化関数
 function initializeInstagramEmbeds() {
-    // インスタグラムの埋め込みスクリプトが既に読み込まれているかチェック
-    if (window.instgrm) {
-        // 既に読み込まれている場合は埋め込みを再処理
-        try {
-            window.instgrm.Embeds.process();
-            console.log('Instagram埋め込みを再処理しました');
-        } catch (error) {
-            console.warn('Instagram埋め込みの再処理でエラー:', error);
-            loadInstagramScript();
-        }
+    if (window.instagramManager) {
+        window.instagramManager.initializeEmbeds();
     } else {
-        // インスタグラムの埋め込みスクリプトを動的に読み込み
-        loadInstagramScript();
-    }
-}
-
-// インスタグラムスクリプトを読み込む関数
-function loadInstagramScript() {
-    // 既存のスクリプトタグがないかチェック
-    if (document.querySelector('script[src*="instagram.com/embed.js"]')) {
-        console.log('Instagramスクリプトは既に読み込まれています');
-        return;
-    }
-    
-    const script = document.createElement('script');
-    script.src = 'https://www.instagram.com/embed.js';
-    script.async = true;
-    script.defer = true; // 非同期読み込みを確実に
-    
-    // スクリプト読み込み完了後に埋め込みを処理
-    script.onload = function() {
-        console.log('Instagramスクリプトが読み込まれました');
+        // 簡易版のフォールバック処理
         if (window.instgrm) {
             try {
                 window.instgrm.Embeds.process();
-                console.log('Instagram埋め込みの処理が完了しました');
             } catch (error) {
-                console.error('Instagram埋め込み処理でエラー:', error);
+                console.warn('Instagram埋め込みの再処理でエラー:', error);
             }
+        } else {
+            const script = document.createElement('script');
+            script.src = 'https://www.instagram.com/embed.js';
+            script.async = true;
+            script.onload = function() {
+                if (window.instgrm) {
+                    window.instgrm.Embeds.process();
+                }
+            };
+            document.head.appendChild(script);
         }
-    };
-    
-    // スクリプト読み込みエラー時の処理
-    script.onerror = function() {
-        console.error('Instagramスクリプトの読み込みに失敗しました');
-        // エラー表示を更新
-        const errorElements = document.querySelectorAll('[data-instagram-post="true"]');
-        errorElements.forEach(element => {
-            element.innerHTML = `
-                <div class="instagram-embed-error">
-                    <p>⚠️ Instagram投稿の読み込みに失敗しました</p>
-                    <p class="error-detail">ネットワーク接続を確認してページを再読み込みしてください</p>
-                </div>
-            `;
-        });
-    };
-    
-    document.head.appendChild(script);
+    }
 }
 // 埋め込みスクリプトが既に読み込まれているかチェック
     if (window.instgrm) {

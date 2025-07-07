@@ -12,10 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const mediaInfoFields = document.getElementById('media-info');
     const contactForm = document.getElementById('contact-form');
     
-    // 現在の年を取得してフッターの著作権表示を更新
-    const copyrightYearElement = document.querySelector('.copyright-year');
-    if (copyrightYearElement) {
-        copyrightYearElement.textContent = new Date().getFullYear();
+    // 共通ユーティリティを使用して著作権年を更新
+    if (window.commonUtils) {
+        window.commonUtils.updateCopyrightYear();
     }
     
     // お問い合わせ種類の選択変更時のイベントリスナー
@@ -152,16 +151,21 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
-        // メールアドレスの形式チェック
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(email)) {
+        // 共通ユーティリティを使用してバリデーション
+        const emailValidator = window.commonUtils ? 
+            window.commonUtils.isValidEmail : 
+            (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        
+        const phoneValidator = window.commonUtils ? 
+            window.commonUtils.isValidPhone : 
+            (phone) => /^[0-9\-]+$/.test(phone);
+        
+        if (!emailValidator(email)) {
             alert('有効なメールアドレスを入力してください。');
             return false;
         }
         
-        // 電話番号の形式チェック（数字とハイフンのみ）
-        const phonePattern = /^[0-9\-]+$/;
-        if (!phonePattern.test(phone)) {
+        if (!phoneValidator(phone)) {
             alert('電話番号は数字とハイフンのみで入力してください。');
             return false;
         }
