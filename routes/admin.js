@@ -88,11 +88,6 @@ router.get('/sw.js', (req, res) => {
 // ヴァレロッソ福岡管理画面用サービスワーカー
 const CACHE_NAME = 'vso-admin-v1';
 const urlsToCache = [
-  '/admin/panel',
-  '/admin/news',
-  '/admin/users',
-  '/admin/inquiries',
-  '/admin/login',
   '/css/style.css',
   '/css/header.css',
   '/css/footer.css',
