@@ -224,6 +224,17 @@ router.get('/pwa-install.js', (req, res) => {
     }
   }
   
+  // デバイス判定関数
+  function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+  }
+  
+  // デスクトップ判定関数
+  function isDesktop() {
+    return !isMobileDevice() && window.innerWidth > 768;
+  }
+  
   // PWAインストールプロンプトの処理
   function handleInstallPrompt() {
     let deferredPrompt;
@@ -232,40 +243,123 @@ router.get('/pwa-install.js', (req, res) => {
       e.preventDefault();
       deferredPrompt = e;
       
-      // インストールボタンの表示（必要に応じて）
-      const installButton = document.createElement('button');
-      installButton.textContent = 'アプリをインストール';
-      installButton.style.cssText = \`
+      // モバイルデバイスの場合のみインストールボタンを表示
+      if (isMobileDevice()) {
+        const installButton = document.createElement('button');
+        installButton.textContent = 'アプリをインストール';
+        installButton.style.cssText = \`
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 1000;
+          background: #0611e3;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 14px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        \`;
+        
+        // 閉じるボタンの追加
+        const closeButton = document.createElement('button');
+        closeButton.textContent = '×';
+        closeButton.style.cssText = \`
+          position: absolute;
+          top: -5px;
+          right: -5px;
+          background: #ff4444;
+          color: white;
+          border: none;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          cursor: pointer;
+          font-size: 12px;
+          line-height: 1;
+        \`;
+        
+        closeButton.addEventListener('click', () => {
+          installButton.remove();
+        });
+        
+        installButton.appendChild(closeButton);
+        
+        installButton.addEventListener('click', (event) => {
+          // 閉じるボタンのクリックは無視
+          if (event.target === closeButton) return;
+          
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+              if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+              } else {
+                console.log('User dismissed the install prompt');
+              }
+              deferredPrompt = null;
+              installButton.remove();
+            });
+          }
+        });
+        
+        document.body.appendChild(installButton);
+        
+        // 5秒後に自動で非表示にする
+        setTimeout(() => {
+          if (installButton.parentNode) {
+            installButton.style.opacity = '0.7';
+          }
+        }, 5000);
+      }
+    });
+    
+    // PCユーザー向けの控えめな案内（オプション）
+    if (isDesktop()) {
+      // ブラウザのアドレスバーに「インストール」ボタンが表示されることを案内
+      const infoText = document.createElement('div');
+      infoText.innerHTML = '💡 <strong>ヒント:</strong> この管理画面はPWA対応です。ブラウザのアドレスバーに「インストール」ボタンが表示される場合があります。';
+      infoText.style.cssText = \`
         position: fixed;
-        top: 20px;
+        bottom: 20px;
         right: 20px;
-        z-index: 1000;
-        background: #0611e3;
-        color: white;
-        border: none;
-        padding: 10px 20px;
+        background: rgba(6, 17, 227, 0.1);
+        color: #0611e3;
+        padding: 10px 15px;
         border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
+        font-size: 12px;
+        max-width: 300px;
+        z-index: 999;
+        border-left: 3px solid #0611e3;
+        opacity: 0.8;
+        transition: opacity 0.3s;
       \`;
       
-      installButton.addEventListener('click', () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-              console.log('User accepted the install prompt');
-            } else {
-              console.log('User dismissed the install prompt');
-            }
-            deferredPrompt = null;
-            installButton.remove();
-          });
-        }
+      // 閉じるボタン
+      const closeInfo = document.createElement('span');
+      closeInfo.textContent = '×';
+      closeInfo.style.cssText = \`
+        float: right;
+        cursor: pointer;
+        font-weight: bold;
+        margin-left: 10px;
+      \`;
+      
+      closeInfo.addEventListener('click', () => {
+        infoText.remove();
       });
       
-      document.body.appendChild(installButton);
-    });
+      infoText.appendChild(closeInfo);
+      document.body.appendChild(infoText);
+      
+      // 10秒後に自動で非表示
+      setTimeout(() => {
+        if (infoText.parentNode) {
+          infoText.style.opacity = '0.3';
+        }
+      }, 10000);
+    }
   }
   
   // 初期化
