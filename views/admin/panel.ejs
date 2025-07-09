@@ -228,6 +228,19 @@
     </main>
 
     <script>
+        // PWA用サービスワーカー登録
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/admin/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const hamburger = document.querySelector('.admin-hamburger');
             const mobileNav = document.querySelector('.admin-nav-mobile');
@@ -278,6 +291,9 @@
             });
         });
     </script>
+    
+    <!-- PWAスクリプトの自動読み込み -->
+    <%- locals.scripts || '' %>
 </body>
 
 </html>
