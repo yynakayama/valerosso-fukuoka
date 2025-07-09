@@ -98,7 +98,7 @@ const urlsToCache = [
   '/css/footer.css',
   '/js/common-utils.js',
   '/img/vso.ico',
-  '/img/healsy.png'
+  '/img/favicon.png'
 ];
 
 // インストール時の処理
@@ -204,7 +204,7 @@ router.get('/pwa-install.js', (req, res) => {
     if (!document.querySelector('link[rel="apple-touch-icon"]')) {
       const appleIcon = document.createElement('link');
       appleIcon.rel = 'apple-touch-icon';
-      appleIcon.href = '/img/healsy.png';
+      appleIcon.href = '/img/favicon.png';
       document.head.appendChild(appleIcon);
     }
   }
