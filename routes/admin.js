@@ -89,10 +89,6 @@ router.get('/sw.js', (req, res) => {
 const CACHE_NAME = 'vso-admin-v1';
 const urlsToCache = [
   '/css/style.css',
-  '/css/header.css',
-  '/css/footer.css',
-  '/js/common-utils.js',
-  '/img/vso.ico',
   '/img/favicon.png'
 ];
 
