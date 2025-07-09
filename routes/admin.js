@@ -235,9 +235,21 @@ router.get('/pwa-install.js', (req, res) => {
     return !isMobileDevice() && window.innerWidth > 768;
   }
   
+  // PWAインストール状態の検出
+  function isPWAInstalled() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.navigator.standalone === true ||
+           document.referrer.includes('android-app://');
+  }
+  
   // PWAインストールプロンプトの処理
   function handleInstallPrompt() {
     let deferredPrompt;
+    
+    // 既にPWAとしてインストールされている場合は何もしない
+    if (isPWAInstalled()) {
+      return;
+    }
     
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -247,6 +259,7 @@ router.get('/pwa-install.js', (req, res) => {
       if (isMobileDevice()) {
         const installButton = document.createElement('button');
         installButton.textContent = 'アプリをインストール';
+        installButton.setAttribute('data-pwa-install', 'true');
         installButton.style.cssText = \`
           position: fixed;
           top: 20px;
@@ -315,11 +328,11 @@ router.get('/pwa-install.js', (req, res) => {
       }
     });
     
-    // PCユーザー向けの控えめな案内（オプション）
-    if (isDesktop()) {
-      // ブラウザのアドレスバーに「インストール」ボタンが表示されることを案内
+    // PCユーザー向けの控えめな案内（PWA未インストール時のみ）
+    if (isDesktop() && !isPWAInstalled()) {
       const infoText = document.createElement('div');
       infoText.innerHTML = '💡 <strong>ヒント:</strong> この管理画面はPWA対応です。ブラウザのアドレスバーに「インストール」ボタンが表示される場合があります。';
+      infoText.setAttribute('data-pwa-info', 'true');
       infoText.style.cssText = \`
         position: fixed;
         bottom: 20px;
@@ -362,10 +375,27 @@ router.get('/pwa-install.js', (req, res) => {
     }
   }
   
+  // インストール状態の監視
+  function watchInstallState() {
+    // display-modeの変更を監視
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    mediaQuery.addListener((e) => {
+      if (e.matches) {
+        // PWAとしてインストールされた場合、案内を削除
+        const installButtons = document.querySelectorAll('[data-pwa-install]');
+        installButtons.forEach(button => button.remove());
+        
+        const infoTexts = document.querySelectorAll('[data-pwa-info]');
+        infoTexts.forEach(info => info.remove());
+      }
+    });
+  }
+  
   // 初期化
   addMetaTags();
   registerServiceWorker();
   handleInstallPrompt();
+  watchInstallState();
 })();
   `;
   
