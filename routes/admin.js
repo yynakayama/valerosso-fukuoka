@@ -63,12 +63,12 @@ router.get('/manifest.json', (req, res) => {
         type: 'image/x-icon'
       },
       {
-        src: '/img/healsy.png',
+        src: '/img/favicon.png',
         sizes: '192x192',
         type: 'image/png'
       },
       {
-        src: '/img/healsy.png',
+        src: '/img/favicon.png',
         sizes: '512x512',
         type: 'image/png'
       }
