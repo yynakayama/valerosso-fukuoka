@@ -226,8 +226,14 @@ router.get('/pwa-install.js', (req, res) => {
     return !isMobileDevice() && window.innerWidth > 768;
   }
   
-  // PWAインストール状態の検出
+  // PWAインストール状態の検出（モバイルデバイスのみ）
   function isPWAInstalled() {
+    // PCデバイスの場合は検出しない
+    if (isDesktop()) {
+      console.log('Desktop device - skipping PWA detection');
+      return false;
+    }
+    
     // display-mode: standalone の判定
     if (window.matchMedia('(display-mode: standalone)').matches) {
       console.log('PWA detected: display-mode standalone');
@@ -359,50 +365,60 @@ router.get('/pwa-install.js', (req, res) => {
       }
     });
     
-    // PCユーザー向けの控えめな案内（PWA未インストール時のみ）
+    // PCユーザー向けの控えめな案内（セッションにつき1回）
     if (isDesktop() && !isPWAInstalled()) {
-      const infoText = document.createElement('div');
-      infoText.innerHTML = '💡 <strong>ヒント:</strong> この管理画面はPWA対応です。ブラウザのアドレスバーに「インストール」ボタンが表示される場合があります。';
-      infoText.setAttribute('data-pwa-info', 'true');
-      infoText.style.cssText = \`
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: rgba(6, 17, 227, 0.1);
-        color: #0611e3;
-        padding: 10px 15px;
-        border-radius: 5px;
-        font-size: 12px;
-        max-width: 300px;
-        z-index: 999;
-        border-left: 3px solid #0611e3;
-        opacity: 0.8;
-        transition: opacity 0.3s;
-      \`;
+      // セッションストレージで既に表示済みかチェック
+      const pwaInfoShown = sessionStorage.getItem('pwaInfoShown');
       
-      // 閉じるボタン
-      const closeInfo = document.createElement('span');
-      closeInfo.textContent = '×';
-      closeInfo.style.cssText = \`
-        float: right;
-        cursor: pointer;
-        font-weight: bold;
-        margin-left: 10px;
-      \`;
-      
-      closeInfo.addEventListener('click', () => {
-        infoText.remove();
-      });
-      
-      infoText.appendChild(closeInfo);
-      document.body.appendChild(infoText);
-      
-      // 10秒後に自動で非表示
-      setTimeout(() => {
-        if (infoText.parentNode) {
-          infoText.style.opacity = '0.3';
-        }
-      }, 10000);
+      if (!pwaInfoShown) {
+        const infoText = document.createElement('div');
+        infoText.innerHTML = '💡 <strong>ヒント:</strong> この管理画面はPWA対応です。ブラウザのアドレスバーに「インストール」ボタンが表示される場合があります。';
+        infoText.setAttribute('data-pwa-info', 'true');
+        infoText.style.cssText = \`
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: rgba(6, 17, 227, 0.1);
+          color: #0611e3;
+          padding: 10px 15px;
+          border-radius: 5px;
+          font-size: 12px;
+          max-width: 300px;
+          z-index: 999;
+          border-left: 3px solid #0611e3;
+          opacity: 0.8;
+          transition: opacity 0.3s;
+        \`;
+        
+        // 閉じるボタン
+        const closeInfo = document.createElement('span');
+        closeInfo.textContent = '×';
+        closeInfo.style.cssText = \`
+          float: right;
+          cursor: pointer;
+          font-weight: bold;
+          margin-left: 10px;
+        \`;
+        
+        closeInfo.addEventListener('click', () => {
+          infoText.remove();
+          // セッションストレージに表示済みフラグを設定
+          sessionStorage.setItem('pwaInfoShown', 'true');
+        });
+        
+        infoText.appendChild(closeInfo);
+        document.body.appendChild(infoText);
+        
+        // 10秒後に自動で非表示
+        setTimeout(() => {
+          if (infoText.parentNode) {
+            infoText.style.opacity = '0.3';
+          }
+        }, 10000);
+        
+        // セッションストレージに表示済みフラグを設定
+        sessionStorage.setItem('pwaInfoShown', 'true');
+      }
     }
   }
   
