@@ -228,9 +228,47 @@ router.get('/pwa-install.js', (req, res) => {
   
   // PWAインストール状態の検出
   function isPWAInstalled() {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.navigator.standalone === true ||
-           document.referrer.includes('android-app://');
+    // display-mode: standalone の判定
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('PWA detected: display-mode standalone');
+      return true;
+    }
+    
+    // iOS Safari の standalone モード判定
+    if (window.navigator.standalone === true) {
+      console.log('PWA detected: iOS standalone');
+      return true;
+    }
+    
+    // Android の TWA (Trusted Web Activity) 判定
+    if (document.referrer.includes('android-app://')) {
+      console.log('PWA detected: Android TWA');
+      return true;
+    }
+    
+    // その他のPWA判定方法
+    if (window.location.search.includes('source=pwa') || 
+        window.location.search.includes('from=pwa')) {
+      console.log('PWA detected: URL parameters');
+      return true;
+    }
+    
+    // ウィンドウサイズが通常のブラウザと異なる場合（PWAの特徴）
+    if (window.innerHeight === window.screen.height && 
+        window.innerWidth === window.screen.width) {
+      console.log('PWA detected: full screen dimensions');
+      return true;
+    }
+    
+    // ユーザーエージェントにPWA関連の文字列が含まれる場合
+    if (navigator.userAgent.includes('PWA') || 
+        navigator.userAgent.includes('standalone')) {
+      console.log('PWA detected: user agent');
+      return true;
+    }
+    
+    console.log('PWA not detected');
+    return false;
   }
   
   // PWAインストールプロンプトの処理
@@ -239,6 +277,7 @@ router.get('/pwa-install.js', (req, res) => {
     
     // 既にPWAとしてインストールされている場合は何もしない
     if (isPWAInstalled()) {
+      console.log('PWA already installed - skipping install prompts');
       return;
     }
     
@@ -248,6 +287,7 @@ router.get('/pwa-install.js', (req, res) => {
       
       // モバイルデバイスの場合のみインストールボタンを表示
       if (isMobileDevice()) {
+        console.log('Showing mobile install button');
         const installButton = document.createElement('button');
         installButton.textContent = 'アプリをインストール';
         installButton.setAttribute('data-pwa-install', 'true');
@@ -370,7 +410,9 @@ router.get('/pwa-install.js', (req, res) => {
   function watchInstallState() {
     // display-modeの変更を監視
     const mediaQuery = window.matchMedia('(display-mode: standalone)');
-    mediaQuery.addListener((e) => {
+    
+    // 非推奨のaddListenerをaddEventListenerに変更
+    const handleDisplayModeChange = (e) => {
       if (e.matches) {
         // PWAとしてインストールされた場合、案内を削除
         const installButtons = document.querySelectorAll('[data-pwa-install]');
@@ -379,13 +421,29 @@ router.get('/pwa-install.js', (req, res) => {
         const infoTexts = document.querySelectorAll('[data-pwa-info]');
         infoTexts.forEach(info => info.remove());
       }
-    });
+    };
+    
+    // 初期状態もチェック
+    handleDisplayModeChange(mediaQuery);
+    
+    // 変更を監視
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleDisplayModeChange);
+    } else {
+      // 古いブラウザ用のフォールバック
+      mediaQuery.addListener(handleDisplayModeChange);
+    }
   }
   
   // 初期化
   addMetaTags();
   registerServiceWorker();
-  handleInstallPrompt();
+  
+  // PWAインストール状態を最初にチェック
+  if (!isPWAInstalled()) {
+    handleInstallPrompt();
+  }
+  
   watchInstallState();
 })();
   `;
