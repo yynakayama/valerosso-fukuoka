@@ -80,12 +80,11 @@ router.get('/sitemap.xml', (req, res) => {
   const baseUrl = `${req.protocol}://${req.get('host')}`;
   const pages = [
     { url: '/', priority: '1.0', changefreq: 'weekly' },
-    { url: '/team', priority: '0.8', changefreq: 'monthly' },
-    { url: '/schedule', priority: '0.9', changefreq: 'weekly' },
-    { url: '/news', priority: '0.9', changefreq: 'daily' },
-    { url: '/gallery', priority: '0.7', changefreq: 'weekly' },
-    { url: '/join', priority: '0.8', changefreq: 'monthly' },
-    { url: '/contact', priority: '0.6', changefreq: 'monthly' }
+    { url: '/team', priority: '0.8', changefreq: 'yearly' },
+    { url: '/news', priority: '0.9', changefreq: 'weekly' },
+    { url: '/gallery', priority: '0.6', changefreq: 'yearly' },
+    { url: '/join', priority: '0.5', changefreq: 'yearly' },
+    { url: '/contact', priority: '0.4', changefreq: 'never' }
   ];
   
   // XML形式のサイトマップ生成
