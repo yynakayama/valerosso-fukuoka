@@ -9,14 +9,6 @@ require('dotenv').config();
 
 const execAsync = promisify(exec);
 
-// デバッグ用：環境変数の確認
-// console.log('🔍 環境変数チェック:');
-// console.log('NODE_ENV:', process.env.NODE_ENV);
-// console.log('PORT:', process.env.PORT);
-// console.log('MYSQLHOST:', process.env.MYSQLHOST ? 'SET' : 'NOT_SET');
-// console.log('MYSQL_DATABASE:', process.env.MYSQL_DATABASE ? 'SET' : 'NOT_SET');
-// console.log('SESSION_SECRET:', process.env.SESSION_SECRET ? 'SET' : 'NOT_SET');
-
 // マイグレーション実行関数（タイムアウト付き）
 const runMigrations = async () => {
   if (process.env.NODE_ENV === 'production') {
@@ -109,7 +101,10 @@ const startServer = async () => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
     app.use(cookieParser());
-    app.use(express.static('public'));
+    app.use(express.static('public', { 
+      maxAge: '30m',  // 30分キャッシュ
+      etag: true      // ETag有効化
+    }));
 
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));

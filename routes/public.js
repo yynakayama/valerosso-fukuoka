@@ -21,6 +21,7 @@ const serveStaticPage = (req, res, next) => {
     }
     
     // ファイルが存在する場合は配信
+    res.set('Cache-Control', 'public, max-age=1800'); // 30分キャッシュ
     res.sendFile(htmlPath, (sendErr) => {
       if (sendErr) {
         console.error(`Error serving ${htmlPath}:`, sendErr);
