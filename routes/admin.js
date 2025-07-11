@@ -86,69 +86,200 @@ router.get('/manifest.json', (req, res) => {
 router.get('/sw.js', (req, res) => {
   const swContent = `
 // ヴァレロッソ福岡管理画面用サービスワーカー
-const CACHE_NAME = 'vso-admin-v1';
+const CACHE_NAME = 'vso-admin-v2'; // バージョンアップしてキャッシュをクリア
+const STATIC_CACHE = 'vso-static-v2';
+const RUNTIME_CACHE = 'vso-runtime-v2';
+
+// 静的ファイルのキャッシュ対象
 const urlsToCache = [
   '/css/style.css',
-  '/img/favicon.png'
+  '/css/footer.css',
+  '/css/header.css',
+  '/img/favicon.png',
+  '/img/vso.ico'
 ];
+
+// キャッシュしてはいけないパターン
+const noCachePatterns = [
+  /\\/admin\\/login/,
+  /\\/admin\\/logout/,
+  /\\/admin\\/api\\//,
+  /\\/api\\//,
+  /\\?.*csrfToken/,
+  /\\?.*_csrf/,
+  /\\.php$/,
+  /\\.json$/
+];
+
+// ネットワークファーストにするパターン（認証や動的コンテンツ）
+const networkFirstPatterns = [
+  /\\/admin\\/panel/,
+  /\\/admin\\/news/,
+  /\\/admin\\/users/,
+  /\\/admin\\/inquiries/,
+  /\\/(create|edit|delete)/,
+  /POST|PUT|PATCH|DELETE/
+];
+
+// リクエストがキャッシュ除外対象かチェック
+function shouldNotCache(request) {
+  return noCachePatterns.some(pattern => pattern.test(request.url)) ||
+         request.method !== 'GET' ||
+         request.url.includes('csrfToken') ||
+         request.url.includes('_csrf');
+}
+
+// リクエストがネットワークファーストかチェック
+function shouldUseNetworkFirst(request) {
+  return networkFirstPatterns.some(pattern => pattern.test(request.url)) ||
+         request.method !== 'GET';
+}
 
 // インストール時の処理
 self.addEventListener('install', (event) => {
+  console.log('Service Worker installing...');
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches.open(STATIC_CACHE)
       .then((cache) => {
-        console.log('Opened cache');
+        console.log('Opened static cache');
         return cache.addAll(urlsToCache);
+      })
+      .then(() => {
+        console.log('Static files cached');
+        return self.skipWaiting(); // 即座にアクティベート
       })
   );
 });
 
 // フェッチ時の処理
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // キャッシュに存在する場合はキャッシュから返す
-        if (response) {
-          return response;
-        }
-        
-        // キャッシュにない場合はネットワークから取得
-        return fetch(event.request).then(
-          (response) => {
-            // 有効なレスポンスでない場合はそのまま返す
+  const request = event.request;
+  const url = new URL(request.url);
+  
+  // キャッシュしてはいけないリクエストは直接ネットワークへ
+  if (shouldNotCache(request)) {
+    event.respondWith(
+      fetch(request).catch(() => {
+        // ネットワークエラーの場合、オフラインページを返すことも可能
+        console.log('Network failed for no-cache request:', request.url);
+        throw new Error('Network request failed');
+      })
+    );
+    return;
+  }
+  
+  // 静的ファイル（CSS、画像など）はキャッシュファースト
+  if (request.destination === 'image' || 
+      request.destination === 'style' || 
+      request.destination === 'script' ||
+      request.url.includes('/css/') ||
+      request.url.includes('/img/') ||
+      request.url.includes('/js/')) {
+    
+    event.respondWith(
+      caches.match(request)
+        .then((response) => {
+          if (response) {
+            return response;
+          }
+          
+          return fetch(request).then((response) => {
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
             
-            // レスポンスをクローンしてキャッシュに保存
             const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
+            caches.open(STATIC_CACHE)
               .then((cache) => {
-                cache.put(event.request, responseToCache);
+                cache.put(request, responseToCache);
               });
             
             return response;
+          });
+        })
+    );
+    return;
+  }
+  
+  // ネットワークファーストのリクエスト（管理画面の動的コンテンツ）
+  if (shouldUseNetworkFirst(request)) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // 成功した場合はランタイムキャッシュに短期間保存（オフライン時のフォールバック用）
+          if (response.status === 200 && request.method === 'GET') {
+            const responseToCache = response.clone();
+            caches.open(RUNTIME_CACHE)
+              .then((cache) => {
+                cache.put(request, responseToCache);
+                // ランタイムキャッシュは5分で期限切れ
+                setTimeout(() => {
+                  cache.delete(request);
+                }, 5 * 60 * 1000);
+              });
           }
-        );
-      })
+          return response;
+        })
+        .catch(() => {
+          // ネットワークが失敗した場合のみキャッシュから返す
+          return caches.match(request)
+            .then((response) => {
+              if (response) {
+                console.log('Serving from cache due to network failure:', request.url);
+                return response;
+              }
+              throw new Error('No cache available');
+            });
+        })
+    );
+    return;
+  }
+  
+  // その他のリクエストはデフォルト処理
+  event.respondWith(
+    fetch(request).catch(() => {
+      return caches.match(request);
+    })
   );
 });
 
 // アクティベート時の処理
 self.addEventListener('activate', (event) => {
+  console.log('Service Worker activating...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
+          // 古いキャッシュを削除
+          if (![STATIC_CACHE, RUNTIME_CACHE].includes(cacheName)) {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
-      );
+      ).then(() => {
+        console.log('Service Worker activated');
+        return self.clients.claim(); // 既存のクライアントも制御下に
+      });
     })
   );
+});
+
+// メッセージ処理（キャッシュクリア用）
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            console.log('Clearing cache:', cacheName);
+            return caches.delete(cacheName);
+          })
+        );
+      }).then(() => {
+        event.ports[0].postMessage({ success: true });
+      })
+    );
+  }
 });
   `;
   
@@ -275,6 +406,90 @@ router.get('/pwa-install.js', (req, res) => {
     
     console.log('PWA not detected');
     return false;
+  }
+  
+  // キャッシュクリア機能
+  function addCacheClearButton() {
+    // 既にボタンが存在する場合は追加しない
+    if (document.querySelector('[data-cache-clear]')) {
+      return;
+    }
+    
+    const clearButton = document.createElement('button');
+    clearButton.textContent = '🔄 キャッシュクリア';
+    clearButton.setAttribute('data-cache-clear', 'true');
+    clearButton.style.cssText = \`
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: #ff6b35;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    \`;
+    
+    clearButton.addEventListener('click', async () => {
+      if (clearButton.disabled) return;
+      
+      clearButton.disabled = true;
+      clearButton.textContent = 'クリア中...';
+      
+      try {
+        // サービスワーカーにキャッシュクリアメッセージを送信
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.ready;
+          if (registration.active) {
+            const messageChannel = new MessageChannel();
+            
+            messageChannel.port1.onmessage = (event) => {
+              if (event.data.success) {
+                clearButton.textContent = '✓ 完了';
+                setTimeout(() => {
+                  clearButton.textContent = '🔄 キャッシュクリア';
+                  clearButton.disabled = false;
+                }, 2000);
+                
+                // ページをリロード
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1000);
+              }
+            };
+            
+            registration.active.postMessage(
+              { type: 'CLEAR_CACHE' },
+              [messageChannel.port2]
+            );
+          }
+        }
+        
+        // ブラウザキャッシュもクリア
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(
+            cacheNames.map(name => caches.delete(name))
+          );
+        }
+        
+        // セッションストレージもクリア
+        sessionStorage.clear();
+        
+      } catch (error) {
+        console.error('Cache clear error:', error);
+        clearButton.textContent = '❌ エラー';
+        setTimeout(() => {
+          clearButton.textContent = '🔄 キャッシュクリア';
+          clearButton.disabled = false;
+        }, 2000);
+      }
+    });
+    
+    document.body.appendChild(clearButton);
   }
   
   // PWAインストールプロンプトの処理
@@ -460,6 +675,11 @@ router.get('/pwa-install.js', (req, res) => {
     handleInstallPrompt();
   }
   
+  // キャッシュクリアボタンを追加（PWAモードでのデバッグ用）
+  if (isPWAInstalled() || window.location.pathname.includes('/admin/')) {
+    addCacheClearButton();
+  }
+  
   watchInstallState();
 })();
   `;
@@ -528,6 +748,13 @@ router.post('/login', requireNoAuth, csrfProtection, addPWAScript, async (req, r
 // 管理者パネル（ダッシュボード）
 router.get('/panel', requireAuth, csrfProtection, addPWAScript, async (req, res) => {
   try {
+    // キャッシュを防ぐヘッダーを設定
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate, private',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
     // データベースから最新のニュースを取得（最大10件）
     const latestNews = await News.findAll({
       order: [['created_at', 'DESC']],
@@ -560,6 +787,13 @@ router.get('/panel', requireAuth, csrfProtection, addPWAScript, async (req, res)
 // ニュース一覧ページ
 router.get('/news', requireAuth, csrfProtection, addPWAScript, async (req, res) => {
   try {
+    // キャッシュを防ぐヘッダーを設定
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate, private',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
     // ページネーション用のパラメータ
     const page = parseInt(req.query.page) || 1;
     const limit = 20; // 1ページあたりの記事数
@@ -864,6 +1098,13 @@ router.get('/logout', (req, res) => {
 // お問い合わせ管理ページ
 router.get('/inquiries', requireAuth, requireAdmin, csrfProtection, addPWAScript, async (req, res) => {
   try {
+    // キャッシュを防ぐヘッダーを設定
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate, private',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
     res.render('admin/inquiries', {
       title: 'お問い合わせ管理',
       currentUser: req.user,
@@ -878,6 +1119,14 @@ router.get('/inquiries', requireAuth, requireAdmin, csrfProtection, addPWAScript
 // お問い合わせデータ取得API
 router.get('/api/inquiries', requireAuth, requireAdmin, async (req, res) => {
   try {
+    // キャッシュを防ぐヘッダーを設定
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate, private',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'ETag': false
+    });
+    
     const inquiries = await db.Inquiry.findAll({
       order: [['created_at', 'DESC']],
       raw: true // 生のデータを取得
@@ -908,6 +1157,13 @@ router.get('/api/inquiries', requireAuth, requireAdmin, async (req, res) => {
 // お問い合わせステータス更新API
 router.patch('/api/inquiries/:id/status', requireAuth, requireAdmin, async (req, res) => {
   try {
+    // キャッシュを防ぐヘッダーを設定
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate, private',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
     const { id } = req.params;
     const { status } = req.body;
 
@@ -927,6 +1183,13 @@ router.patch('/api/inquiries/:id/status', requireAuth, requireAdmin, async (req,
 // お問い合わせ削除API
 router.delete('/api/inquiries/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
+    // キャッシュを防ぐヘッダーを設定
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate, private',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
     const { id } = req.params;
     const inquiry = await Inquiry.findByPk(id);
     
