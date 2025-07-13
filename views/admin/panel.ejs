@@ -206,7 +206,7 @@
                             <div class="news-title">
                                 <%= item.title %>
                             </div>
-                            <div class="news-date">投稿日：<%= item.created_at ? new Date(item.created_at).toLocaleDateString('ja-JP') : '不明' %></div>
+                            <div class="news-date">投稿日：<%= item.createdAt ? new Date(item.createdAt).toLocaleDateString('ja-JP') : '不明' %></div>
                             <div class="news-buttons">
                                 <a href="/admin/news/edit/<%= item.id %>" class="btn-admin btn-edit">編集</a>
                                 <form method="POST" action="/admin/news/delete/<%= item.id %>" style="display: inline;">

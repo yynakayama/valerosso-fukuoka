@@ -165,6 +165,8 @@
             .action-buttons .btn-admin {
                 flex: 1;
                 text-align: center;
+                font-size: 18px;     
+                padding: 8px 12px;             
             }
         }
     </style>
@@ -260,7 +262,7 @@
                             <tr>
                                 <td data-label="ID"><%= item.id %></td>
                                 <td data-label="タイトル"><%= item.title %></td>
-                                <td data-label="投稿日"><%= item.created_at ? new Date(item.created_at).toLocaleDateString('ja-JP') : '不明' %></td>
+                                <td data-label="投稿日"><%= item.createdAt ? new Date(item.createdAt).toLocaleDateString('ja-JP') : '不明' %></td>
                                 <td data-label="Instagram">
                                     <% if (item.instagram_embed_code) { %>
                                         <span class="instagram-indicator">あり</span>
