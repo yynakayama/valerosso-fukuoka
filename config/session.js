@@ -137,48 +137,7 @@ sessionStore.on('error', (error) => {
   }
 });
 
-// セッション接続テスト
-const testConnection = async () => {
-  try {
-    console.log('🔄 セッション接続テストを開始...');
-    
-    await new Promise((resolve, reject) => {
-      let resolved = false;
-      
-      sessionStore.onReady(() => {
-        if (!resolved) {
-          resolved = true;
-          resolve();
-        }
-      });
-      
-      sessionStore.on('error', (err) => {
-        if (!resolved) {
-          resolved = true;
-          reject(err);
-        }
-      });
-      
-      setTimeout(() => {
-        if (!resolved) {
-          resolved = true;
-          console.log('⚠️ セッション接続テストがタイムアウトしましたが、これは正常な場合があります');
-          resolve();
-        }
-      }, 30000);
-    });
-    
-    console.log('✅ セッション接続テスト完了');
-  } catch (error) {
-    console.log('⚠️ セッション接続テストでエラーが発生しましたが、サービスは継続します');
-    console.log('📝 理由:', error.message);
-  }
-};
-
-setTimeout(() => {
-  testConnection();
-}, 1000);
-
+// 開発環境でのデバッグ情報  
 if (process.env.NODE_ENV === 'development') {
   console.log('🔧 開発モードでセッション設定を初期化しました');
   console.log('🍪 Cookie secure:', cookieSettings.secure);
