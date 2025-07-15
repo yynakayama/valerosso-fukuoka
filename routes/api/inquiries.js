@@ -1,10 +1,46 @@
 const express = require('express');
+const csrf = require('csurf');
 const router = express.Router();
 const { Inquiry } = require('../../models');
-const { isAuthenticated, isAdmin } = require('../../middleware/auth');
+const { requireAuth, requireAdmin } = require('../../middleware/auth');
+
+// CSRF保護ミドルウェアの設定
+const csrfProtection = csrf({ cookie: true });
+
+// レート制限の設定
+const rateLimit = (() => {
+  const requests = new Map();
+  const limit = 2; // 15分あたりのリクエスト数
+  const windowMs = 15 * 60 * 1000;  // 15分
+  
+  return (req, res, next) => {
+    const key = req.ip || req.connection.remoteAddress || 'unknown';
+    const currentTime = Date.now();
+
+    // 期限切れのリクエストを削除
+    for (const [ip, data] of requests.entries()) {
+      if (currentTime - data.timestamp > windowMs) {
+        requests.delete(ip);
+      }
+    }
+
+    // 現在のリクエストを記録
+    if (!requests.has(key)) {
+      requests.set(key, { count: 1, timestamp: currentTime });
+    } else {
+      const data = requests.get(key);
+      if (data.count < limit) {
+        data.count += 1;
+      } else {
+        return res.status(429).json({ message: 'リクエストが多すぎます。しばらく待ってから再試行してください。' });
+      }
+    }
+    next();
+  };
+})();
 
 // お問い合わせの新規作成
-router.post('/', async (req, res) => {
+router.post('/', rateLimit, csrfProtection, async (req, res) => {
   try {
     const now = new Date();
     const inquiryData = {
@@ -52,7 +88,7 @@ router.post('/', async (req, res) => {
 });
 
 // 管理者用：お問い合わせ一覧の取得
-router.get('/', [isAuthenticated, isAdmin], async (req, res) => {
+router.get('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     const inquiries = await Inquiry.findAll({
       order: [['created_at', 'DESC']],
@@ -69,7 +105,7 @@ router.get('/', [isAuthenticated, isAdmin], async (req, res) => {
 });
 
 // 管理者用：お問い合わせの詳細取得
-router.get('/:id', [isAuthenticated, isAdmin], async (req, res) => {
+router.get('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     const inquiry = await Inquiry.findByPk(req.params.id);
     if (!inquiry) {
@@ -89,7 +125,7 @@ router.get('/:id', [isAuthenticated, isAdmin], async (req, res) => {
 });
 
 // 管理者用：お問い合わせのステータス更新
-router.patch('/:id/status', [isAuthenticated, isAdmin], async (req, res) => {
+router.patch('/:id/status', requireAuth, requireAdmin, async (req, res) => {
   try {
     const { status } = req.body;
     const [updatedCount] = await Inquiry.update(

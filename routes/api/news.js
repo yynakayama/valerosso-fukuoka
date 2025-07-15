@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { User, News } = require('../../models');
+const { requireAuth } = require('../../middlewares/auth');
+
+const csrfProtection = csrf({ cookie: true });
 
 // ニュース一覧を取得するAPIエンドポイント
 router.get('/', async (req, res) => {
@@ -83,7 +86,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // 新規ニュース投稿APIエンドポイント（管理画面用）
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, csrfProtection, async (req, res) => {
   try {
     const { title, content, instagram_embed_code } = req.body;
     
@@ -97,7 +100,7 @@ router.post('/', async (req, res) => {
       title: title.trim(),
       content: content ? content.trim() : '',
       instagram_embed_code: instagram_embed_code ? instagram_embed_code.trim() : null,
-      author_id: req.session?.userId || 1 // ログイン中のユーザーIDまたはデフォルト
+      author_id: req.session.userId  // ログイン中のユーザーID
     });
     
     // 作成された記事を返す（ステータスコード201：Created）
@@ -106,6 +109,9 @@ router.post('/', async (req, res) => {
       data: newItem
     });
   } catch (error) {
+    if (error.code === 'EBADCSRFTOKEN') {
+      return res.status(403).json({ message: 'CSRFトークンが無効です' });
+    }
     console.error('News creation error:', error);
     res.status(500).json({ 
       message: 'ニュース記事の作成に失敗しました',
@@ -115,7 +121,7 @@ router.post('/', async (req, res) => {
 });
 
 // ニュース記事を更新するAPIエンドポイント
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, csrfProtection, async (req, res) => {
   try {
     const newsId = parseInt(req.params.id);
     const { title, content, instagram_embed_code } = req.body;
@@ -145,6 +151,9 @@ router.put('/:id', async (req, res) => {
     
     res.json({ message: '記事が正常に更新されました' });
   } catch (error) {
+    if (error.code === 'EBADCSRFTOKEN') {
+      return res.status(403).json({ message: 'CSRFトークンが無効です' });
+    }
     console.error('News update error:', error);
     res.status(500).json({ 
       message: 'ニュース記事の更新に失敗しました',
@@ -154,7 +163,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // ニュース記事を削除するAPIエンドポイント
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, csrfProtection, async (req, res) => {
   try {
     const newsId = parseInt(req.params.id);
     
@@ -176,6 +185,9 @@ router.delete('/:id', async (req, res) => {
     // 正常に削除された場合の応答
     res.json({ message: '記事が正常に削除されました' });
   } catch (error) {
+    if (error.code === 'EBADCSRFTOKEN') {
+      return res.status(403).json({ message: 'CSRFトークンが無効です' });
+    }
     console.error('News deletion error:', error);
     res.status(500).json({ 
       message: 'ニュース記事の削除に失敗しました',
