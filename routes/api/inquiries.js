@@ -40,7 +40,7 @@ const rateLimit = (() => {
 })();
 
 // お問い合わせの新規作成
-router.post('/', rateLimit, csrfProtection, async (req, res) => {
+router.post('/', rateLimit, async (req, res) => {
   try {
     const now = new Date();
     const inquiryData = {
@@ -88,7 +88,7 @@ router.post('/', rateLimit, csrfProtection, async (req, res) => {
 });
 
 // 管理者用：お問い合わせ一覧の取得
-router.get('/', requireAuth, requireAdmin, async (req, res) => {
+router.get('/', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
   try {
     const inquiries = await Inquiry.findAll({
       order: [['created_at', 'DESC']],
@@ -105,7 +105,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // 管理者用：お問い合わせの詳細取得
-router.get('/:id', requireAuth, requireAdmin, async (req, res) => {
+router.get('/:id', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
   try {
     const inquiry = await Inquiry.findByPk(req.params.id);
     if (!inquiry) {
@@ -125,7 +125,7 @@ router.get('/:id', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // 管理者用：お問い合わせのステータス更新
-router.patch('/:id/status', requireAuth, requireAdmin, async (req, res) => {
+router.patch('/:id/status', requireAuth, requireAdmin, csrfProtection, async (req, res) => {
   try {
     const { status } = req.body;
     const [updatedCount] = await Inquiry.update(
