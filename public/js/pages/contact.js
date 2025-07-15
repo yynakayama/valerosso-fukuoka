@@ -100,7 +100,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     playerInfoFields.classList.add('hidden');
                     mediaInfoFields.classList.add('hidden');
                 } else {
-                    throw new Error(result.message || '送信に失敗しました。');
+                    // **修正点：サーバーからの具体的なエラーメッセージを表示**
+                    // HTTPステータスコード別の処理
+                    if (response.status === 429) {
+                        // レート制限の場合
+                        alert(result.message || 'リクエストが多すぎます。しばらく待ってから再試行してください。');
+                    } else if (response.status === 400) {
+                        // バリデーションエラーの場合
+                        alert(result.message || '入力内容に問題があります。確認してください。');
+                    } else if (response.status === 500) {
+                        // サーバーエラーの場合
+                        alert(result.message || 'サーバーでエラーが発生しました。しばらく経ってから再度お試しください。');
+                    } else {
+                        // その他のエラーの場合
+                        alert(result.message || '送信に失敗しました。しばらく経ってから再度お試しください。');
+                    }
                 }
             } catch (error) {
                 console.error('Error submitting form:', error);
