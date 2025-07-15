@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User, News } = require('../../models');
-const { requireAuth } = require('../../middlewares/auth');
+const { requireAuth } = require('../../middleware/auth');
 
 const csrfProtection = csrf({ cookie: true });
 
