@@ -101,6 +101,13 @@ const startServer = async () => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
     app.use(cookieParser());
+
+    app.get('/favicon.ico', (req, res) => {
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1年キャッシュ
+      res.sendFile(path.join(__dirname, 'public/img/favicon.png'));
+    });
+
     app.use(express.static('public', { 
       maxAge: '30m',  // 30分キャッシュ
       etag: true      // ETag有効化

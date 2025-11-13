@@ -158,28 +158,36 @@ document.addEventListener('DOMContentLoaded', function() {
         const email = document.getElementById('email').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const inquiryType = inquiryTypeSelect.value;
-        
+
         // 基本的な空チェック（メッセージは除外）
-        if (!name || !email || !phone || !inquiryType) {
+        if (!name || !inquiryType) {
             alert('必須項目を入力してください。');
+            return false;
+        }
+
+        // メールアドレスまたは電話番号のどちらか一方は必須
+        if (!email && !phone) {
+            alert('メールアドレスまたは電話番号のどちらか一方は必ずご入力ください。');
             return false;
         }
         
         // 共通ユーティリティを使用してバリデーション
-        const emailValidator = window.commonUtils ? 
-            window.commonUtils.isValidEmail : 
+        const emailValidator = window.commonUtils ?
+            window.commonUtils.isValidEmail :
             (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        
-        const phoneValidator = window.commonUtils ? 
-            window.commonUtils.isValidPhone : 
+
+        const phoneValidator = window.commonUtils ?
+            window.commonUtils.isValidPhone :
             (phone) => /^[0-9\-]+$/.test(phone);
-        
-        if (!emailValidator(email)) {
+
+        // メールアドレスが入力されている場合のみ形式チェック
+        if (email && !emailValidator(email)) {
             alert('有効なメールアドレスを入力してください。');
             return false;
         }
-        
-        if (!phoneValidator(phone)) {
+
+        // 電話番号が入力されている場合のみ形式チェック
+        if (phone && !phoneValidator(phone)) {
             alert('電話番号は数字とハイフンのみで入力してください。');
             return false;
         }
