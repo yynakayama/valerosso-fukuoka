@@ -133,7 +133,7 @@ router.get('/manifest.json', (req, res) => {
   const manifest = {
     name: 'ヴァレロッソ福岡',
     short_name: 'VSO福岡',
-    description: '筑後地区を拠点に活動する中学生・高校生向けサッカークラブ',
+    description: '筑後地区を拠点に活動する中学生向けサッカークラブ',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
