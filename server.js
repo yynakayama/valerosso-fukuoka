@@ -29,28 +29,36 @@ const runMigrations = async () => {
   }
 };
 
-// データベース接続テスト
-const testDatabaseConnection = async () => {
-  try {
-    const { Sequelize } = require('sequelize');
-    const config = require('./config/config.js')[process.env.NODE_ENV || 'development'];
-    const sequelize = new Sequelize(config.database, config.username, config.password, config);
-    await sequelize.authenticate();
-    await sequelize.close();
-    return true;
-  } catch (error) {
-    console.error('DB connection failed:', error.message);
-    return false;
+// データベース接続テスト（リトライ付き）
+const testDatabaseConnection = async (maxRetries = 10, intervalMs = 5000) => {
+  const { Sequelize } = require('sequelize');
+  const config = require('./config/config.js')[process.env.NODE_ENV || 'development'];
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const sequelize = new Sequelize(config.database, config.username, config.password, config);
+      await sequelize.authenticate();
+      await sequelize.close();
+      console.log(`DB接続成功 (試行 ${attempt}/${maxRetries})`);
+      return true;
+    } catch (error) {
+      console.error(`DB接続失敗 (試行 ${attempt}/${maxRetries}): ${error.message}`);
+      if (attempt < maxRetries) {
+        console.log(`${intervalMs / 1000}秒後にリトライします...`);
+        await new Promise(resolve => setTimeout(resolve, intervalMs));
+      }
+    }
   }
+  return false;
 };
 
 // メイン起動関数
 const startServer = async () => {
   try {
-    // 1. データベース接続確認
+    // 1. データベース接続確認（最大10回、5秒間隔でリトライ）
     const dbConnected = await testDatabaseConnection();
     if (!dbConnected) {
-      console.error('DB接続失敗。起動中止。');
+      console.error('DB接続失敗。全リトライ失敗のため起動中止。');
       process.exit(1);
     }
 

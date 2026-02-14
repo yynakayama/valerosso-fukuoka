@@ -56,12 +56,6 @@ router.get('/schedule', serveStaticPage);
 router.get('/news', serveStaticPage);
 
 /**
- * フォトギャラリーページ
- * /gallery へのアクセスをgallery.htmlに転送
- */
-router.get('/gallery', serveStaticPage);
-
-/**
  * 入部案内ページ
  * /join へのアクセスをjoin.htmlに転送
  */
@@ -83,7 +77,6 @@ router.get('/sitemap.xml', (req, res) => {
     { url: '/', priority: '1.0', changefreq: 'weekly' },
     { url: '/team', priority: '0.8', changefreq: 'yearly' },
     { url: '/news', priority: '0.9', changefreq: 'weekly' },
-    { url: '/gallery', priority: '0.6', changefreq: 'yearly' },
     { url: '/join', priority: '0.5', changefreq: 'yearly' },
     { url: '/contact', priority: '0.4', changefreq: 'never' }
   ];
